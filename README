@@ -1,3 +1,6 @@
 
 Documentation is available at http://nginx.org
 
+To add additional modules, put the modules into the directory `modules` and change the cpompiler flags in `debian/rules` accordingly.
+Be reminded that this source assumes that the code and especially the modules are located in `/usr/local/src/`, 
+thus you might have to change the compiler flags according to your file path.
