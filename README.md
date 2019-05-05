@@ -7,4 +7,4 @@ thus you might have to change the compiler flags according to your file path.
 
 If you want to confugure nginx with ipscrub, you'll require [libbsd](https://libbsd.freedesktop.org/wiki/). Run `apt-get install libbsd-dev` to install it. 
 
-The releases already include debian packages while binaries ending with `full` include all modules (requires libbsd) and the other binary including only the `ngx_headers_more` module.
+The releases already include debian packages while binaries ending with `full` include all modules (requires libbsd), `noSP` include all modules **except** `ngx_pagespeed` and the other binary including only the `ngx_headers_more` module.
