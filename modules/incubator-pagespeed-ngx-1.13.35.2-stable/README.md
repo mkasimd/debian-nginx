@@ -25,6 +25,8 @@ Follow the steps on <a
 href="https://developers.google.com/speed/pagespeed/module/build_ngx_pagespeed_from_source">build
 ngx_pagespeed from source</a>.
 
+Get sources and builds for PageSpeed and PSOL from https://www.modpagespeed.com/release_archive 
+
 ## How to use
 
 Follow the steps on <a
