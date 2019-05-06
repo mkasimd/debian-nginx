@@ -1,7 +1,7 @@
 
 Documentation is available on [nginx](http://nginx.org)
 
-To add additional modules, put the modules into the directory `modules` and change the compiler flags in `debian/rules` and update possible dependencies under `debian/control` accordingly.
+To add additional modules, put the modules into the directory `modules`, change the compiler flags in `debian/rules` and update possible dependencies under `debian/control` accordingly.
 Be reminded that this source assumes that the the `rules` and especially the modules are located in `/usr/local/src/nginx/nginx-1-16.0/`, 
 thus you might have to change the compiler flags according to your file path.
 
