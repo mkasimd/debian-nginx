@@ -36,4 +36,4 @@ $ tar -xzvf incubating_psol-1.14.36.1-x64.tar.gz
 
 The latest PSOL releases can be found in the [Modpagespeed Release Archive](https://www.modpagespeed.com/release_archive/).
 
-NOTE: [nginx-nonewlines](https://github.com/vedang/nginx-nonewlines) is not added as a module to compile against as the PageSpeed module deals with such optimization measures with the right filters enabled already.
+NOTE: [nginx-nonewlines](https://github.com/vedang/nginx-nonewlines) is not added as a module to compile against under `debian/rules` as the PageSpeed module deals with such optimization measures with the right filters enabled already.
