@@ -1,5 +1,5 @@
 # Documentation
-Documentation is available on the [nginx website](http://nginx.org)
+Documentation is available on the [nginx website](http://nginx.org).
 
 # Project Details
 This project is about building Debian packages of the latest nginx versions with late OpenSSL versions. There are various releases differing from each other by the modules added to the package.
