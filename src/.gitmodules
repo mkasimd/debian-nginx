@@ -1,0 +1,3 @@
+[submodule "nginx-modules"]
+	path = modules
+	url = https://github.com/mkasimd/nginx-modules.git
