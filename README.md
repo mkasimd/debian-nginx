@@ -14,7 +14,7 @@ The releases already include debian packages (.deb file); for more information o
 To use the zstd compression module, compile the zstd library first. To do so, the [zstd-nginx-module](https://github.com/mkasimd/zstd-nginx-module) has the [zstd](https://github.com/facebook/zstd) submodule included. Just run the following commands on your CLI to compile and install the zstd library:
 
 ```sh
-$ cd modules/zstd-nginx-module/zstd
+$ cd src/modules/zstd-nginx-module/zstd
 $ make install
 ```
 
@@ -29,7 +29,7 @@ https://github.com/apache/incubator-pagespeed-ngx/wiki/Building-PSOL-From-Source
 
 You need to separately download the pagespeed library:
 
-$ cd modules/incubator-pagespeed-ngx
+$ cd src/modules/incubator-pagespeed-ngx
 $ wget https://www.modpagespeed.com/release_archive/1.14.36.1-incubator-RC0/x64/incubating_psol-1.14.36.1-x64.tar.gz
 $ tar -xzvf incubating_psol-1.14.36.1-x64.tar.gz
 ```
