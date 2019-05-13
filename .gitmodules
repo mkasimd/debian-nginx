@@ -2,6 +2,3 @@
 	path = src/modules
 	url = https://github.com/mkasimd/nginx-modules.git
 	branch = master
-[submodule "modules"]
-	path = modules
-	url = https://github.com/mkasimd/nginx-modules.git
