@@ -57,6 +57,7 @@ config.status.nginx: config.env.nginx
 	--add-module="/usr/local/src/debian-nginx/modules/ngx_brotli" \
 	--add-module="/usr/local/src/debian-nginx/modules/incubator-pagespeed-ngx" \
 	--add-module="/usr/local/src/debian-nginx/modules/zstd-nginx-module" \
+	--add-module="/usr/local/src/debian-nginx/modules/ngx_quic" \
 	--add-dynamic-module="/usr/local/src/debian-nginx/modules/naxsi/naxsi_src"
 	touch $@
 
