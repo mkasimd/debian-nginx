@@ -38,7 +38,7 @@ config.env.%:
 
 config.status.nginx: config.env.nginx
 	cd $(BUILDDIR_nginx) && \
-	CFLAGS="" ./configure  --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules \
+	CFLAGS="" ./configure  --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/local/src/debian-nginx/modules \
 	--conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log \
 	--pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp \
 	--http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
