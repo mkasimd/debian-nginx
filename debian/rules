@@ -52,12 +52,7 @@ config.status.nginx: config.env.nginx
 	--with-cc-opt='-g -O2 -fdebug-prefix-map=/data/builder/debuild/nginx/nginx-1.16.0/debian/debuild-base/nginx-1.16.0=. -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' \
 	--with-ld-opt='-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie' \
 	--add-module="/usr/local/src/debian-nginx/modules/headers-more-nginx-module" \
-	--add-module="/usr/local/src/debian-nginx/modules/nginx-module-sysguard" \
-	--add-module="/usr/local/src/debian-nginx/modules/ipscrub/ipscrub" \
-	--add-module="/usr/local/src/debian-nginx/modules/ngx_brotli" \
-	--add-module="/usr/local/src/debian-nginx/modules/incubator-pagespeed-ngx" \
-	--add-module="/usr/local/src/debian-nginx/modules/zstd-nginx-module" \
-	--add-dynamic-module="/usr/local/src/debian-nginx/modules/naxsi/naxsi_src"
+	--add-module="/usr/local/src/debian-nginx/modules/ngx_brotli"
 	touch $@
 
 config.status.nginx_debug: config.env.nginx_debug
