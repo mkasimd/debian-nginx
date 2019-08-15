@@ -16,14 +16,14 @@ In this project, the Application Versioning (AVer) and the Package Versioning (P
 ## Application Versioning
 This is the application version numbering system for KSM-ngx:
 
- * <nginx version><openssl version's last letter>-<lite|noPS|full>
+ * `<nginx version><openssl version's last letter>-<lite|noPS|full>`
 
 This version numbering will only be displayed when running `nginx -v` or `nginx -V`. By doing so, it is intended that the user can see which build and package of nginx he is using on his system.
 
 ## Package & Release Versioning
 The package version numbering system varies a little:
 
- * <nginx version>.<KSM-ngx version>
+ * `<nginx version>.<KSM-ngx version>`
   
  This is simply the nginx version followed by a number for the KSM-ngx release built on top of the given nginx version. The reason why this is different is, is that each application version doesn't really need an own release, but is built on top of the same release anyways and only differ in the mosules that the package is compiled with.
 
