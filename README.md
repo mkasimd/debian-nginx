@@ -23,7 +23,7 @@ This version numbering will only be displayed when running `nginx -v` or `nginx 
 ## Package & Release Versioning
 The package version numbering system varies a little:
 
- * `<nginx version>.<KSM-ngx version>`
+ * `<nginx version>.<KSM-ngx release no.>`
   
  This is simply the nginx version followed by a number for the KSM-ngx release built on top of the given nginx version. The reason why this is different is, is that each application version doesn't really need an own release, but is built on top of the same release anyways and only differ in the mosules that the package is compiled with.
 
@@ -36,7 +36,13 @@ $ make install
 ```
 
 # Pagespeed
-To use the PageSpeed module, you'll require to download the PSOL library and extract it. Details on how to do so is under the config file, though the steps will be like this:
+To use the PageSpeed module, you'll require to download the PSOL library and extract it. 
+
+## Automated Configuration
+You can configure the PageSpeed module automaticalls by using the script provided by pagespeed/ngx_pagespeed [here](https://ngxpagespeed.com/install).
+
+## Manual Configuration
+Details on how to do so is under the config file, though the steps will be like this:
 
 ```sh
 This is a development branch of ngx_pagespeed, which means there is no
@@ -54,3 +60,6 @@ $ tar -xzvf incubating_psol-1.14.36.1-x64.tar.gz
 The latest PSOL releases can be found in the [Modpagespeed Release Archive](https://www.modpagespeed.com/release_archive/).
 
 NOTE: [nginx-nonewlines](https://github.com/vedang/nginx-nonewlines) is not added as a module to compile against under `debian/rules` as the PageSpeed module deals with such optimization measures with the right filters enabled already.
+
+# Modules
+KSM-ngx comes with three types of releases, namely `lite`, `noPS` and `full`. They all have the same nginx base, but differ from each other with the modules that are provided. See the notes for each release to see which modules each provided package come with. Additionally, you can check out [mkasimd/nginx-modules](https://github.com/mkasimd/nginx-modules) to see some additional useful modules which might not be included in the releases.
