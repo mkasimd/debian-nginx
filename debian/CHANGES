@@ -1,7 +1,25 @@
+Changes with nginx 1.16.1.1                                      14 Aug 2019
+
+    *) Custom build with additional modules
+	
+	*) Changed server header
+
+Changes with nginx 1.16.1                                        13 Aug 2019
+
+    *) Security: when using HTTP/2 a client might cause excessive memory
+       consumption and CPU usage (CVE-2019-9511, CVE-2019-9513,
+       CVE-2019-9516).
 
 Changes with nginx 1.16.0-2                                      11 May 2019
 
     *) 1.16.0 stable branch
+
+
+Changes with nginx 1.16.0-1                                      05 May 2019
+
+    *) Added additional modules
+
+    *) Changed Server header
 
 
 Changes with nginx 1.16.0                                        23 Apr 2019
