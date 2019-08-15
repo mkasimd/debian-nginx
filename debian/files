@@ -1,3 +1,3 @@
-nginx-dbg_1.16.0-2~stretch_amd64.deb debug extra
-nginx_1.16.0-2~stretch_amd64.buildinfo httpd optional
-nginx_1.16.0-2~stretch_amd64.deb httpd optional
+nginx-dbg_1.16.1.1-1~stretch_amd64.deb debug extra
+nginx_1.16.1.1-1~stretch_amd64.buildinfo httpd optional
+nginx_1.16.1.1-1~stretch_amd64.deb httpd optional
