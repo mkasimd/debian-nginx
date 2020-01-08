@@ -10,7 +10,7 @@
 
 
 #define nginx_version      1016001
-#define NGINX_VERSION      "1.16.1c-full"
+#define NGINX_VERSION      "1.16.1-boringh3-full"
 #define NGINX_VER          "KSM-ngx/" NGINX_VERSION
 
 #ifdef NGX_BUILD
