@@ -1,8 +1,19 @@
+nginx (1.16.1.2-1~stretch) stretch; urgency=low
+
+  * 1.16.1.1
+  * Built against BoringSSL and Cloudflare/Quiche
+  * QUIC and HTTP/3 support
+  * Custom build with extra modules (see 'nginx -V')
+
+ -- M. Kasim <foo@mys.onl>  Wed, 08 Jan 2020 08:00:00 +0100
+
 nginx (1.16.1.1-1~stretch) stretch; urgency=low
 
   * 1.16.1.1
   * Building against OpenSSL 1.1.1c -> TLS 1.3 support
   * Custom build with extra modules (see 'nginx -V')
+
+ -- M. Kasim <foo@mys.onl>  Wed, 14 Aug 2019 15:00:00 +0100
 
 nginx (1.16.1-1~stretch) stretch; urgency=low
 

@@ -10,13 +10,14 @@ Build-Depends: debhelper (>= 9~),
                libssl-dev (>= 0.9.7),
                libpcre3-dev,
                zlib1g-dev,
-               cmake
+               cmake,
+               golang
 Standards-Version: 3.9.8.0
 Homepage: http://nginx.org
 
 Package: nginx
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.0-6), libbsd-dev (>= 0.8.0), libpcre3, adduser, brotli (>= 0.5.0), zstd (>= 1.4.0)
+Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.0-6), libbsd-dev (>= 0.8.0), libpcre3, adduser, brotli (>= 0.5.0), zstd (>= 1.1.0)
 Provides: httpd
 Conflicts: nginx-common, nginx-core
 Replaces: nginx-common, nginx-core

@@ -1,8 +1,14 @@
+Changes with nginx 1.16.1.2                                      08 Jan 2020
+
+    *) Custom build with additional modules
+
+    *) QUIC support
+
 Changes with nginx 1.16.1.1                                      14 Aug 2019
 
     *) Custom build with additional modules
 	
-	*) Changed server header
+    *) Changed server header
 
 Changes with nginx 1.16.1                                        13 Aug 2019
 
