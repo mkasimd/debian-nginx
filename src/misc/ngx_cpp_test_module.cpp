@@ -11,8 +11,8 @@ extern "C" {
 #include <ngx_http.h>
 
 #include <ngx_mail.h>
-#include <ngx_mail_pop3_module.h>
 #include <ngx_mail_imap_module.h>
+#include <ngx_mail_pop3_module.h>
 #include <ngx_mail_smtp_module.h>
 
 #include <ngx_stream.h>
@@ -21,11 +21,6 @@ extern "C" {
 // nginx header files should go before other, because they define 64-bit off_t
 // #include <string>
 
-
 void ngx_cpp_test_handler(void *data);
 
-void
-ngx_cpp_test_handler(void *data)
-{
-    return;
-}
+void ngx_cpp_test_handler(void *data) { return; }
