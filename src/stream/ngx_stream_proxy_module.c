@@ -24,8 +24,8 @@ typedef struct {
     ngx_msec_t                       timeout;
     ngx_msec_t                       next_upstream_timeout;
     size_t                           buffer_size;
-    size_t                           upload_rate;
-    size_t                           download_rate;
+    ngx_stream_complex_value_t      *upload_rate;
+    ngx_stream_complex_value_t      *download_rate;
     ngx_uint_t                       requests;
     ngx_uint_t                       responses;
     ngx_uint_t                       next_upstream_tries;
@@ -49,6 +49,7 @@ typedef struct {
     ngx_str_t                        ssl_certificate;
     ngx_str_t                        ssl_certificate_key;
     ngx_array_t                     *ssl_passwords;
+    ngx_array_t                     *ssl_conf_commands;
 
     ngx_ssl_t                       *ssl;
 #endif
@@ -94,6 +95,8 @@ static char *ngx_stream_proxy_bind(ngx_conf_t *cf, ngx_command_t *cmd,
 static ngx_int_t ngx_stream_proxy_send_proxy_protocol(ngx_stream_session_t *s);
 static char *ngx_stream_proxy_ssl_password_file(ngx_conf_t *cf,
     ngx_command_t *cmd, void *conf);
+static char *ngx_stream_proxy_ssl_conf_command_check(ngx_conf_t *cf, void *post,
+    void *data);
 static void ngx_stream_proxy_ssl_init_connection(ngx_stream_session_t *s);
 static void ngx_stream_proxy_ssl_handshake(ngx_connection_t *pc);
 static void ngx_stream_proxy_ssl_save_session(ngx_connection_t *c);
@@ -111,6 +114,9 @@ static ngx_conf_bitmask_t  ngx_stream_proxy_ssl_protocols[] = {
     { ngx_string("TLSv1.3"), NGX_SSL_TLSv1_3 },
     { ngx_null_string, 0 }
 };
+
+static ngx_conf_post_t  ngx_stream_proxy_ssl_conf_command_post =
+    { ngx_stream_proxy_ssl_conf_command_check };
 
 #endif
 
@@ -184,14 +190,14 @@ static ngx_command_t  ngx_stream_proxy_commands[] = {
 
     { ngx_string("proxy_upload_rate"),
       NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
+      ngx_stream_set_complex_value_size_slot,
       NGX_STREAM_SRV_CONF_OFFSET,
       offsetof(ngx_stream_proxy_srv_conf_t, upload_rate),
       NULL },
 
     { ngx_string("proxy_download_rate"),
       NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
+      ngx_stream_set_complex_value_size_slot,
       NGX_STREAM_SRV_CONF_OFFSET,
       offsetof(ngx_stream_proxy_srv_conf_t, download_rate),
       NULL },
@@ -330,6 +336,13 @@ static ngx_command_t  ngx_stream_proxy_commands[] = {
       NGX_STREAM_SRV_CONF_OFFSET,
       0,
       NULL },
+
+    { ngx_string("proxy_ssl_conf_command"),
+      NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE2,
+      ngx_conf_set_keyval_slot,
+      NGX_STREAM_SRV_CONF_OFFSET,
+      offsetof(ngx_stream_proxy_srv_conf_t, ssl_conf_commands),
+      &ngx_stream_proxy_ssl_conf_command_post },
 
 #endif
 
@@ -839,7 +852,7 @@ ngx_stream_proxy_init_upstream(ngx_stream_session_t *s)
         u->upstream_buf.last = p;
     }
 
-    if (c->buffer && c->buffer->pos < c->buffer->last) {
+    if (c->buffer && c->buffer->pos <= c->buffer->last) {
         ngx_log_debug1(NGX_LOG_DEBUG_STREAM, c->log, 0,
                        "stream proxy add preread buffer: %uz",
                        c->buffer->last - c->buffer->pos);
@@ -853,6 +866,7 @@ ngx_stream_proxy_init_upstream(ngx_stream_session_t *s)
         *cl->buf = *c->buffer;
 
         cl->buf->tag = (ngx_buf_tag_t) &ngx_stream_proxy_module;
+        cl->buf->temporary = (cl->buf->pos == cl->buf->last) ? 0 : 1;
         cl->buf->flush = 1;
 
         cl->next = u->upstream_out;
@@ -894,6 +908,9 @@ ngx_stream_proxy_init_upstream(ngx_stream_session_t *s)
 
         u->proxy_protocol = 0;
     }
+
+    u->upload_rate = ngx_stream_complex_value_size(s, pscf->upload_rate, 0);
+    u->download_rate = ngx_stream_complex_value_size(s, pscf->download_rate, 0);
 
     u->connected = 1;
 
@@ -1001,6 +1018,17 @@ ngx_stream_proxy_ssl_password_file(ngx_conf_t *cf, ngx_command_t *cmd,
     }
 
     return NGX_CONF_OK;
+}
+
+
+static char *
+ngx_stream_proxy_ssl_conf_command_check(ngx_conf_t *cf, void *post, void *data)
+{
+#ifndef SSL_CONF_FLAG_FILE
+    return "is not supported on this platform";
+#else
+    return NGX_CONF_OK;
+#endif
 }
 
 
@@ -1532,7 +1560,7 @@ ngx_stream_proxy_process(ngx_stream_session_t *s, ngx_uint_t from_upstream,
         src = pc;
         dst = c;
         b = &u->upstream_buf;
-        limit_rate = pscf->download_rate;
+        limit_rate = u->download_rate;
         received = &u->received;
         packets = &u->responses;
         out = &u->downstream_out;
@@ -1544,7 +1572,7 @@ ngx_stream_proxy_process(ngx_stream_session_t *s, ngx_uint_t from_upstream,
         src = c;
         dst = pc;
         b = &u->downstream_buf;
-        limit_rate = pscf->upload_rate;
+        limit_rate = u->upload_rate;
         received = &s->received;
         packets = &u->requests;
         out = &u->upstream_out;
@@ -1955,6 +1983,8 @@ ngx_stream_proxy_create_srv_conf(ngx_conf_t *cf)
      *     conf->ssl_certificate = { 0, NULL };
      *     conf->ssl_certificate_key = { 0, NULL };
      *
+     *     conf->upload_rate = NULL;
+     *     conf->download_rate = NULL;
      *     conf->ssl = NULL;
      *     conf->upstream = NULL;
      *     conf->upstream_value = NULL;
@@ -1964,8 +1994,6 @@ ngx_stream_proxy_create_srv_conf(ngx_conf_t *cf)
     conf->timeout = NGX_CONF_UNSET_MSEC;
     conf->next_upstream_timeout = NGX_CONF_UNSET_MSEC;
     conf->buffer_size = NGX_CONF_UNSET_SIZE;
-    conf->upload_rate = NGX_CONF_UNSET_SIZE;
-    conf->download_rate = NGX_CONF_UNSET_SIZE;
     conf->requests = NGX_CONF_UNSET_UINT;
     conf->responses = NGX_CONF_UNSET_UINT;
     conf->next_upstream_tries = NGX_CONF_UNSET_UINT;
@@ -1981,6 +2009,7 @@ ngx_stream_proxy_create_srv_conf(ngx_conf_t *cf)
     conf->ssl_verify = NGX_CONF_UNSET;
     conf->ssl_verify_depth = NGX_CONF_UNSET_UINT;
     conf->ssl_passwords = NGX_CONF_UNSET_PTR;
+    conf->ssl_conf_commands = NGX_CONF_UNSET_PTR;
 #endif
 
     return conf;
@@ -2005,11 +2034,13 @@ ngx_stream_proxy_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
     ngx_conf_merge_size_value(conf->buffer_size,
                               prev->buffer_size, 16384);
 
-    ngx_conf_merge_size_value(conf->upload_rate,
-                              prev->upload_rate, 0);
+    if (conf->upload_rate == NULL) {
+        conf->upload_rate = prev->upload_rate;
+    }
 
-    ngx_conf_merge_size_value(conf->download_rate,
-                              prev->download_rate, 0);
+    if (conf->download_rate == NULL) {
+        conf->download_rate = prev->download_rate;
+    }
 
     ngx_conf_merge_uint_value(conf->requests,
                               prev->requests, 0);
@@ -2065,6 +2096,9 @@ ngx_stream_proxy_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
                               prev->ssl_certificate_key, "");
 
     ngx_conf_merge_ptr_value(conf->ssl_passwords, prev->ssl_passwords, NULL);
+
+    ngx_conf_merge_ptr_value(conf->ssl_conf_commands,
+                              prev->ssl_conf_commands, NULL);
 
     if (conf->ssl_enable && ngx_stream_proxy_set_ssl(cf, conf) != NGX_OK) {
         return NGX_CONF_ERROR;
@@ -2145,6 +2179,12 @@ ngx_stream_proxy_set_ssl(ngx_conf_t *cf, ngx_stream_proxy_srv_conf_t *pscf)
     }
 
     if (ngx_ssl_client_session_cache(cf, pscf->ssl, pscf->ssl_session_reuse)
+        != NGX_OK)
+    {
+        return NGX_ERROR;
+    }
+
+    if (ngx_ssl_conf_commands(cf, pscf->ssl, pscf->ssl_conf_commands)
         != NGX_OK)
     {
         return NGX_ERROR;
