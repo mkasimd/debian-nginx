@@ -2,6 +2,7 @@
 /*
  * Copyright (C) Igor Sysoev
  * Copyright (C) Nginx, Inc.
+ * Edited by: M. Kasim
  */
 
 
@@ -46,7 +47,7 @@ ngx_module_t  ngx_http_header_filter_module = {
 };
 
 
-static u_char ngx_http_server_string[] = "Server: nginx" CRLF;
+static u_char ngx_http_server_string[] = "Server: KSM-ngx" CRLF;
 static u_char ngx_http_server_full_string[] = "Server: " NGINX_VER CRLF;
 static u_char ngx_http_server_build_string[] = "Server: " NGINX_VER_BUILD CRLF;
 
@@ -98,7 +99,7 @@ static ngx_str_t ngx_http_status_lines[] = {
     ngx_string("415 Unsupported Media Type"),
     ngx_string("416 Requested Range Not Satisfiable"),
     ngx_null_string,  /* "417 Expectation Failed" */
-    ngx_null_string,  /* "418 unused" */
+    ngx_string("418 I'm a teapot"),
     ngx_null_string,  /* "419 unused" */
     ngx_null_string,  /* "420 unused" */
     ngx_string("421 Misdirected Request"),

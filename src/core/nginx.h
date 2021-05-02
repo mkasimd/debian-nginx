@@ -2,6 +2,7 @@
 /*
  * Copyright (C) Igor Sysoev
  * Copyright (C) Nginx, Inc.
+ * Edited by: M. Kasim
  */
 
 
@@ -10,8 +11,8 @@
 
 
 #define nginx_version      1020000
-#define NGINX_VERSION      "1.20.0"
-#define NGINX_VER          "nginx/" NGINX_VERSION
+#define NGINX_VERSION      "1.20.0d-full"
+#define NGINX_VER          "KSM-ngx/" NGINX_VERSION
 
 #ifdef NGX_BUILD
 #define NGINX_VER_BUILD    NGINX_VER " (" NGX_BUILD ")"
