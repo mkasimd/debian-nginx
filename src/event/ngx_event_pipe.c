@@ -77,7 +77,7 @@ ngx_event_pipe(ngx_event_pipe_t *p, ngx_int_t do_write)
     }
 
     if (p->downstream->fd != (ngx_socket_t) -1
-        && p->downstream->data == p->output_ctx)
+            && p->downstream->data == p->output_ctx)
     {
         wev = p->downstream->write;
         if (ngx_handle_write_event(wev, p->send_lowat) != NGX_OK) {
@@ -172,11 +172,11 @@ ngx_event_pipe_read_upstream(ngx_event_pipe_t *p)
              */
 
             if (p->upstream->read->available == 0
-                && p->upstream->read->pending_eof
+                    && p->upstream->read->pending_eof
 #if (NGX_SSL)
-                && !p->upstream->ssl
+                    && !p->upstream->ssl
 #endif
-                )
+               )
             {
                 p->upstream->read->ready = 0;
                 p->upstream->read->eof = 1;
@@ -590,8 +590,8 @@ ngx_event_pipe_write_to_downstream(ngx_event_pipe_t *p)
         }
 
         if (downstream->data != p->output_ctx
-            || !downstream->write->ready
-            || downstream->write->delayed)
+                || !downstream->write->ready
+                || downstream->write->delayed)
         {
             break;
         }
@@ -674,7 +674,7 @@ ngx_event_pipe_write_to_downstream(ngx_event_pipe_t *p)
             ll = &cl->next;
         }
 
-    flush:
+flush:
 
         ngx_log_debug2(NGX_LOG_DEBUG_EVENT, p->log, 0,
                        "pipe write: out:%p, f:%ui", out, flush);
@@ -796,9 +796,9 @@ ngx_event_pipe_write_chain_to_temp_file(ngx_event_pipe_t *p)
                            cl->buf->pos, bsize);
 
             if (prev_last_shadow
-                && ((size + bsize > p->temp_file_write_size)
-                    || (p->temp_file->offset + size + bsize
-                        > p->max_temp_file_size)))
+                    && ((size + bsize > p->temp_file_write_size)
+                        || (p->temp_file->offset + size + bsize
+                            > p->max_temp_file_size)))
             {
                 break;
             }
@@ -910,8 +910,8 @@ done:
 free:
 
     for (last_free = &p->free_raw_bufs;
-         *last_free != NULL;
-         last_free = &(*last_free)->next)
+            *last_free != NULL;
+            last_free = &(*last_free)->next)
     {
         /* void */
     }

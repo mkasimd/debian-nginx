@@ -74,36 +74,36 @@ typedef struct {
 
 
 static ngx_int_t ngx_http_xslt_send(ngx_http_request_t *r,
-    ngx_http_xslt_filter_ctx_t *ctx, ngx_buf_t *b);
+                                    ngx_http_xslt_filter_ctx_t *ctx, ngx_buf_t *b);
 static ngx_int_t ngx_http_xslt_add_chunk(ngx_http_request_t *r,
-    ngx_http_xslt_filter_ctx_t *ctx, ngx_buf_t *b);
+        ngx_http_xslt_filter_ctx_t *ctx, ngx_buf_t *b);
 
 
 static void ngx_http_xslt_sax_external_subset(void *data, const xmlChar *name,
-    const xmlChar *externalId, const xmlChar *systemId);
+        const xmlChar *externalId, const xmlChar *systemId);
 static void ngx_cdecl ngx_http_xslt_sax_error(void *data, const char *msg, ...);
 
 
 static ngx_buf_t *ngx_http_xslt_apply_stylesheet(ngx_http_request_t *r,
-    ngx_http_xslt_filter_ctx_t *ctx);
+        ngx_http_xslt_filter_ctx_t *ctx);
 static ngx_int_t ngx_http_xslt_params(ngx_http_request_t *r,
-    ngx_http_xslt_filter_ctx_t *ctx, ngx_array_t *params, ngx_uint_t final);
+                                      ngx_http_xslt_filter_ctx_t *ctx, ngx_array_t *params, ngx_uint_t final);
 static u_char *ngx_http_xslt_content_type(xsltStylesheetPtr s);
 static u_char *ngx_http_xslt_encoding(xsltStylesheetPtr s);
 static void ngx_http_xslt_cleanup(void *data);
 
 static char *ngx_http_xslt_entities(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                    void *conf);
 static char *ngx_http_xslt_stylesheet(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                      void *conf);
 static char *ngx_http_xslt_param(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                 void *conf);
 static void ngx_http_xslt_cleanup_dtd(void *data);
 static void ngx_http_xslt_cleanup_stylesheet(void *data);
 static void *ngx_http_xslt_filter_create_main_conf(ngx_conf_t *cf);
 static void *ngx_http_xslt_filter_create_conf(ngx_conf_t *cf);
 static char *ngx_http_xslt_filter_merge_conf(ngx_conf_t *cf, void *parent,
-    void *child);
+        void *child);
 static ngx_int_t ngx_http_xslt_filter_preconfiguration(ngx_conf_t *cf);
 static ngx_int_t ngx_http_xslt_filter_init(ngx_conf_t *cf);
 static void ngx_http_xslt_filter_exit(ngx_cycle_t *cycle);
@@ -117,49 +117,55 @@ static ngx_str_t  ngx_http_xslt_default_types[] = {
 
 static ngx_command_t  ngx_http_xslt_filter_commands[] = {
 
-    { ngx_string("xml_entities"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_http_xslt_entities,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("xml_entities"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_http_xslt_entities,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("xslt_stylesheet"),
-      NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_http_xslt_stylesheet,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("xslt_stylesheet"),
+        NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_http_xslt_stylesheet,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("xslt_param"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
-      ngx_http_xslt_param,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("xslt_param"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
+        ngx_http_xslt_param,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("xslt_string_param"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
-      ngx_http_xslt_param,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      (void *) 1 },
+    {   ngx_string("xslt_string_param"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
+        ngx_http_xslt_param,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        (void *) 1
+    },
 
-    { ngx_string("xslt_types"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_http_types_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_xslt_filter_loc_conf_t, types_keys),
-      &ngx_http_xslt_default_types[0] },
+    {   ngx_string("xslt_types"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_http_types_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_xslt_filter_loc_conf_t, types_keys),
+        &ngx_http_xslt_default_types[0]
+    },
 
-    { ngx_string("xslt_last_modified"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_xslt_filter_loc_conf_t, last_modified),
-      NULL },
+    {   ngx_string("xslt_last_modified"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_xslt_filter_loc_conf_t, last_modified),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -214,7 +220,7 @@ ngx_http_xslt_header_filter(ngx_http_request_t *r)
     conf = ngx_http_get_module_loc_conf(r, ngx_http_xslt_filter_module);
 
     if (conf->sheets.nelts == 0
-        || ngx_http_test_content_type(r, &conf->types) == NULL)
+            || ngx_http_test_content_type(r, &conf->types) == NULL)
     {
         return ngx_http_next_header_filter(r);
     }
@@ -290,7 +296,7 @@ ngx_http_xslt_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
             if (wellFormed) {
                 return ngx_http_xslt_send(r, ctx,
-                                       ngx_http_xslt_apply_stylesheet(r, ctx));
+                                          ngx_http_xslt_apply_stylesheet(r, ctx));
             }
 
             xmlFreeDoc(ctx->doc);
@@ -308,7 +314,7 @@ ngx_http_xslt_body_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
 static ngx_int_t
 ngx_http_xslt_send(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
-    ngx_buf_t *b)
+                   ngx_buf_t *b)
 {
     ngx_int_t                         rc;
     ngx_chain_t                       out;
@@ -319,7 +325,7 @@ ngx_http_xslt_send(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
 
     if (b == NULL) {
         return ngx_http_filter_finalize_request(r, &ngx_http_xslt_filter_module,
-                                               NGX_HTTP_INTERNAL_SERVER_ERROR);
+                                                NGX_HTTP_INTERNAL_SERVER_ERROR);
     }
 
     cln = ngx_pool_cleanup_add(r->pool, 0);
@@ -327,7 +333,7 @@ ngx_http_xslt_send(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
     if (cln == NULL) {
         ngx_free(b->pos);
         return ngx_http_filter_finalize_request(r, &ngx_http_xslt_filter_module,
-                                               NGX_HTTP_INTERNAL_SERVER_ERROR);
+                                                NGX_HTTP_INTERNAL_SERVER_ERROR);
     }
 
     if (r == r->main) {
@@ -368,7 +374,7 @@ ngx_http_xslt_send(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
 
 static ngx_int_t
 ngx_http_xslt_add_chunk(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
-    ngx_buf_t *b)
+                        ngx_buf_t *b)
 {
     int               err;
     xmlParserCtxtPtr  ctxt;
@@ -382,7 +388,7 @@ ngx_http_xslt_add_chunk(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
             return NGX_ERROR;
         }
         xmlCtxtUseOptions(ctxt, XML_PARSE_NOENT|XML_PARSE_DTDLOAD
-                                               |XML_PARSE_NOWARNING);
+                          |XML_PARSE_NOWARNING);
 
         ctxt->sax->externalSubset = ngx_http_xslt_sax_external_subset;
         ctxt->sax->setDocumentLocator = NULL;
@@ -411,7 +417,7 @@ ngx_http_xslt_add_chunk(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
 
 static void
 ngx_http_xslt_sax_external_subset(void *data, const xmlChar *name,
-    const xmlChar *externalId, const xmlChar *systemId)
+                                  const xmlChar *externalId, const xmlChar *systemId)
 {
     xmlParserCtxtPtr ctxt = data;
 
@@ -487,7 +493,7 @@ ngx_http_xslt_sax_error(void *data, const char *msg, ...)
 
 static ngx_buf_t *
 ngx_http_xslt_apply_stylesheet(ngx_http_request_t *r,
-    ngx_http_xslt_filter_ctx_t *ctx)
+                               ngx_http_xslt_filter_ctx_t *ctx)
 {
     int                               len, rc, doc_type;
     u_char                           *type, *encoding;
@@ -505,7 +511,7 @@ ngx_http_xslt_apply_stylesheet(ngx_http_request_t *r,
     /* preallocate array for 4 params */
 
     if (ngx_array_init(&ctx->params, r->pool, 4 * 2 + 1, sizeof(char *))
-        != NGX_OK)
+            != NGX_OK)
     {
         xmlFreeDoc(doc);
         return NULL;
@@ -520,7 +526,7 @@ ngx_http_xslt_apply_stylesheet(ngx_http_request_t *r,
         }
 
         if (conf->params
-            && ngx_http_xslt_params(r, ctx, conf->params, 0) != NGX_OK)
+                && ngx_http_xslt_params(r, ctx, conf->params, 0) != NGX_OK)
         {
             xsltFreeTransformContext(ctx->transform);
             xmlFreeDoc(doc);
@@ -627,7 +633,7 @@ ngx_http_xslt_apply_stylesheet(ngx_http_request_t *r,
 
 static ngx_int_t
 ngx_http_xslt_params(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
-    ngx_array_t *params, ngx_uint_t final)
+                     ngx_array_t *params, ngx_uint_t final)
 {
     u_char                 *p, *value, *dst, *src, **s;
     size_t                  len;
@@ -654,11 +660,11 @@ ngx_http_xslt_params(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
             if (param[i].quote) {
                 if (xsltQuoteOneUserParam(ctx->transform, param[i].name,
                                           string.data)
-                    != 0)
+                        != 0)
                 {
                     ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                                "xsltQuoteOneUserParam(\"%s\", \"%s\") failed",
-                                param[i].name, string.data);
+                                  "xsltQuoteOneUserParam(\"%s\", \"%s\") failed",
+                                  param[i].name, string.data);
                     return NGX_ERROR;
                 }
 
@@ -705,7 +711,7 @@ ngx_http_xslt_params(ngx_http_request_t *r, ngx_http_xslt_filter_ctx_t *ctx,
             p = (u_char *) ngx_strchr(p, '=');
             if (p == NULL) {
                 ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                                "invalid libxslt parameter \"%s\"", value);
+                              "invalid libxslt parameter \"%s\"", value);
                 return NGX_ERROR;
             }
             *p++ = '\0';
@@ -891,7 +897,7 @@ ngx_http_xslt_stylesheet(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     if (xlcf->sheets.elts == NULL) {
         if (ngx_array_init(&xlcf->sheets, cf->pool, 1,
                            sizeof(ngx_http_xslt_sheet_t))
-            != NGX_OK)
+                != NGX_OK)
         {
             return NGX_CONF_ERROR;
         }
@@ -952,7 +958,7 @@ found:
 
     if (ngx_array_init(&sheet->params, cf->pool, n - 2,
                        sizeof(ngx_http_xslt_param_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_CONF_ERROR;
     }
@@ -1049,14 +1055,14 @@ ngx_http_xslt_filter_create_main_conf(ngx_conf_t *cf)
 
     if (ngx_array_init(&conf->dtd_files, cf->pool, 1,
                        sizeof(ngx_http_xslt_file_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NULL;
     }
 
     if (ngx_array_init(&conf->sheet_files, cf->pool, 1,
                        sizeof(ngx_http_xslt_file_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NULL;
     }
@@ -1112,7 +1118,7 @@ ngx_http_xslt_filter_merge_conf(ngx_conf_t *cf, void *parent, void *child)
     if (ngx_http_merge_types(cf, &conf->types_keys, &conf->types,
                              &prev->types_keys, &prev->types,
                              ngx_http_xslt_default_types)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_CONF_ERROR;
     }

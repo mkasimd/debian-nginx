@@ -313,7 +313,7 @@ typedef struct {
 
 
 typedef void (*ngx_mail_init_session_pt)(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+        ngx_connection_t *c);
 typedef void (*ngx_mail_init_protocol_pt)(ngx_event_t *rev);
 typedef void (*ngx_mail_auth_state_pt)(ngx_event_t *rev);
 typedef ngx_int_t (*ngx_mail_parse_command_pt)(ngx_mail_session_t *s);
@@ -343,7 +343,7 @@ typedef struct {
 
     void                       *(*create_srv_conf)(ngx_conf_t *cf);
     char                       *(*merge_srv_conf)(ngx_conf_t *cf, void *prev,
-                                                  void *conf);
+            void *conf);
 } ngx_mail_module_t;
 
 
@@ -381,18 +381,18 @@ ngx_int_t ngx_mail_starttls_only(ngx_mail_session_t *s, ngx_connection_t *c);
 void ngx_mail_init_connection(ngx_connection_t *c);
 
 ngx_int_t ngx_mail_salt(ngx_mail_session_t *s, ngx_connection_t *c,
-    ngx_mail_core_srv_conf_t *cscf);
+                        ngx_mail_core_srv_conf_t *cscf);
 ngx_int_t ngx_mail_auth_plain(ngx_mail_session_t *s, ngx_connection_t *c,
-    ngx_uint_t n);
+                              ngx_uint_t n);
 ngx_int_t ngx_mail_auth_login_username(ngx_mail_session_t *s,
-    ngx_connection_t *c, ngx_uint_t n);
+                                       ngx_connection_t *c, ngx_uint_t n);
 ngx_int_t ngx_mail_auth_login_password(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+                                       ngx_connection_t *c);
 ngx_int_t ngx_mail_auth_cram_md5_salt(ngx_mail_session_t *s,
-    ngx_connection_t *c, char *prefix, size_t len);
+                                      ngx_connection_t *c, char *prefix, size_t len);
 ngx_int_t ngx_mail_auth_cram_md5(ngx_mail_session_t *s, ngx_connection_t *c);
 ngx_int_t ngx_mail_auth_external(ngx_mail_session_t *s, ngx_connection_t *c,
-    ngx_uint_t n);
+                                 ngx_uint_t n);
 ngx_int_t ngx_mail_auth_parse(ngx_mail_session_t *s, ngx_connection_t *c);
 
 void ngx_mail_send(ngx_event_t *wev);

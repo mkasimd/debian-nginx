@@ -100,7 +100,7 @@ ngx_http_static_handler(ngx_http_request_t *r)
     }
 
     if (ngx_open_cached_file(clcf->open_file_cache, &path, &of, r->pool)
-        != NGX_OK)
+            != NGX_OK)
     {
         switch (of.err) {
 

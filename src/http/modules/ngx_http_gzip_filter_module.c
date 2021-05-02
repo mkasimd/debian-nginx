@@ -67,34 +67,34 @@ typedef struct {
 
 
 static void ngx_http_gzip_filter_memory(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx);
+                                        ngx_http_gzip_ctx_t *ctx);
 static ngx_int_t ngx_http_gzip_filter_buffer(ngx_http_gzip_ctx_t *ctx,
-    ngx_chain_t *in);
+        ngx_chain_t *in);
 static ngx_int_t ngx_http_gzip_filter_deflate_start(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx);
+        ngx_http_gzip_ctx_t *ctx);
 static ngx_int_t ngx_http_gzip_filter_add_data(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx);
+        ngx_http_gzip_ctx_t *ctx);
 static ngx_int_t ngx_http_gzip_filter_get_buf(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx);
+        ngx_http_gzip_ctx_t *ctx);
 static ngx_int_t ngx_http_gzip_filter_deflate(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx);
+        ngx_http_gzip_ctx_t *ctx);
 static ngx_int_t ngx_http_gzip_filter_deflate_end(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx);
+        ngx_http_gzip_ctx_t *ctx);
 
 static void *ngx_http_gzip_filter_alloc(void *opaque, u_int items,
-    u_int size);
+                                        u_int size);
 static void ngx_http_gzip_filter_free(void *opaque, void *address);
 static void ngx_http_gzip_filter_free_copy_buf(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx);
+        ngx_http_gzip_ctx_t *ctx);
 
 static ngx_int_t ngx_http_gzip_add_variables(ngx_conf_t *cf);
 static ngx_int_t ngx_http_gzip_ratio_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data);
+        ngx_http_variable_value_t *v, uintptr_t data);
 
 static ngx_int_t ngx_http_gzip_filter_init(ngx_conf_t *cf);
 static void *ngx_http_gzip_create_conf(ngx_conf_t *cf);
 static char *ngx_http_gzip_merge_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+                                      void *parent, void *child);
 static char *ngx_http_gzip_window(ngx_conf_t *cf, void *post, void *data);
 static char *ngx_http_gzip_hash(ngx_conf_t *cf, void *post, void *data);
 
@@ -109,71 +109,80 @@ static ngx_conf_post_handler_pt  ngx_http_gzip_hash_p = ngx_http_gzip_hash;
 
 static ngx_command_t  ngx_http_gzip_filter_commands[] = {
 
-    { ngx_string("gzip"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, enable),
-      NULL },
+    {   ngx_string("gzip"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
+        |NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, enable),
+        NULL
+    },
 
-    { ngx_string("gzip_buffers"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
-      ngx_conf_set_bufs_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, bufs),
-      NULL },
+    {   ngx_string("gzip_buffers"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
+        ngx_conf_set_bufs_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, bufs),
+        NULL
+    },
 
-    { ngx_string("gzip_types"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_http_types_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, types_keys),
-      &ngx_http_html_default_types[0] },
+    {   ngx_string("gzip_types"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_http_types_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, types_keys),
+        &ngx_http_html_default_types[0]
+    },
 
-    { ngx_string("gzip_comp_level"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, level),
-      &ngx_http_gzip_comp_level_bounds },
+    {   ngx_string("gzip_comp_level"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, level),
+        &ngx_http_gzip_comp_level_bounds
+    },
 
-    { ngx_string("gzip_window"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, wbits),
-      &ngx_http_gzip_window_p },
+    {   ngx_string("gzip_window"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, wbits),
+        &ngx_http_gzip_window_p
+    },
 
-    { ngx_string("gzip_hash"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, memlevel),
-      &ngx_http_gzip_hash_p },
+    {   ngx_string("gzip_hash"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, memlevel),
+        &ngx_http_gzip_hash_p
+    },
 
-    { ngx_string("postpone_gzipping"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, postpone_gzipping),
-      NULL },
+    {   ngx_string("postpone_gzipping"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, postpone_gzipping),
+        NULL
+    },
 
-    { ngx_string("gzip_no_buffer"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, no_buffer),
-      NULL },
+    {   ngx_string("gzip_no_buffer"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, no_buffer),
+        NULL
+    },
 
-    { ngx_string("gzip_min_length"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_gzip_conf_t, min_length),
-      NULL },
+    {   ngx_string("gzip_min_length"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_gzip_conf_t, min_length),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -226,15 +235,15 @@ ngx_http_gzip_header_filter(ngx_http_request_t *r)
     conf = ngx_http_get_module_loc_conf(r, ngx_http_gzip_filter_module);
 
     if (!conf->enable
-        || (r->headers_out.status != NGX_HTTP_OK
-            && r->headers_out.status != NGX_HTTP_FORBIDDEN
-            && r->headers_out.status != NGX_HTTP_NOT_FOUND)
-        || (r->headers_out.content_encoding
-            && r->headers_out.content_encoding->value.len)
-        || (r->headers_out.content_length_n != -1
-            && r->headers_out.content_length_n < conf->min_length)
-        || ngx_http_test_content_type(r, &conf->types) == NULL
-        || r->header_only)
+            || (r->headers_out.status != NGX_HTTP_OK
+                && r->headers_out.status != NGX_HTTP_FORBIDDEN
+                && r->headers_out.status != NGX_HTTP_NOT_FOUND)
+            || (r->headers_out.content_encoding
+                && r->headers_out.content_encoding->value.len)
+            || (r->headers_out.content_length_n != -1
+                && r->headers_out.content_length_n < conf->min_length)
+            || ngx_http_test_content_type(r, &conf->types) == NULL
+            || r->header_only)
     {
         return ngx_http_next_header_filter(r);
     }
@@ -243,13 +252,13 @@ ngx_http_gzip_header_filter(ngx_http_request_t *r)
 
 #if (NGX_HTTP_DEGRADATION)
     {
-    ngx_http_core_loc_conf_t  *clcf;
+        ngx_http_core_loc_conf_t  *clcf;
 
-    clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
+        clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 
-    if (clcf->gzip_disable_degradation && ngx_http_degraded(r)) {
-        return ngx_http_next_header_filter(r);
-    }
+        if (clcf->gzip_disable_degradation && ngx_http_degraded(r)) {
+            return ngx_http_next_header_filter(r);
+        }
     }
 #endif
 
@@ -599,7 +608,7 @@ ngx_http_gzip_filter_buffer(ngx_http_gzip_ctx_t *ctx, ngx_chain_t *in)
 
 static ngx_int_t
 ngx_http_gzip_filter_deflate_start(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx)
+                                   ngx_http_gzip_ctx_t *ctx)
 {
     int                    rc;
     ngx_http_gzip_conf_t  *conf;
@@ -747,10 +756,10 @@ ngx_http_gzip_filter_deflate(ngx_http_request_t *r, ngx_http_gzip_ctx_t *ctx)
     ngx_http_gzip_conf_t  *conf;
 
     ngx_log_debug6(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
-                 "deflate in: ni:%p no:%p ai:%ud ao:%ud fl:%d redo:%d",
-                 ctx->zstream.next_in, ctx->zstream.next_out,
-                 ctx->zstream.avail_in, ctx->zstream.avail_out,
-                 ctx->flush, ctx->redo);
+                   "deflate in: ni:%p no:%p ai:%ud ao:%ud fl:%d redo:%d",
+                   ctx->zstream.next_in, ctx->zstream.next_out,
+                   ctx->zstream.avail_in, ctx->zstream.avail_out,
+                   ctx->flush, ctx->redo);
 
     rc = deflate(&ctx->zstream, ctx->flush);
 
@@ -867,7 +876,7 @@ ngx_http_gzip_filter_deflate(ngx_http_request_t *r, ngx_http_gzip_ctx_t *ctx)
 
 static ngx_int_t
 ngx_http_gzip_filter_deflate_end(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx)
+                                 ngx_http_gzip_ctx_t *ctx)
 {
     int           rc;
     ngx_buf_t    *b;
@@ -976,7 +985,7 @@ ngx_http_gzip_filter_free(void *opaque, void *address)
 
 static void
 ngx_http_gzip_filter_free_copy_buf(ngx_http_request_t *r,
-    ngx_http_gzip_ctx_t *ctx)
+                                   ngx_http_gzip_ctx_t *ctx)
 {
     ngx_chain_t  *cl;
 
@@ -1006,7 +1015,7 @@ ngx_http_gzip_add_variables(ngx_conf_t *cf)
 
 static ngx_int_t
 ngx_http_gzip_ratio_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data)
+                             ngx_http_variable_value_t *v, uintptr_t data)
 {
     ngx_uint_t            zint, zfrac;
     ngx_http_gzip_ctx_t  *ctx;
@@ -1102,7 +1111,7 @@ ngx_http_gzip_merge_conf(ngx_conf_t *cf, void *parent, void *child)
     if (ngx_http_merge_types(cf, &conf->types_keys, &conf->types,
                              &prev->types_keys, &prev->types,
                              ngx_http_html_default_types)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_CONF_ERROR;
     }

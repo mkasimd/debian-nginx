@@ -103,25 +103,25 @@ typedef struct {
 
 
 void ngx_stream_script_flush_complex_value(ngx_stream_session_t *s,
-    ngx_stream_complex_value_t *val);
+        ngx_stream_complex_value_t *val);
 ngx_int_t ngx_stream_complex_value(ngx_stream_session_t *s,
-    ngx_stream_complex_value_t *val, ngx_str_t *value);
+                                   ngx_stream_complex_value_t *val, ngx_str_t *value);
 size_t ngx_stream_complex_value_size(ngx_stream_session_t *s,
-    ngx_stream_complex_value_t *val, size_t default_value);
+                                     ngx_stream_complex_value_t *val, size_t default_value);
 ngx_int_t ngx_stream_compile_complex_value(
     ngx_stream_compile_complex_value_t *ccv);
 char *ngx_stream_set_complex_value_slot(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                        void *conf);
 char *ngx_stream_set_complex_value_size_slot(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+        void *conf);
 
 
 ngx_uint_t ngx_stream_script_variables_count(ngx_str_t *value);
 ngx_int_t ngx_stream_script_compile(ngx_stream_script_compile_t *sc);
 u_char *ngx_stream_script_run(ngx_stream_session_t *s, ngx_str_t *value,
-    void *code_lengths, size_t reserved, void *code_values);
+                              void *code_lengths, size_t reserved, void *code_values);
 void ngx_stream_script_flush_no_cacheable_variables(ngx_stream_session_t *s,
-    ngx_array_t *indices);
+        ngx_array_t *indices);
 
 void *ngx_stream_script_add_code(ngx_array_t *codes, size_t size, void *code);
 

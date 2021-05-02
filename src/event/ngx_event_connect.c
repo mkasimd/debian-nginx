@@ -13,7 +13,7 @@
 
 #if (NGX_HAVE_TRANSPARENT_PROXY)
 static ngx_int_t ngx_event_connect_set_transparent(ngx_peer_connection_t *pc,
-    ngx_socket_t s);
+        ngx_socket_t s);
 #endif
 
 
@@ -78,7 +78,7 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
 
         if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE,
                        (const void *) &value, sizeof(int))
-            == -1)
+                == -1)
         {
             ngx_log_error(NGX_LOG_ALERT, pc->log, ngx_socket_errno,
                           "setsockopt(SO_KEEPALIVE) failed, ignored");
@@ -139,7 +139,7 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
 
             if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
                            (const void *) &reuse_addr, sizeof(int))
-                 == -1)
+                    == -1)
             {
                 ngx_log_error(NGX_LOG_ALERT, pc->log, ngx_socket_errno,
                               "setsockopt(SO_REUSEADDR) failed");
@@ -212,24 +212,24 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
 
         if (err != NGX_EINPROGRESS
 #if (NGX_WIN32)
-            /* Winsock returns WSAEWOULDBLOCK (NGX_EAGAIN) */
-            && err != NGX_EAGAIN
+                /* Winsock returns WSAEWOULDBLOCK (NGX_EAGAIN) */
+                && err != NGX_EAGAIN
 #endif
-            )
+           )
         {
             if (err == NGX_ECONNREFUSED
 #if (NGX_LINUX)
-                /*
-                 * Linux returns EAGAIN instead of ECONNREFUSED
-                 * for unix sockets if listen queue is full
-                 */
-                || err == NGX_EAGAIN
+                    /*
+                     * Linux returns EAGAIN instead of ECONNREFUSED
+                     * for unix sockets if listen queue is full
+                     */
+                    || err == NGX_EAGAIN
 #endif
-                || err == NGX_ECONNRESET
-                || err == NGX_ENETDOWN
-                || err == NGX_ENETUNREACH
-                || err == NGX_EHOSTDOWN
-                || err == NGX_EHOSTUNREACH)
+                    || err == NGX_ECONNRESET
+                    || err == NGX_ENETDOWN
+                    || err == NGX_ENETUNREACH
+                    || err == NGX_EHOSTDOWN
+                    || err == NGX_EHOSTUNREACH)
             {
                 level = NGX_LOG_ERR;
 

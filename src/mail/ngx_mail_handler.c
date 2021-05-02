@@ -19,7 +19,7 @@ static void ngx_mail_init_session(ngx_connection_t *c);
 static void ngx_mail_ssl_init_connection(ngx_ssl_t *ssl, ngx_connection_t *c);
 static void ngx_mail_ssl_handshake_handler(ngx_connection_t *c);
 static ngx_int_t ngx_mail_verify_cert(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+                                      ngx_connection_t *c);
 #endif
 
 
@@ -278,19 +278,19 @@ ngx_mail_init_session_handler(ngx_event_t *rev)
 
 #if (NGX_MAIL_SSL)
     {
-    ngx_mail_session_t   *s;
-    ngx_mail_ssl_conf_t  *sslcf;
+        ngx_mail_session_t   *s;
+        ngx_mail_ssl_conf_t  *sslcf;
 
-    s = c->data;
+        s = c->data;
 
-    sslcf = ngx_mail_get_module_srv_conf(s, ngx_mail_ssl_module);
+        sslcf = ngx_mail_get_module_srv_conf(s, ngx_mail_ssl_module);
 
-    if (sslcf->enable || s->ssl) {
-        c->log->action = "SSL handshaking";
+        if (sslcf->enable || s->ssl) {
+            c->log->action = "SSL handshaking";
 
-        ngx_mail_ssl_init_connection(&sslcf->ssl, c);
-        return;
-    }
+            ngx_mail_ssl_init_connection(&sslcf->ssl, c);
+            return;
+        }
 
     }
 #endif
@@ -401,7 +401,7 @@ ngx_mail_verify_cert(ngx_mail_session_t *s, ngx_connection_t *c)
     rc = SSL_get_verify_result(c->ssl->connection);
 
     if (rc != X509_V_OK
-        && (sslcf->verify != 3 || !ngx_ssl_verify_error_optional(rc)))
+            && (sslcf->verify != 3 || !ngx_ssl_verify_error_optional(rc)))
     {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
                       "client SSL certificate verify error: (%l:%s)",
@@ -429,7 +429,7 @@ ngx_mail_verify_cert(ngx_mail_session_t *s, ngx_connection_t *c)
                           "client sent no required SSL certificate");
 
             ngx_ssl_remove_cached_session(c->ssl->session_ctx,
-                                       (SSL_get0_session(c->ssl->connection)));
+                                          (SSL_get0_session(c->ssl->connection)));
 
             cscf = ngx_mail_get_module_srv_conf(s, ngx_mail_core_module);
 
@@ -479,7 +479,7 @@ ngx_mail_init_session(ngx_connection_t *c)
 
 ngx_int_t
 ngx_mail_salt(ngx_mail_session_t *s, ngx_connection_t *c,
-    ngx_mail_core_srv_conf_t *cscf)
+              ngx_mail_core_srv_conf_t *cscf)
 {
     s->salt.data = ngx_pnalloc(c->pool,
                                sizeof(" <18446744073709551616.@>" CRLF) - 1
@@ -540,7 +540,7 @@ ngx_mail_auth_plain(ngx_mail_session_t *s, ngx_connection_t *c, ngx_uint_t n)
 
     if (ngx_decode_base64(&plain, &arg[n]) != NGX_OK) {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
-            "client sent invalid base64 encoding in AUTH PLAIN command");
+                      "client sent invalid base64 encoding in AUTH PLAIN command");
         return NGX_MAIL_PARSE_INVALID_COMMAND;
     }
 
@@ -557,7 +557,9 @@ ngx_mail_auth_plain(ngx_mail_session_t *s, ngx_connection_t *c, ngx_uint_t n)
 
     s->login.data = p;
 
-    while (p < last && *p) { p++; }
+    while (p < last && *p) {
+        p++;
+    }
 
     if (p == last) {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
@@ -581,7 +583,7 @@ ngx_mail_auth_plain(ngx_mail_session_t *s, ngx_connection_t *c, ngx_uint_t n)
 
 ngx_int_t
 ngx_mail_auth_login_username(ngx_mail_session_t *s, ngx_connection_t *c,
-    ngx_uint_t n)
+                             ngx_uint_t n)
 {
     ngx_str_t  *arg;
 
@@ -597,7 +599,7 @@ ngx_mail_auth_login_username(ngx_mail_session_t *s, ngx_connection_t *c,
 
     if (ngx_decode_base64(&s->login, &arg[n]) != NGX_OK) {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
-            "client sent invalid base64 encoding in AUTH LOGIN command");
+                      "client sent invalid base64 encoding in AUTH LOGIN command");
         return NGX_MAIL_PARSE_INVALID_COMMAND;
     }
 
@@ -628,7 +630,7 @@ ngx_mail_auth_login_password(ngx_mail_session_t *s, ngx_connection_t *c)
 
     if (ngx_decode_base64(&s->passwd, &arg[0]) != NGX_OK) {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
-            "client sent invalid base64 encoding in AUTH LOGIN command");
+                      "client sent invalid base64 encoding in AUTH LOGIN command");
         return NGX_MAIL_PARSE_INVALID_COMMAND;
     }
 
@@ -643,7 +645,7 @@ ngx_mail_auth_login_password(ngx_mail_session_t *s, ngx_connection_t *c)
 
 ngx_int_t
 ngx_mail_auth_cram_md5_salt(ngx_mail_session_t *s, ngx_connection_t *c,
-    char *prefix, size_t len)
+                            char *prefix, size_t len)
 {
     u_char      *p;
     ngx_str_t    salt;
@@ -661,7 +663,8 @@ ngx_mail_auth_cram_md5_salt(ngx_mail_session_t *s, ngx_connection_t *c,
 
     s->salt.len += 2;
     n = len + salt.len;
-    p[n++] = CR; p[n++] = LF;
+    p[n++] = CR;
+    p[n++] = LF;
 
     s->out.len = n;
     s->out.data = p;
@@ -688,7 +691,7 @@ ngx_mail_auth_cram_md5(ngx_mail_session_t *s, ngx_connection_t *c)
 
     if (ngx_decode_base64(&s->login, &arg[0]) != NGX_OK) {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
-            "client sent invalid base64 encoding in AUTH CRAM-MD5 command");
+                      "client sent invalid base64 encoding in AUTH CRAM-MD5 command");
         return NGX_MAIL_PARSE_INVALID_COMMAND;
     }
 
@@ -706,7 +709,7 @@ ngx_mail_auth_cram_md5(ngx_mail_session_t *s, ngx_connection_t *c)
 
     if (s->passwd.len != 32) {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
-            "client sent invalid CRAM-MD5 hash in AUTH CRAM-MD5 command");
+                      "client sent invalid CRAM-MD5 hash in AUTH CRAM-MD5 command");
         return NGX_MAIL_PARSE_INVALID_COMMAND;
     }
 
@@ -721,7 +724,7 @@ ngx_mail_auth_cram_md5(ngx_mail_session_t *s, ngx_connection_t *c)
 
 ngx_int_t
 ngx_mail_auth_external(ngx_mail_session_t *s, ngx_connection_t *c,
-    ngx_uint_t n)
+                       ngx_uint_t n)
 {
     ngx_str_t  *arg, external;
 
@@ -737,7 +740,7 @@ ngx_mail_auth_external(ngx_mail_session_t *s, ngx_connection_t *c,
 
     if (ngx_decode_base64(&external, &arg[n]) != NGX_OK) {
         ngx_log_error(NGX_LOG_INFO, c->log, 0,
-            "client sent invalid base64 encoding in AUTH EXTERNAL command");
+                      "client sent invalid base64 encoding in AUTH EXTERNAL command");
         return NGX_MAIL_PARSE_INVALID_COMMAND;
     }
 

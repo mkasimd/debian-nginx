@@ -21,11 +21,11 @@ struct ngx_udp_connection_s {
 
 static void ngx_close_accepted_udp_connection(ngx_connection_t *c);
 static ssize_t ngx_udp_shared_recv(ngx_connection_t *c, u_char *buf,
-    size_t size);
+                                   size_t size);
 static ngx_int_t ngx_insert_udp_connection(ngx_connection_t *c);
 static ngx_connection_t *ngx_lookup_udp_connection(ngx_listening_t *ls,
-    struct sockaddr *sockaddr, socklen_t socklen,
-    struct sockaddr *local_sockaddr, socklen_t local_socklen);
+        struct sockaddr *sockaddr, socklen_t socklen,
+        struct sockaddr *local_sockaddr, socklen_t local_socklen);
 
 
 void
@@ -168,15 +168,15 @@ ngx_event_recvmsg(ngx_event_t *ev)
             local_sockaddr = &lsa.sockaddr;
 
             for (cmsg = CMSG_FIRSTHDR(&msg);
-                 cmsg != NULL;
-                 cmsg = CMSG_NXTHDR(&msg, cmsg))
+                    cmsg != NULL;
+                    cmsg = CMSG_NXTHDR(&msg, cmsg))
             {
 
 #if (NGX_HAVE_IP_RECVDSTADDR)
 
                 if (cmsg->cmsg_level == IPPROTO_IP
-                    && cmsg->cmsg_type == IP_RECVDSTADDR
-                    && local_sockaddr->sa_family == AF_INET)
+                        && cmsg->cmsg_type == IP_RECVDSTADDR
+                        && local_sockaddr->sa_family == AF_INET)
                 {
                     struct in_addr      *addr;
                     struct sockaddr_in  *sin;
@@ -191,8 +191,8 @@ ngx_event_recvmsg(ngx_event_t *ev)
 #elif (NGX_HAVE_IP_PKTINFO)
 
                 if (cmsg->cmsg_level == IPPROTO_IP
-                    && cmsg->cmsg_type == IP_PKTINFO
-                    && local_sockaddr->sa_family == AF_INET)
+                        && cmsg->cmsg_type == IP_PKTINFO
+                        && local_sockaddr->sa_family == AF_INET)
                 {
                     struct in_pktinfo   *pkt;
                     struct sockaddr_in  *sin;
@@ -209,8 +209,8 @@ ngx_event_recvmsg(ngx_event_t *ev)
 #if (NGX_HAVE_INET6 && NGX_HAVE_IPV6_RECVPKTINFO)
 
                 if (cmsg->cmsg_level == IPPROTO_IPV6
-                    && cmsg->cmsg_type == IPV6_PKTINFO
-                    && local_sockaddr->sa_family == AF_INET6)
+                        && cmsg->cmsg_type == IPV6_PKTINFO
+                        && local_sockaddr->sa_family == AF_INET6)
                 {
                     struct in6_pktinfo   *pkt6;
                     struct sockaddr_in6  *sin6;
@@ -387,20 +387,20 @@ ngx_event_recvmsg(ngx_event_t *ev)
 
 #if (NGX_DEBUG)
         {
-        ngx_str_t  addr;
-        u_char     text[NGX_SOCKADDR_STRLEN];
+            ngx_str_t  addr;
+            u_char     text[NGX_SOCKADDR_STRLEN];
 
-        ngx_debug_accepted_connection(ecf, c);
+            ngx_debug_accepted_connection(ecf, c);
 
-        if (log->log_level & NGX_LOG_DEBUG_EVENT) {
-            addr.data = text;
-            addr.len = ngx_sock_ntop(c->sockaddr, c->socklen, text,
-                                     NGX_SOCKADDR_STRLEN, 1);
+            if (log->log_level & NGX_LOG_DEBUG_EVENT) {
+                addr.data = text;
+                addr.len = ngx_sock_ntop(c->sockaddr, c->socklen, text,
+                                         NGX_SOCKADDR_STRLEN, 1);
 
-            ngx_log_debug4(NGX_LOG_DEBUG_EVENT, log, 0,
-                           "*%uA recvmsg: %V fd:%d n:%z",
-                           c->number, &addr, c->fd, n);
-        }
+                ngx_log_debug4(NGX_LOG_DEBUG_EVENT, log, 0,
+                               "*%uA recvmsg: %V fd:%d n:%z",
+                               c->number, &addr, c->fd, n);
+            }
 
         }
 #endif
@@ -415,7 +415,7 @@ ngx_event_recvmsg(ngx_event_t *ev)
 
         ls->handler(c);
 
-    next:
+next:
 
         if (ngx_event_flags & NGX_USE_KQUEUE_EVENT) {
             ev->available -= n;
@@ -469,7 +469,7 @@ ngx_udp_shared_recv(ngx_connection_t *c, u_char *buf, size_t size)
 
 void
 ngx_udp_rbtree_insert_value(ngx_rbtree_node_t *temp,
-    ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
+                            ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
 {
     ngx_int_t               rc;
     ngx_connection_t       *c, *ct;
@@ -582,7 +582,7 @@ ngx_delete_udp_connection(void *data)
 
 static ngx_connection_t *
 ngx_lookup_udp_connection(ngx_listening_t *ls, struct sockaddr *sockaddr,
-    socklen_t socklen, struct sockaddr *local_sockaddr, socklen_t local_socklen)
+                          socklen_t socklen, struct sockaddr *local_sockaddr, socklen_t local_socklen)
 {
     uint32_t               hash;
     ngx_int_t              rc;
@@ -596,7 +596,7 @@ ngx_lookup_udp_connection(ngx_listening_t *ls, struct sockaddr *sockaddr,
         struct sockaddr_un *saun = (struct sockaddr_un *) sockaddr;
 
         if (socklen <= (socklen_t) offsetof(struct sockaddr_un, sun_path)
-            || saun->sun_path[0] == '\0')
+                || saun->sun_path[0] == '\0')
         {
             ngx_log_debug0(NGX_LOG_DEBUG_EVENT, ngx_cycle->log, 0,
                            "unbound unix socket");

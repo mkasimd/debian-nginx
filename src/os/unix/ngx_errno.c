@@ -117,8 +117,8 @@ ngx_strerror_init(void)
         msg = strerror(err);
 
         if (errno == EINVAL
-            || msg == NULL
-            || strncmp(msg, "Unknown error", 13) == 0)
+                || msg == NULL
+                || strncmp(msg, "Unknown error", 13) == 0)
         {
             continue;
         }
@@ -131,8 +131,8 @@ ngx_strerror_init(void)
         msg = strerror(err);
 
         if (errno == EINVAL
-            || msg == NULL
-            || strncmp(msg, "Unknown error", 13) == 0)
+                || msg == NULL
+                || strncmp(msg, "Unknown error", 13) == 0)
         {
             continue;
         }
@@ -154,8 +154,8 @@ ngx_strerror_init(void)
         msg = strerror(err);
 
         if (errno == EINVAL
-            || msg == NULL
-            || strncmp(msg, "Unknown error", 13) == 0)
+                || msg == NULL
+                || strncmp(msg, "Unknown error", 13) == 0)
         {
             continue;
         }

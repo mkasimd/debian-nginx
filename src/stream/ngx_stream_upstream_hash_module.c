@@ -41,38 +41,39 @@ typedef struct {
 
 
 static ngx_int_t ngx_stream_upstream_init_hash(ngx_conf_t *cf,
-    ngx_stream_upstream_srv_conf_t *us);
+        ngx_stream_upstream_srv_conf_t *us);
 static ngx_int_t ngx_stream_upstream_init_hash_peer(ngx_stream_session_t *s,
-    ngx_stream_upstream_srv_conf_t *us);
+        ngx_stream_upstream_srv_conf_t *us);
 static ngx_int_t ngx_stream_upstream_get_hash_peer(ngx_peer_connection_t *pc,
-    void *data);
+        void *data);
 
 static ngx_int_t ngx_stream_upstream_init_chash(ngx_conf_t *cf,
-    ngx_stream_upstream_srv_conf_t *us);
+        ngx_stream_upstream_srv_conf_t *us);
 static int ngx_libc_cdecl
-    ngx_stream_upstream_chash_cmp_points(const void *one, const void *two);
+ngx_stream_upstream_chash_cmp_points(const void *one, const void *two);
 static ngx_uint_t ngx_stream_upstream_find_chash_point(
     ngx_stream_upstream_chash_points_t *points, uint32_t hash);
 static ngx_int_t ngx_stream_upstream_init_chash_peer(ngx_stream_session_t *s,
-    ngx_stream_upstream_srv_conf_t *us);
+        ngx_stream_upstream_srv_conf_t *us);
 static ngx_int_t ngx_stream_upstream_get_chash_peer(ngx_peer_connection_t *pc,
-    void *data);
+        void *data);
 
 static void *ngx_stream_upstream_hash_create_conf(ngx_conf_t *cf);
 static char *ngx_stream_upstream_hash(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                      void *conf);
 
 
 static ngx_command_t  ngx_stream_upstream_hash_commands[] = {
 
-    { ngx_string("hash"),
-      NGX_STREAM_UPS_CONF|NGX_CONF_TAKE12,
-      ngx_stream_upstream_hash,
-      NGX_STREAM_SRV_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("hash"),
+        NGX_STREAM_UPS_CONF|NGX_CONF_TAKE12,
+        ngx_stream_upstream_hash,
+        NGX_STREAM_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -106,7 +107,7 @@ ngx_module_t  ngx_stream_upstream_hash_module = {
 
 static ngx_int_t
 ngx_stream_upstream_init_hash(ngx_conf_t *cf,
-    ngx_stream_upstream_srv_conf_t *us)
+                              ngx_stream_upstream_srv_conf_t *us)
 {
     if (ngx_stream_upstream_init_round_robin(cf, us) != NGX_OK) {
         return NGX_ERROR;
@@ -120,7 +121,7 @@ ngx_stream_upstream_init_hash(ngx_conf_t *cf,
 
 static ngx_int_t
 ngx_stream_upstream_init_hash_peer(ngx_stream_session_t *s,
-    ngx_stream_upstream_srv_conf_t *us)
+                                   ngx_stream_upstream_srv_conf_t *us)
 {
     ngx_stream_upstream_hash_srv_conf_t   *hcf;
     ngx_stream_upstream_hash_peer_data_t  *hp;
@@ -238,8 +239,8 @@ ngx_stream_upstream_get_hash_peer(ngx_peer_connection_t *pc, void *data)
         }
 
         if (peer->max_fails
-            && peer->fails >= peer->max_fails
-            && now - peer->checked <= peer->fail_timeout)
+                && peer->fails >= peer->max_fails
+                && now - peer->checked <= peer->fail_timeout)
         {
             ngx_stream_upstream_rr_peer_unlock(hp->rrp.peers, peer);
             goto next;
@@ -252,7 +253,7 @@ ngx_stream_upstream_get_hash_peer(ngx_peer_connection_t *pc, void *data)
 
         break;
 
-    next:
+next:
 
         if (++hp->tries > 20) {
             ngx_stream_upstream_rr_peers_unlock(hp->rrp.peers);
@@ -283,7 +284,7 @@ ngx_stream_upstream_get_hash_peer(ngx_peer_connection_t *pc, void *data)
 
 static ngx_int_t
 ngx_stream_upstream_init_chash(ngx_conf_t *cf,
-    ngx_stream_upstream_srv_conf_t *us)
+                               ngx_stream_upstream_srv_conf_t *us)
 {
     u_char                               *host, *port, c;
     size_t                                host_len, port_len, size;
@@ -327,7 +328,7 @@ ngx_stream_upstream_init_chash(ngx_conf_t *cf,
          */
 
         if (server->len >= 5
-            && ngx_strncasecmp(server->data, (u_char *) "unix:", 5) == 0)
+                && ngx_strncasecmp(server->data, (u_char *) "unix:", 5) == 0)
         {
             host = server->data + 5;
             host_len = server->len - 5;
@@ -357,7 +358,7 @@ ngx_stream_upstream_init_chash(ngx_conf_t *cf,
         port = NULL;
         port_len = 0;
 
-    done:
+done:
 
         ngx_crc32_init(base_hash);
         ngx_crc32_update(&base_hash, host, host_len);
@@ -413,9 +414,9 @@ static int ngx_libc_cdecl
 ngx_stream_upstream_chash_cmp_points(const void *one, const void *two)
 {
     ngx_stream_upstream_chash_point_t *first =
-                                     (ngx_stream_upstream_chash_point_t *) one;
+        (ngx_stream_upstream_chash_point_t *) one;
     ngx_stream_upstream_chash_point_t *second =
-                                     (ngx_stream_upstream_chash_point_t *) two;
+        (ngx_stream_upstream_chash_point_t *) two;
 
     if (first->hash < second->hash) {
         return -1;
@@ -431,7 +432,7 @@ ngx_stream_upstream_chash_cmp_points(const void *one, const void *two)
 
 static ngx_uint_t
 ngx_stream_upstream_find_chash_point(ngx_stream_upstream_chash_points_t *points,
-    uint32_t hash)
+                                     uint32_t hash)
 {
     ngx_uint_t                          i, j, k;
     ngx_stream_upstream_chash_point_t  *point;
@@ -463,7 +464,7 @@ ngx_stream_upstream_find_chash_point(ngx_stream_upstream_chash_points_t *points,
 
 static ngx_int_t
 ngx_stream_upstream_init_chash_peer(ngx_stream_session_t *s,
-    ngx_stream_upstream_srv_conf_t *us)
+                                    ngx_stream_upstream_srv_conf_t *us)
 {
     uint32_t                               hash;
     ngx_stream_upstream_hash_srv_conf_t   *hcf;
@@ -536,8 +537,8 @@ ngx_stream_upstream_get_chash_peer(ngx_peer_connection_t *pc, void *data)
         total = 0;
 
         for (peer = hp->rrp.peers->peer, i = 0;
-             peer;
-             peer = peer->next, i++)
+                peer;
+                peer = peer->next, i++)
         {
             n = i / (8 * sizeof(uintptr_t));
             m = (uintptr_t) 1 << i % (8 * sizeof(uintptr_t));
@@ -551,8 +552,8 @@ ngx_stream_upstream_get_chash_peer(ngx_peer_connection_t *pc, void *data)
             }
 
             if (peer->max_fails
-                && peer->fails >= peer->max_fails
-                && now - peer->checked <= peer->fail_timeout)
+                    && peer->fails >= peer->max_fails
+                    && now - peer->checked <= peer->fail_timeout)
             {
                 continue;
             }
@@ -562,8 +563,8 @@ ngx_stream_upstream_get_chash_peer(ngx_peer_connection_t *pc, void *data)
             }
 
             if (peer->server.len != server->len
-                || ngx_strncmp(peer->server.data, server->data, server->len)
-                   != 0)
+                    || ngx_strncmp(peer->server.data, server->data, server->len)
+                    != 0)
             {
                 continue;
             }

@@ -22,36 +22,38 @@ typedef struct {
 
 static ngx_int_t ngx_http_auth_basic_handler(ngx_http_request_t *r);
 static ngx_int_t ngx_http_auth_basic_crypt_handler(ngx_http_request_t *r,
-    ngx_str_t *passwd, ngx_str_t *realm);
+        ngx_str_t *passwd, ngx_str_t *realm);
 static ngx_int_t ngx_http_auth_basic_set_realm(ngx_http_request_t *r,
-    ngx_str_t *realm);
+        ngx_str_t *realm);
 static void *ngx_http_auth_basic_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_auth_basic_merge_loc_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+        void *parent, void *child);
 static ngx_int_t ngx_http_auth_basic_init(ngx_conf_t *cf);
 static char *ngx_http_auth_basic_user_file(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+        void *conf);
 
 
 static ngx_command_t  ngx_http_auth_basic_commands[] = {
 
-    { ngx_string("auth_basic"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LMT_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_set_complex_value_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_auth_basic_loc_conf_t, realm),
-      NULL },
+    {   ngx_string("auth_basic"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LMT_CONF
+        |NGX_CONF_TAKE1,
+        ngx_http_set_complex_value_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_auth_basic_loc_conf_t, realm),
+        NULL
+    },
 
-    { ngx_string("auth_basic_user_file"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LMT_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_auth_basic_user_file,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_auth_basic_loc_conf_t, user_file),
-      NULL },
+    {   ngx_string("auth_basic_user_file"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LMT_CONF
+        |NGX_CONF_TAKE1,
+        ngx_http_auth_basic_user_file,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_auth_basic_loc_conf_t, user_file),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -283,7 +285,7 @@ cleanup:
 
 static ngx_int_t
 ngx_http_auth_basic_crypt_handler(ngx_http_request_t *r, ngx_str_t *passwd,
-    ngx_str_t *realm)
+                                  ngx_str_t *realm)
 {
     ngx_int_t   rc;
     u_char     *encrypted;

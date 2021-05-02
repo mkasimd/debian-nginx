@@ -69,10 +69,10 @@ int port_create(void)
 
 
 int port_associate(int port, int source, uintptr_t object, int events,
-    void *user);
+                   void *user);
 
 int port_associate(int port, int source, uintptr_t object, int events,
-    void *user)
+                   void *user)
 {
     return -1;
 }
@@ -87,10 +87,10 @@ int port_dissociate(int port, int source, uintptr_t object)
 
 
 int port_getn(int port, port_event_t list[], uint_t max, uint_t *nget,
-    struct timespec *timeout);
+              struct timespec *timeout);
 
 int port_getn(int port, port_event_t list[], uint_t max, uint_t *nget,
-    struct timespec *timeout)
+              struct timespec *timeout)
 {
     return -1;
 }
@@ -112,10 +112,10 @@ int timer_create(clockid_t clock_id, struct sigevent *evp, timer_t *timerid)
 
 
 int timer_settime(timer_t timerid, int flags, const struct itimerspec *value,
-    struct itimerspec *ovalue);
+                  struct itimerspec *ovalue);
 
 int timer_settime(timer_t timerid, int flags, const struct itimerspec *value,
-    struct itimerspec *ovalue)
+                  struct itimerspec *ovalue)
 {
     return -1;
 }
@@ -139,12 +139,12 @@ typedef struct {
 static ngx_int_t ngx_eventport_init(ngx_cycle_t *cycle, ngx_msec_t timer);
 static void ngx_eventport_done(ngx_cycle_t *cycle);
 static ngx_int_t ngx_eventport_add_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+        ngx_uint_t flags);
 static ngx_int_t ngx_eventport_del_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+        ngx_uint_t flags);
 static ngx_int_t ngx_eventport_notify(ngx_event_handler_pt handler);
 static ngx_int_t ngx_eventport_process_events(ngx_cycle_t *cycle,
-    ngx_msec_t timer, ngx_uint_t flags);
+        ngx_msec_t timer, ngx_uint_t flags);
 
 static void *ngx_eventport_create_conf(ngx_cycle_t *cycle);
 static char *ngx_eventport_init_conf(ngx_cycle_t *cycle, void *conf);
@@ -160,14 +160,15 @@ static ngx_str_t      eventport_name = ngx_string("eventport");
 
 static ngx_command_t  ngx_eventport_commands[] = {
 
-    { ngx_string("eventport_events"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      0,
-      offsetof(ngx_eventport_conf_t, events),
-      NULL },
+    {   ngx_string("eventport_events"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        0,
+        offsetof(ngx_eventport_conf_t, events),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -343,7 +344,7 @@ ngx_eventport_add_event(ngx_event_t *ev, ngx_int_t event, ngx_uint_t flags)
 
     if (port_associate(ep, PORT_SOURCE_FD, c->fd, events,
                        (void *) ((uintptr_t) ev | ev->instance))
-        == -1)
+            == -1)
     {
         ngx_log_error(NGX_LOG_ALERT, ev->log, ngx_errno,
                       "port_associate() failed");
@@ -392,7 +393,7 @@ ngx_eventport_del_event(ngx_event_t *ev, ngx_int_t event, ngx_uint_t flags)
 
         if (port_associate(ep, PORT_SOURCE_FD, c->fd, event,
                            (void *) ((uintptr_t) ev | ev->instance))
-            == -1)
+                == -1)
         {
             ngx_log_error(NGX_LOG_ALERT, ev->log, ngx_errno,
                           "port_associate() failed");
@@ -434,7 +435,7 @@ ngx_eventport_notify(ngx_event_handler_pt handler)
 
 static ngx_int_t
 ngx_eventport_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
-    ngx_uint_t flags)
+                             ngx_uint_t flags)
 {
     int                 n, revents;
     u_int               events;
@@ -563,7 +564,7 @@ ngx_eventport_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 
                 if (flags & NGX_POST_EVENTS) {
                     queue = rev->accept ? &ngx_posted_accept_events
-                                        : &ngx_posted_events;
+                            : &ngx_posted_events;
 
                     ngx_post_event(rev, queue);
 
@@ -583,7 +584,7 @@ ngx_eventport_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 
                     if (port_associate(ep, PORT_SOURCE_FD, c->fd, POLLIN,
                                        (void *) ((uintptr_t) ev | ev->instance))
-                        == -1)
+                            == -1)
                     {
                         ngx_log_error(NGX_LOG_ALERT, ev->log, ngx_errno,
                                       "port_associate() failed");

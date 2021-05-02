@@ -51,7 +51,7 @@ typedef struct {
     unsigned                         updating:1;
     unsigned                         deleting:1;
     unsigned                         purged:1;
-                                     /* 10 unused bits */
+    /* 10 unused bits */
 
     ngx_file_uniq_t                  uniq;
     time_t                           expire;
@@ -183,7 +183,7 @@ struct ngx_http_file_cache_s {
     ngx_shm_zone_t                  *shm_zone;
 
     ngx_uint_t                       use_temp_path;
-                                     /* unsigned use_temp_path:1 */
+    /* unsigned use_temp_path:1 */
 };
 
 
@@ -199,9 +199,9 @@ void ngx_http_file_cache_free(ngx_http_cache_t *c, ngx_temp_file_t *tf);
 time_t ngx_http_file_cache_valid(ngx_array_t *cache_valid, ngx_uint_t status);
 
 char *ngx_http_file_cache_set_slot(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                   void *conf);
 char *ngx_http_file_cache_valid_set_slot(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+        void *conf);
 
 
 extern ngx_str_t  ngx_http_cache_status[];

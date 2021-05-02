@@ -13,13 +13,13 @@
 
 
 static ngx_int_t ngx_mail_imap_login(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+                                     ngx_connection_t *c);
 static ngx_int_t ngx_mail_imap_authenticate(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+        ngx_connection_t *c);
 static ngx_int_t ngx_mail_imap_capability(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+        ngx_connection_t *c);
 static ngx_int_t ngx_mail_imap_starttls(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+                                        ngx_connection_t *c);
 
 
 static u_char  imap_greeting[] = "* OK IMAP4 ready" CRLF;
@@ -76,7 +76,7 @@ ngx_mail_imap_init_protocol(ngx_event_t *rev)
 
     if (s->buffer == NULL) {
         if (ngx_array_init(&s->args, c->pool, 2, sizeof(ngx_str_t))
-            == NGX_ERROR)
+                == NGX_ERROR)
         {
             ngx_mail_session_internal_server_error(s);
             return;

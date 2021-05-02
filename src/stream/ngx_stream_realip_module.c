@@ -24,32 +24,33 @@ typedef struct {
 
 static ngx_int_t ngx_stream_realip_handler(ngx_stream_session_t *s);
 static ngx_int_t ngx_stream_realip_set_addr(ngx_stream_session_t *s,
-    ngx_addr_t *addr);
+        ngx_addr_t *addr);
 static char *ngx_stream_realip_from(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                    void *conf);
 static void *ngx_stream_realip_create_srv_conf(ngx_conf_t *cf);
 static char *ngx_stream_realip_merge_srv_conf(ngx_conf_t *cf, void *parent,
-    void *child);
+        void *child);
 static ngx_int_t ngx_stream_realip_add_variables(ngx_conf_t *cf);
 static ngx_int_t ngx_stream_realip_init(ngx_conf_t *cf);
 
 
 static ngx_int_t ngx_stream_realip_remote_addr_variable(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_realip_remote_port_variable(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 
 
 static ngx_command_t  ngx_stream_realip_commands[] = {
 
-    { ngx_string("set_real_ip_from"),
-      NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_stream_realip_from,
-      NGX_STREAM_SRV_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("set_real_ip_from"),
+        NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_stream_realip_from,
+        NGX_STREAM_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -83,13 +84,15 @@ ngx_module_t  ngx_stream_realip_module = {
 
 static ngx_stream_variable_t  ngx_stream_realip_vars[] = {
 
-    { ngx_string("realip_remote_addr"), NULL,
-      ngx_stream_realip_remote_addr_variable, 0, 0, 0 },
+    {   ngx_string("realip_remote_addr"), NULL,
+        ngx_stream_realip_remote_addr_variable, 0, 0, 0
+    },
 
-    { ngx_string("realip_remote_port"), NULL,
-      ngx_stream_realip_remote_port_variable, 0, 0, 0 },
+    {   ngx_string("realip_remote_port"), NULL,
+        ngx_stream_realip_remote_port_variable, 0, 0, 0
+    },
 
-      ngx_stream_null_variable
+    ngx_stream_null_variable
 };
 
 
@@ -118,7 +121,7 @@ ngx_stream_realip_handler(ngx_stream_session_t *s)
 
     if (ngx_parse_addr(c->pool, &addr, c->proxy_protocol->src_addr.data,
                        c->proxy_protocol->src_addr.len)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_DECLINED;
     }
@@ -350,7 +353,7 @@ ngx_stream_realip_init(ngx_conf_t *cf)
 
 static ngx_int_t
 ngx_stream_realip_remote_addr_variable(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                       ngx_stream_variable_value_t *v, uintptr_t data)
 {
     ngx_str_t                *addr_text;
     ngx_stream_realip_ctx_t  *ctx;
@@ -371,7 +374,7 @@ ngx_stream_realip_remote_addr_variable(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_realip_remote_port_variable(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                       ngx_stream_variable_value_t *v, uintptr_t data)
 {
     ngx_uint_t                port;
     struct sockaddr          *sa;

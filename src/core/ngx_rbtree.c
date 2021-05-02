@@ -16,9 +16,9 @@
 
 
 static ngx_inline void ngx_rbtree_left_rotate(ngx_rbtree_node_t **root,
-    ngx_rbtree_node_t *sentinel, ngx_rbtree_node_t *node);
+        ngx_rbtree_node_t *sentinel, ngx_rbtree_node_t *node);
 static ngx_inline void ngx_rbtree_right_rotate(ngx_rbtree_node_t **root,
-    ngx_rbtree_node_t *sentinel, ngx_rbtree_node_t *node);
+        ngx_rbtree_node_t *sentinel, ngx_rbtree_node_t *node);
 
 
 void
@@ -95,7 +95,7 @@ ngx_rbtree_insert(ngx_rbtree_t *tree, ngx_rbtree_node_t *node)
 
 void
 ngx_rbtree_insert_value(ngx_rbtree_node_t *temp, ngx_rbtree_node_t *node,
-    ngx_rbtree_node_t *sentinel)
+                        ngx_rbtree_node_t *sentinel)
 {
     ngx_rbtree_node_t  **p;
 
@@ -120,7 +120,7 @@ ngx_rbtree_insert_value(ngx_rbtree_node_t *temp, ngx_rbtree_node_t *node,
 
 void
 ngx_rbtree_insert_timer_value(ngx_rbtree_node_t *temp, ngx_rbtree_node_t *node,
-    ngx_rbtree_node_t *sentinel)
+                              ngx_rbtree_node_t *sentinel)
 {
     ngx_rbtree_node_t  **p;
 
@@ -317,7 +317,7 @@ ngx_rbtree_delete(ngx_rbtree_t *tree, ngx_rbtree_node_t *node)
 
 static ngx_inline void
 ngx_rbtree_left_rotate(ngx_rbtree_node_t **root, ngx_rbtree_node_t *sentinel,
-    ngx_rbtree_node_t *node)
+                       ngx_rbtree_node_t *node)
 {
     ngx_rbtree_node_t  *temp;
 
@@ -347,7 +347,7 @@ ngx_rbtree_left_rotate(ngx_rbtree_node_t **root, ngx_rbtree_node_t *sentinel,
 
 static ngx_inline void
 ngx_rbtree_right_rotate(ngx_rbtree_node_t **root, ngx_rbtree_node_t *sentinel,
-    ngx_rbtree_node_t *node)
+                        ngx_rbtree_node_t *node)
 {
     ngx_rbtree_node_t  *temp;
 

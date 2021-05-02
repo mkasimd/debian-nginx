@@ -11,117 +11,138 @@
 #include <nginx.h>
 
 static ngx_stream_variable_t *ngx_stream_add_prefix_variable(ngx_conf_t *cf,
-    ngx_str_t *name, ngx_uint_t flags);
+        ngx_str_t *name, ngx_uint_t flags);
 
 static ngx_int_t ngx_stream_variable_binary_remote_addr(
     ngx_stream_session_t *s, ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_remote_addr(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_remote_port(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_proxy_protocol_addr(
     ngx_stream_session_t *s, ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_proxy_protocol_port(
     ngx_stream_session_t *s, ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_server_addr(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_server_port(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_bytes(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_session_time(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_status(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_connection(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 
 static ngx_int_t ngx_stream_variable_nginx_version(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_hostname(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_pid(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_msec(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_time_iso8601(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_time_local(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_stream_variable_protocol(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data);
+        ngx_stream_variable_value_t *v, uintptr_t data);
 
 
 static ngx_stream_variable_t  ngx_stream_core_variables[] = {
 
-    { ngx_string("binary_remote_addr"), NULL,
-      ngx_stream_variable_binary_remote_addr, 0, 0, 0 },
+    {   ngx_string("binary_remote_addr"), NULL,
+        ngx_stream_variable_binary_remote_addr, 0, 0, 0
+    },
 
-    { ngx_string("remote_addr"), NULL,
-      ngx_stream_variable_remote_addr, 0, 0, 0 },
+    {   ngx_string("remote_addr"), NULL,
+        ngx_stream_variable_remote_addr, 0, 0, 0
+    },
 
-    { ngx_string("remote_port"), NULL,
-      ngx_stream_variable_remote_port, 0, 0, 0 },
+    {   ngx_string("remote_port"), NULL,
+        ngx_stream_variable_remote_port, 0, 0, 0
+    },
 
-    { ngx_string("proxy_protocol_addr"), NULL,
-      ngx_stream_variable_proxy_protocol_addr,
-      offsetof(ngx_proxy_protocol_t, src_addr), 0, 0 },
+    {   ngx_string("proxy_protocol_addr"), NULL,
+        ngx_stream_variable_proxy_protocol_addr,
+        offsetof(ngx_proxy_protocol_t, src_addr), 0, 0
+    },
 
-    { ngx_string("proxy_protocol_port"), NULL,
-      ngx_stream_variable_proxy_protocol_port,
-      offsetof(ngx_proxy_protocol_t, src_port), 0, 0 },
+    {   ngx_string("proxy_protocol_port"), NULL,
+        ngx_stream_variable_proxy_protocol_port,
+        offsetof(ngx_proxy_protocol_t, src_port), 0, 0
+    },
 
-    { ngx_string("proxy_protocol_server_addr"), NULL,
-      ngx_stream_variable_proxy_protocol_addr,
-      offsetof(ngx_proxy_protocol_t, dst_addr), 0, 0 },
+    {   ngx_string("proxy_protocol_server_addr"), NULL,
+        ngx_stream_variable_proxy_protocol_addr,
+        offsetof(ngx_proxy_protocol_t, dst_addr), 0, 0
+    },
 
-    { ngx_string("proxy_protocol_server_port"), NULL,
-      ngx_stream_variable_proxy_protocol_port,
-      offsetof(ngx_proxy_protocol_t, dst_port), 0, 0 },
+    {   ngx_string("proxy_protocol_server_port"), NULL,
+        ngx_stream_variable_proxy_protocol_port,
+        offsetof(ngx_proxy_protocol_t, dst_port), 0, 0
+    },
 
-    { ngx_string("server_addr"), NULL,
-      ngx_stream_variable_server_addr, 0, 0, 0 },
+    {   ngx_string("server_addr"), NULL,
+        ngx_stream_variable_server_addr, 0, 0, 0
+    },
 
-    { ngx_string("server_port"), NULL,
-      ngx_stream_variable_server_port, 0, 0, 0 },
+    {   ngx_string("server_port"), NULL,
+        ngx_stream_variable_server_port, 0, 0, 0
+    },
 
-    { ngx_string("bytes_sent"), NULL, ngx_stream_variable_bytes,
-      0, 0, 0 },
+    {   ngx_string("bytes_sent"), NULL, ngx_stream_variable_bytes,
+        0, 0, 0
+    },
 
-    { ngx_string("bytes_received"), NULL, ngx_stream_variable_bytes,
-      1, 0, 0 },
+    {   ngx_string("bytes_received"), NULL, ngx_stream_variable_bytes,
+        1, 0, 0
+    },
 
-    { ngx_string("session_time"), NULL, ngx_stream_variable_session_time,
-      0, NGX_STREAM_VAR_NOCACHEABLE, 0 },
+    {   ngx_string("session_time"), NULL, ngx_stream_variable_session_time,
+        0, NGX_STREAM_VAR_NOCACHEABLE, 0
+    },
 
-    { ngx_string("status"), NULL, ngx_stream_variable_status,
-      0, NGX_STREAM_VAR_NOCACHEABLE, 0 },
+    {   ngx_string("status"), NULL, ngx_stream_variable_status,
+        0, NGX_STREAM_VAR_NOCACHEABLE, 0
+    },
 
-    { ngx_string("connection"), NULL,
-      ngx_stream_variable_connection, 0, 0, 0 },
+    {   ngx_string("connection"), NULL,
+        ngx_stream_variable_connection, 0, 0, 0
+    },
 
-    { ngx_string("nginx_version"), NULL, ngx_stream_variable_nginx_version,
-      0, 0, 0 },
+    {   ngx_string("nginx_version"), NULL, ngx_stream_variable_nginx_version,
+        0, 0, 0
+    },
 
-    { ngx_string("hostname"), NULL, ngx_stream_variable_hostname,
-      0, 0, 0 },
+    {   ngx_string("hostname"), NULL, ngx_stream_variable_hostname,
+        0, 0, 0
+    },
 
-    { ngx_string("pid"), NULL, ngx_stream_variable_pid,
-      0, 0, 0 },
+    {   ngx_string("pid"), NULL, ngx_stream_variable_pid,
+        0, 0, 0
+    },
 
-    { ngx_string("msec"), NULL, ngx_stream_variable_msec,
-      0, NGX_STREAM_VAR_NOCACHEABLE, 0 },
+    {   ngx_string("msec"), NULL, ngx_stream_variable_msec,
+        0, NGX_STREAM_VAR_NOCACHEABLE, 0
+    },
 
-    { ngx_string("time_iso8601"), NULL, ngx_stream_variable_time_iso8601,
-      0, NGX_STREAM_VAR_NOCACHEABLE, 0 },
+    {   ngx_string("time_iso8601"), NULL, ngx_stream_variable_time_iso8601,
+        0, NGX_STREAM_VAR_NOCACHEABLE, 0
+    },
 
-    { ngx_string("time_local"), NULL, ngx_stream_variable_time_local,
-      0, NGX_STREAM_VAR_NOCACHEABLE, 0 },
+    {   ngx_string("time_local"), NULL, ngx_stream_variable_time_local,
+        0, NGX_STREAM_VAR_NOCACHEABLE, 0
+    },
 
-    { ngx_string("protocol"), NULL,
-      ngx_stream_variable_protocol, 0, 0, 0 },
+    {   ngx_string("protocol"), NULL,
+        ngx_stream_variable_protocol, 0, 0, 0
+    },
 
-      ngx_stream_null_variable
+    ngx_stream_null_variable
 };
 
 
@@ -158,7 +179,7 @@ ngx_stream_add_variable(ngx_conf_t *cf, ngx_str_t *name, ngx_uint_t flags)
     key = cmcf->variables_keys->keys.elts;
     for (i = 0; i < cmcf->variables_keys->keys.nelts; i++) {
         if (name->len != key[i].key.len
-            || ngx_strncasecmp(name->data, key[i].key.data, name->len) != 0)
+                || ngx_strncasecmp(name->data, key[i].key.data, name->len) != 0)
         {
             continue;
         }
@@ -215,7 +236,7 @@ ngx_stream_add_variable(ngx_conf_t *cf, ngx_str_t *name, ngx_uint_t flags)
 
 static ngx_stream_variable_t *
 ngx_stream_add_prefix_variable(ngx_conf_t *cf, ngx_str_t *name,
-    ngx_uint_t flags)
+                               ngx_uint_t flags)
 {
     ngx_uint_t                    i;
     ngx_stream_variable_t        *v;
@@ -226,7 +247,7 @@ ngx_stream_add_prefix_variable(ngx_conf_t *cf, ngx_str_t *name,
     v = cmcf->prefix_variables.elts;
     for (i = 0; i < cmcf->prefix_variables.nelts; i++) {
         if (name->len != v[i].name.len
-            || ngx_strncasecmp(name->data, v[i].name.data, name->len) != 0)
+                || ngx_strncasecmp(name->data, v[i].name.data, name->len) != 0)
         {
             continue;
         }
@@ -289,7 +310,7 @@ ngx_stream_get_variable_index(ngx_conf_t *cf, ngx_str_t *name)
     if (v == NULL) {
         if (ngx_array_init(&cmcf->variables, cf->pool, 4,
                            sizeof(ngx_stream_variable_t))
-            != NGX_OK)
+                != NGX_OK)
         {
             return NGX_ERROR;
         }
@@ -297,7 +318,7 @@ ngx_stream_get_variable_index(ngx_conf_t *cf, ngx_str_t *name)
     } else {
         for (i = 0; i < cmcf->variables.nelts; i++) {
             if (name->len != v[i].name.len
-                || ngx_strncasecmp(name->data, v[i].name.data, name->len) != 0)
+                    || ngx_strncasecmp(name->data, v[i].name.data, name->len) != 0)
             {
                 continue;
             }
@@ -359,7 +380,7 @@ ngx_stream_get_indexed_variable(ngx_stream_session_t *s, ngx_uint_t index)
     ngx_stream_variable_depth--;
 
     if (v[index].get_handler(s, &s->variables[index], v[index].data)
-        == NGX_OK)
+            == NGX_OK)
     {
         ngx_stream_variable_depth++;
 
@@ -401,7 +422,7 @@ ngx_stream_get_flushed_variable(ngx_stream_session_t *s, ngx_uint_t index)
 
 ngx_stream_variable_value_t *
 ngx_stream_get_variable(ngx_stream_session_t *s, ngx_str_t *name,
-    ngx_uint_t key)
+                        ngx_uint_t key)
 {
     size_t                        len;
     ngx_uint_t                    i, n;
@@ -450,7 +471,7 @@ ngx_stream_get_variable(ngx_stream_session_t *s, ngx_str_t *name,
 
     for (i = 0; i < cmcf->prefix_variables.nelts; i++) {
         if (name->len >= v[i].name.len && name->len > len
-            && ngx_strncmp(name->data, v[i].name.data, v[i].name.len) == 0)
+                && ngx_strncmp(name->data, v[i].name.data, v[i].name.len) == 0)
         {
             len = v[i].name.len;
             n = i;
@@ -473,7 +494,7 @@ ngx_stream_get_variable(ngx_stream_session_t *s, ngx_str_t *name,
 
 static ngx_int_t
 ngx_stream_variable_binary_remote_addr(ngx_stream_session_t *s,
-     ngx_stream_variable_value_t *v, uintptr_t data)
+                                       ngx_stream_variable_value_t *v, uintptr_t data)
 {
     struct sockaddr_in   *sin;
 #if (NGX_HAVE_INET6)
@@ -525,7 +546,7 @@ ngx_stream_variable_binary_remote_addr(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_remote_addr(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                ngx_stream_variable_value_t *v, uintptr_t data)
 {
     v->len = s->connection->addr_text.len;
     v->valid = 1;
@@ -539,7 +560,7 @@ ngx_stream_variable_remote_addr(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_remote_port(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                ngx_stream_variable_value_t *v, uintptr_t data)
 {
     ngx_uint_t  port;
 
@@ -565,7 +586,7 @@ ngx_stream_variable_remote_port(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_proxy_protocol_addr(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                        ngx_stream_variable_value_t *v, uintptr_t data)
 {
     ngx_str_t             *addr;
     ngx_proxy_protocol_t  *pp;
@@ -590,7 +611,7 @@ ngx_stream_variable_proxy_protocol_addr(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_proxy_protocol_port(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                        ngx_stream_variable_value_t *v, uintptr_t data)
 {
     ngx_uint_t             port;
     ngx_proxy_protocol_t  *pp;
@@ -623,7 +644,7 @@ ngx_stream_variable_proxy_protocol_port(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_server_addr(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                ngx_stream_variable_value_t *v, uintptr_t data)
 {
     ngx_str_t  str;
     u_char     addr[NGX_SOCKADDR_STRLEN];
@@ -654,7 +675,7 @@ ngx_stream_variable_server_addr(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_server_port(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                ngx_stream_variable_value_t *v, uintptr_t data)
 {
     ngx_uint_t  port;
 
@@ -684,7 +705,7 @@ ngx_stream_variable_server_port(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_bytes(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                          ngx_stream_variable_value_t *v, uintptr_t data)
 {
     u_char  *p;
 
@@ -711,7 +732,7 @@ ngx_stream_variable_bytes(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_session_time(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                 ngx_stream_variable_value_t *v, uintptr_t data)
 {
     u_char          *p;
     ngx_time_t      *tp;
@@ -725,7 +746,7 @@ ngx_stream_variable_session_time(ngx_stream_session_t *s,
     tp = ngx_timeofday();
 
     ms = (ngx_msec_int_t)
-             ((tp->sec - s->start_sec) * 1000 + (tp->msec - s->start_msec));
+         ((tp->sec - s->start_sec) * 1000 + (tp->msec - s->start_msec));
     ms = ngx_max(ms, 0);
 
     v->len = ngx_sprintf(p, "%T.%03M", (time_t) ms / 1000, ms % 1000) - p;
@@ -740,7 +761,7 @@ ngx_stream_variable_session_time(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_status(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                           ngx_stream_variable_value_t *v, uintptr_t data)
 {
     v->data = ngx_pnalloc(s->connection->pool, NGX_INT_T_LEN);
     if (v->data == NULL) {
@@ -758,7 +779,7 @@ ngx_stream_variable_status(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_connection(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                               ngx_stream_variable_value_t *v, uintptr_t data)
 {
     u_char  *p;
 
@@ -779,7 +800,7 @@ ngx_stream_variable_connection(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_nginx_version(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                  ngx_stream_variable_value_t *v, uintptr_t data)
 {
     v->len = sizeof(NGINX_VERSION) - 1;
     v->valid = 1;
@@ -793,7 +814,7 @@ ngx_stream_variable_nginx_version(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_hostname(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                             ngx_stream_variable_value_t *v, uintptr_t data)
 {
     v->len = ngx_cycle->hostname.len;
     v->valid = 1;
@@ -807,7 +828,7 @@ ngx_stream_variable_hostname(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_pid(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                        ngx_stream_variable_value_t *v, uintptr_t data)
 {
     u_char  *p;
 
@@ -828,7 +849,7 @@ ngx_stream_variable_pid(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_msec(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                         ngx_stream_variable_value_t *v, uintptr_t data)
 {
     u_char      *p;
     ngx_time_t  *tp;
@@ -852,7 +873,7 @@ ngx_stream_variable_msec(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_time_iso8601(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                                 ngx_stream_variable_value_t *v, uintptr_t data)
 {
     u_char  *p;
 
@@ -876,7 +897,7 @@ ngx_stream_variable_time_iso8601(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_time_local(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                               ngx_stream_variable_value_t *v, uintptr_t data)
 {
     u_char  *p;
 
@@ -899,7 +920,7 @@ ngx_stream_variable_time_local(ngx_stream_session_t *s,
 
 static ngx_int_t
 ngx_stream_variable_protocol(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                             ngx_stream_variable_value_t *v, uintptr_t data)
 {
     v->len = 3;
     v->valid = 1;
@@ -913,7 +934,7 @@ ngx_stream_variable_protocol(ngx_stream_session_t *s,
 
 void *
 ngx_stream_map_find(ngx_stream_session_t *s, ngx_stream_map_t *map,
-    ngx_str_t *match)
+                    ngx_str_t *match)
 {
     void        *value;
     u_char      *low;
@@ -976,7 +997,7 @@ ngx_stream_map_find(ngx_stream_session_t *s, ngx_stream_map_t *map,
 
 static ngx_int_t
 ngx_stream_variable_not_found(ngx_stream_session_t *s,
-    ngx_stream_variable_value_t *v, uintptr_t data)
+                              ngx_stream_variable_value_t *v, uintptr_t data)
 {
     v->not_found = 1;
     return NGX_OK;
@@ -1058,7 +1079,7 @@ ngx_stream_regex_compile(ngx_conf_t *cf, ngx_regex_compile_t *rc)
 
 ngx_int_t
 ngx_stream_regex_exec(ngx_stream_session_t *s, ngx_stream_regex_t *re,
-    ngx_str_t *str)
+                      ngx_str_t *str)
 {
     ngx_int_t                     rc, index;
     ngx_uint_t                    i, n, len;
@@ -1108,12 +1129,12 @@ ngx_stream_regex_exec(ngx_stream_session_t *s, ngx_stream_regex_t *re,
 
 #if (NGX_DEBUG)
         {
-        ngx_stream_variable_t  *v;
+            ngx_stream_variable_t  *v;
 
-        v = cmcf->variables.elts;
+            v = cmcf->variables.elts;
 
-        ngx_log_debug2(NGX_LOG_DEBUG_STREAM, s->connection->log, 0,
-                       "stream regex set $%V to \"%v\"", &v[index].name, vv);
+            ngx_log_debug2(NGX_LOG_DEBUG_STREAM, s->connection->log, 0,
+                           "stream regex set $%V to \"%v\"", &v[index].name, vv);
         }
 #endif
     }
@@ -1145,14 +1166,14 @@ ngx_stream_variables_add_core_vars(ngx_conf_t *cf)
     cmcf->variables_keys->temp_pool = cf->pool;
 
     if (ngx_hash_keys_array_init(cmcf->variables_keys, NGX_HASH_SMALL)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }
 
     if (ngx_array_init(&cmcf->prefix_variables, cf->pool, 8,
                        sizeof(ngx_stream_variable_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }
@@ -1195,8 +1216,8 @@ ngx_stream_variables_init_vars(ngx_conf_t *cf)
             av = key[n].value;
 
             if (v[i].name.len == key[n].key.len
-                && ngx_strncmp(v[i].name.data, key[n].key.data, v[i].name.len)
-                   == 0)
+                    && ngx_strncmp(v[i].name.data, key[n].key.data, v[i].name.len)
+                    == 0)
             {
                 v[i].get_handler = av->get_handler;
                 v[i].data = av->data;
@@ -1207,7 +1228,7 @@ ngx_stream_variables_init_vars(ngx_conf_t *cf)
                 av->index = i;
 
                 if (av->get_handler == NULL
-                    || (av->flags & NGX_STREAM_VAR_WEAK))
+                        || (av->flags & NGX_STREAM_VAR_WEAK))
                 {
                     break;
                 }
@@ -1221,8 +1242,8 @@ ngx_stream_variables_init_vars(ngx_conf_t *cf)
 
         for (n = 0; n < cmcf->prefix_variables.nelts; n++) {
             if (v[i].name.len >= pv[n].name.len && v[i].name.len > len
-                && ngx_strncmp(v[i].name.data, pv[n].name.data, pv[n].name.len)
-                   == 0)
+                    && ngx_strncmp(v[i].name.data, pv[n].name.data, pv[n].name.len)
+                    == 0)
             {
                 av = &pv[n];
                 len = pv[n].name.len;
@@ -1235,7 +1256,7 @@ ngx_stream_variables_init_vars(ngx_conf_t *cf)
             v[i].flags = av->flags;
 
             goto next;
-         }
+        }
 
         if (v[i].get_handler == NULL) {
             ngx_log_error(NGX_LOG_EMERG, cf->log, 0,
@@ -1243,7 +1264,7 @@ ngx_stream_variables_init_vars(ngx_conf_t *cf)
             return NGX_ERROR;
         }
 
-    next:
+next:
         continue;
     }
 
@@ -1267,7 +1288,7 @@ ngx_stream_variables_init_vars(ngx_conf_t *cf)
 
     if (ngx_hash_init(&hash, cmcf->variables_keys->keys.elts,
                       cmcf->variables_keys->keys.nelts)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }

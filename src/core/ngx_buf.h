@@ -73,7 +73,7 @@ typedef struct ngx_output_chain_ctx_s  ngx_output_chain_ctx_t;
 typedef ngx_int_t (*ngx_output_chain_filter_pt)(void *ctx, ngx_chain_t *in);
 
 typedef void (*ngx_output_chain_aio_pt)(ngx_output_chain_ctx_t *ctx,
-    ngx_file_t *file);
+                                        ngx_file_t *file);
 
 struct ngx_output_chain_ctx_s {
     ngx_buf_t                   *buf;
@@ -97,7 +97,7 @@ struct ngx_output_chain_ctx_s {
 
 #if (NGX_THREADS || NGX_COMPAT)
     ngx_int_t                  (*thread_handler)(ngx_thread_task_t *task,
-                                                 ngx_file_t *file);
+            ngx_file_t *file);
     ngx_thread_task_t           *thread_task;
 #endif
 
@@ -158,10 +158,10 @@ ngx_int_t ngx_output_chain(ngx_output_chain_ctx_t *ctx, ngx_chain_t *in);
 ngx_int_t ngx_chain_writer(void *ctx, ngx_chain_t *in);
 
 ngx_int_t ngx_chain_add_copy(ngx_pool_t *pool, ngx_chain_t **chain,
-    ngx_chain_t *in);
+                             ngx_chain_t *in);
 ngx_chain_t *ngx_chain_get_free_buf(ngx_pool_t *p, ngx_chain_t **free);
 void ngx_chain_update_chains(ngx_pool_t *p, ngx_chain_t **free,
-    ngx_chain_t **busy, ngx_chain_t **out, ngx_buf_tag_t tag);
+                             ngx_chain_t **busy, ngx_chain_t **out, ngx_buf_tag_t tag);
 
 off_t ngx_chain_coalesce_file(ngx_chain_t **in, off_t limit);
 

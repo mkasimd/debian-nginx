@@ -41,11 +41,11 @@ typedef struct {
 
 
 static u_char *ngx_proxy_protocol_read_addr(ngx_connection_t *c, u_char *p,
-    u_char *last, ngx_str_t *addr);
+        u_char *last, ngx_str_t *addr);
 static u_char *ngx_proxy_protocol_read_port(u_char *p, u_char *last,
-    in_port_t *port, u_char sep);
+        in_port_t *port, u_char sep);
 static u_char *ngx_proxy_protocol_v2_read(ngx_connection_t *c, u_char *buf,
-    u_char *last);
+        u_char *last);
 
 
 u_char *
@@ -61,7 +61,7 @@ ngx_proxy_protocol_read(ngx_connection_t *c, u_char *buf, u_char *last)
     len = last - buf;
 
     if (len >= sizeof(ngx_proxy_protocol_header_t)
-        && memcmp(p, signature, sizeof(signature) - 1) == 0)
+            && memcmp(p, signature, sizeof(signature) - 1) == 0)
     {
         return ngx_proxy_protocol_v2_read(c, buf, last);
     }
@@ -81,7 +81,7 @@ ngx_proxy_protocol_read(ngx_connection_t *c, u_char *buf, u_char *last)
     }
 
     if (len < 5 || ngx_strncmp(p, "TCP", 3) != 0
-        || (p[3] != '4' && p[3] != '6') || p[4] != ' ')
+            || (p[3] != '4' && p[3] != '6') || p[4] != ' ')
     {
         goto invalid;
     }
@@ -148,7 +148,7 @@ invalid:
 
 static u_char *
 ngx_proxy_protocol_read_addr(ngx_connection_t *c, u_char *p, u_char *last,
-    ngx_str_t *addr)
+                             ngx_str_t *addr)
 {
     size_t  len;
     u_char  ch, *pos;
@@ -167,9 +167,9 @@ ngx_proxy_protocol_read_addr(ngx_connection_t *c, u_char *p, u_char *last,
         }
 
         if (ch != ':' && ch != '.'
-            && (ch < 'a' || ch > 'f')
-            && (ch < 'A' || ch > 'F')
-            && (ch < '0' || ch > '9'))
+                && (ch < 'a' || ch > 'f')
+                && (ch < 'A' || ch > 'F')
+                && (ch < '0' || ch > '9'))
         {
             return NULL;
         }
@@ -191,7 +191,7 @@ ngx_proxy_protocol_read_addr(ngx_connection_t *c, u_char *p, u_char *last,
 
 static u_char *
 ngx_proxy_protocol_read_port(u_char *p, u_char *last, in_port_t *port,
-    u_char sep)
+                             u_char sep)
 {
     size_t      len;
     u_char     *pos;

@@ -17,7 +17,7 @@ static void ngx_log_insert(ngx_log_t *log, ngx_log_t *new_log);
 #if (NGX_DEBUG)
 
 static void ngx_log_memory_writer(ngx_log_t *log, ngx_uint_t level,
-    u_char *buf, size_t len);
+                                  u_char *buf, size_t len);
 static void ngx_log_memory_cleanup(void *data);
 
 
@@ -33,14 +33,15 @@ typedef struct {
 
 static ngx_command_t  ngx_errlog_commands[] = {
 
-    { ngx_string("error_log"),
-      NGX_MAIN_CONF|NGX_CONF_1MORE,
-      ngx_error_log,
-      0,
-      0,
-      NULL },
+    {   ngx_string("error_log"),
+        NGX_MAIN_CONF|NGX_CONF_1MORE,
+        ngx_error_log,
+        0,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -94,13 +95,13 @@ static const char *debug_levels[] = {
 
 void
 ngx_log_error_core(ngx_uint_t level, ngx_log_t *log, ngx_err_t err,
-    const char *fmt, ...)
+                   const char *fmt, ...)
 
 #else
 
 void
 ngx_log_error_core(ngx_uint_t level, ngx_log_t *log, ngx_err_t err,
-    const char *fmt, va_list args)
+                   const char *fmt, va_list args)
 
 #endif
 {
@@ -121,7 +122,7 @@ ngx_log_error_core(ngx_uint_t level, ngx_log_t *log, ngx_err_t err,
 
     /* pid#tid */
     p = ngx_slprintf(p, last, "%P#" NGX_TID_T_FMT ": ",
-                    ngx_log_pid, ngx_log_tid);
+                     ngx_log_pid, ngx_log_tid);
 
     if (log->connection) {
         p = ngx_slprintf(p, last, "*%uA ", log->connection);
@@ -190,14 +191,14 @@ ngx_log_error_core(ngx_uint_t level, ngx_log_t *log, ngx_err_t err,
             wrote_stderr = 1;
         }
 
-    next:
+next:
 
         log = log->next;
     }
 
     if (!ngx_use_stderr
-        || level > NGX_LOG_WARN
-        || wrote_stderr)
+            || level > NGX_LOG_WARN
+            || wrote_stderr)
     {
         return;
     }
@@ -214,7 +215,7 @@ ngx_log_error_core(ngx_uint_t level, ngx_log_t *log, ngx_err_t err,
 
 void ngx_cdecl
 ngx_log_error(ngx_uint_t level, ngx_log_t *log, ngx_err_t err,
-    const char *fmt, ...)
+              const char *fmt, ...)
 {
     va_list  args;
 
@@ -299,7 +300,7 @@ ngx_log_errno(u_char *buf, u_char *last, ngx_err_t err)
 
 #if (NGX_WIN32)
     buf = ngx_slprintf(buf, last, ((unsigned) err < 0x80000000)
-                                       ? " (%d: " : " (%Xd: ", err);
+                       ? " (%d: " : " (%Xd: ", err);
 #else
     buf = ngx_slprintf(buf, last, " (%d: ", err);
 #endif
@@ -383,8 +384,8 @@ ngx_log_init(u_char *prefix, u_char *error_log)
                        ngx_open_file_n " \"%s\" failed", name);
 #if (NGX_WIN32)
         ngx_event_log(ngx_errno,
-                       "could not open error log file: "
-                       ngx_open_file_n " \"%s\" failed", name);
+                      "could not open error log file: "
+                      ngx_open_file_n " \"%s\" failed", name);
 #endif
 
         ngx_log_file.fd = ngx_stderr;
@@ -711,7 +712,7 @@ ngx_log_insert(ngx_log_t *log, ngx_log_t *new_log)
 
 static void
 ngx_log_memory_writer(ngx_log_t *log, ngx_uint_t level, u_char *buf,
-    size_t len)
+                      size_t len)
 {
     u_char                *p;
     size_t                 avail, written;

@@ -126,7 +126,7 @@ typedef enum {
 typedef struct ngx_stream_phase_handler_s  ngx_stream_phase_handler_t;
 
 typedef ngx_int_t (*ngx_stream_phase_handler_pt)(ngx_stream_session_t *s,
-    ngx_stream_phase_handler_t *ph);
+        ngx_stream_phase_handler_t *ph);
 typedef ngx_int_t (*ngx_stream_handler_pt)(ngx_stream_session_t *s);
 typedef void (*ngx_stream_content_handler_pt)(ngx_stream_session_t *s);
 
@@ -209,7 +209,7 @@ struct ngx_stream_session_s {
 
     ngx_stream_upstream_t         *upstream;
     ngx_array_t                   *upstream_states;
-                                           /* of ngx_stream_upstream_state_t */
+    /* of ngx_stream_upstream_state_t */
     ngx_stream_variable_value_t   *variables;
 
 #if (NGX_PCRE)
@@ -240,7 +240,7 @@ typedef struct {
 
     void                        *(*create_srv_conf)(ngx_conf_t *cf);
     char                        *(*merge_srv_conf)(ngx_conf_t *cf, void *prev,
-                                                   void *conf);
+            void *conf);
 } ngx_stream_module_t;
 
 
@@ -282,11 +282,11 @@ typedef struct {
 
 void ngx_stream_core_run_phases(ngx_stream_session_t *s);
 ngx_int_t ngx_stream_core_generic_phase(ngx_stream_session_t *s,
-    ngx_stream_phase_handler_t *ph);
+                                        ngx_stream_phase_handler_t *ph);
 ngx_int_t ngx_stream_core_preread_phase(ngx_stream_session_t *s,
-    ngx_stream_phase_handler_t *ph);
+                                        ngx_stream_phase_handler_t *ph);
 ngx_int_t ngx_stream_core_content_phase(ngx_stream_session_t *s,
-    ngx_stream_phase_handler_t *ph);
+                                        ngx_stream_phase_handler_t *ph);
 
 
 void ngx_stream_init_connection(ngx_connection_t *c);
@@ -300,7 +300,7 @@ extern ngx_module_t  ngx_stream_core_module;
 
 
 typedef ngx_int_t (*ngx_stream_filter_pt)(ngx_stream_session_t *s,
-    ngx_chain_t *chain, ngx_uint_t from_upstream);
+        ngx_chain_t *chain, ngx_uint_t from_upstream);
 
 
 extern ngx_stream_filter_pt  ngx_stream_top_filter;

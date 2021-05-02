@@ -16,24 +16,25 @@ typedef struct {
 
 
 static ngx_int_t ngx_mail_realip_set_addr(ngx_mail_session_t *s,
-    ngx_addr_t *addr);
+        ngx_addr_t *addr);
 static char *ngx_mail_realip_from(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                  void *conf);
 static void *ngx_mail_realip_create_srv_conf(ngx_conf_t *cf);
 static char *ngx_mail_realip_merge_srv_conf(ngx_conf_t *cf, void *parent,
-    void *child);
+        void *child);
 
 
 static ngx_command_t  ngx_mail_realip_commands[] = {
 
-    { ngx_string("set_real_ip_from"),
-      NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_mail_realip_from,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("set_real_ip_from"),
+        NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_mail_realip_from,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -89,7 +90,7 @@ ngx_mail_realip_handler(ngx_mail_session_t *s)
 
     if (ngx_parse_addr(c->pool, &addr, c->proxy_protocol->src_addr.data,
                        c->proxy_protocol->src_addr.len)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_OK;
     }

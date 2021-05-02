@@ -27,28 +27,29 @@ typedef struct {
 
 
 static ngx_int_t ngx_http_index_test_dir(ngx_http_request_t *r,
-    ngx_http_core_loc_conf_t *clcf, u_char *path, u_char *last);
+        ngx_http_core_loc_conf_t *clcf, u_char *path, u_char *last);
 static ngx_int_t ngx_http_index_error(ngx_http_request_t *r,
-    ngx_http_core_loc_conf_t *clcf, u_char *file, ngx_err_t err);
+                                      ngx_http_core_loc_conf_t *clcf, u_char *file, ngx_err_t err);
 
 static ngx_int_t ngx_http_index_init(ngx_conf_t *cf);
 static void *ngx_http_index_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_index_merge_loc_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+        void *parent, void *child);
 static char *ngx_http_index_set_index(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                      void *conf);
 
 
 static ngx_command_t  ngx_http_index_commands[] = {
 
-    { ngx_string("index"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_http_index_set_index,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("index"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_http_index_set_index,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -215,7 +216,7 @@ ngx_http_index_handler(ngx_http_request_t *r)
         }
 
         if (ngx_open_cached_file(clcf->open_file_cache, &path, &of, r->pool)
-            != NGX_OK)
+                != NGX_OK)
         {
             if (of.err == 0) {
                 return NGX_HTTP_INTERNAL_SERVER_ERROR;
@@ -226,15 +227,15 @@ ngx_http_index_handler(ngx_http_request_t *r)
 
 #if (NGX_HAVE_OPENAT)
             if (of.err == NGX_EMLINK
-                || of.err == NGX_ELOOP)
+                    || of.err == NGX_ELOOP)
             {
                 return NGX_HTTP_FORBIDDEN;
             }
 #endif
 
             if (of.err == NGX_ENOTDIR
-                || of.err == NGX_ENAMETOOLONG
-                || of.err == NGX_EACCES)
+                    || of.err == NGX_ENAMETOOLONG
+                    || of.err == NGX_EACCES)
             {
                 return ngx_http_index_error(r, clcf, path.data, of.err);
             }
@@ -283,7 +284,7 @@ ngx_http_index_handler(ngx_http_request_t *r)
 
 static ngx_int_t
 ngx_http_index_test_dir(ngx_http_request_t *r, ngx_http_core_loc_conf_t *clcf,
-    u_char *path, u_char *last)
+                        u_char *path, u_char *last)
 {
     u_char                c;
     ngx_str_t             dir;
@@ -314,13 +315,13 @@ ngx_http_index_test_dir(ngx_http_request_t *r, ngx_http_core_loc_conf_t *clcf,
     }
 
     if (ngx_open_cached_file(clcf->open_file_cache, &dir, &of, r->pool)
-        != NGX_OK)
+            != NGX_OK)
     {
         if (of.err) {
 
 #if (NGX_HAVE_OPENAT)
             if (of.err == NGX_EMLINK
-                || of.err == NGX_ELOOP)
+                    || of.err == NGX_ELOOP)
             {
                 return NGX_HTTP_FORBIDDEN;
             }
@@ -366,7 +367,7 @@ ngx_http_index_test_dir(ngx_http_request_t *r, ngx_http_core_loc_conf_t *clcf,
 
 static ngx_int_t
 ngx_http_index_error(ngx_http_request_t *r, ngx_http_core_loc_conf_t  *clcf,
-    u_char *file, ngx_err_t err)
+                     u_char *file, ngx_err_t err)
 {
     if (err == NGX_EACCES) {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, err,

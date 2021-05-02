@@ -108,7 +108,7 @@ ngx_event_accept(ngx_event_t *ev)
 
             if (err == NGX_EMFILE || err == NGX_ENFILE) {
                 if (ngx_disable_accept_events((ngx_cycle_t *) ngx_cycle, 1)
-                    != NGX_OK)
+                        != NGX_OK)
                 {
                     return;
                 }
@@ -280,19 +280,19 @@ ngx_event_accept(ngx_event_t *ev)
 
 #if (NGX_DEBUG)
         {
-        ngx_str_t  addr;
-        u_char     text[NGX_SOCKADDR_STRLEN];
+            ngx_str_t  addr;
+            u_char     text[NGX_SOCKADDR_STRLEN];
 
-        ngx_debug_accepted_connection(ecf, c);
+            ngx_debug_accepted_connection(ecf, c);
 
-        if (log->log_level & NGX_LOG_DEBUG_EVENT) {
-            addr.data = text;
-            addr.len = ngx_sock_ntop(c->sockaddr, c->socklen, text,
-                                     NGX_SOCKADDR_STRLEN, 1);
+            if (log->log_level & NGX_LOG_DEBUG_EVENT) {
+                addr.data = text;
+                addr.len = ngx_sock_ntop(c->sockaddr, c->socklen, text,
+                                         NGX_SOCKADDR_STRLEN, 1);
 
-            ngx_log_debug3(NGX_LOG_DEBUG_EVENT, log, 0,
-                           "*%uA accept: %V fd:%d", c->number, &addr, s);
-        }
+                ngx_log_debug3(NGX_LOG_DEBUG_EVENT, log, 0,
+                               "*%uA accept: %V fd:%d", c->number, &addr, s);
+            }
 
         }
 #endif
@@ -410,7 +410,7 @@ ngx_disable_accept_events(ngx_cycle_t *cycle, ngx_uint_t all)
 #endif
 
         if (ngx_del_event(c->read, NGX_READ_EVENT, NGX_DISABLE_EVENT)
-            == NGX_ERROR)
+                == NGX_ERROR)
         {
             return NGX_ERROR;
         }
@@ -479,8 +479,8 @@ ngx_debug_accepted_connection(ngx_event_conf_t *ecf, ngx_connection_t *c)
             sin6 = (struct sockaddr_in6 *) c->sockaddr;
             for (n = 0; n < 16; n++) {
                 if ((sin6->sin6_addr.s6_addr[n]
-                    & cidr[i].u.in6.mask.s6_addr[n])
-                    != cidr[i].u.in6.addr.s6_addr[n])
+                        & cidr[i].u.in6.mask.s6_addr[n])
+                        != cidr[i].u.in6.addr.s6_addr[n])
                 {
                     goto next;
                 }
@@ -496,7 +496,7 @@ ngx_debug_accepted_connection(ngx_event_conf_t *ecf, ngx_connection_t *c)
         default: /* AF_INET */
             sin = (struct sockaddr_in *) c->sockaddr;
             if ((sin->sin_addr.s_addr & cidr[i].u.in.mask)
-                != cidr[i].u.in.addr)
+                    != cidr[i].u.in.addr)
             {
                 goto next;
             }
@@ -506,7 +506,7 @@ ngx_debug_accepted_connection(ngx_event_conf_t *ecf, ngx_connection_t *c)
         c->log->log_level = NGX_LOG_DEBUG_CONNECTION|NGX_LOG_DEBUG_ALL;
         break;
 
-    next:
+next:
         continue;
     }
 }

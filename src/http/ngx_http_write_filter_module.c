@@ -226,8 +226,8 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     }
 
     if (size == 0
-        && !(c->buffered & NGX_LOWLEVEL_BUFFERED)
-        && !(last && c->need_last_buf))
+            && !(c->buffered & NGX_LOWLEVEL_BUFFERED)
+            && !(last && c->need_last_buf))
     {
         if (last || flush || sync) {
             for (cl = r->out; cl; /* void */) {
@@ -259,7 +259,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
         if (!r->limit_rate_after_set) {
             r->limit_rate_after = ngx_http_complex_value_size(r,
-                                                    clcf->limit_rate_after, 0);
+                                  clcf->limit_rate_after, 0);
             r->limit_rate_after_set = 1;
         }
 
@@ -277,7 +277,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         }
 
         if (clcf->sendfile_max_chunk
-            && (off_t) clcf->sendfile_max_chunk < limit)
+                && (off_t) clcf->sendfile_max_chunk < limit)
         {
             limit = clcf->sendfile_max_chunk;
         }
@@ -328,8 +328,8 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     }
 
     if (limit
-        && c->write->ready
-        && c->sent - sent >= limit - (off_t) (2 * ngx_pagesize))
+            && c->write->ready
+            && c->sent - sent >= limit - (off_t) (2 * ngx_pagesize))
     {
         c->write->delayed = 1;
         ngx_add_timer(c->write, 1);

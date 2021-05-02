@@ -57,19 +57,19 @@ typedef struct {
 
 
 static ngx_rbtree_node_t *ngx_http_limit_conn_lookup(ngx_rbtree_t *rbtree,
-    ngx_str_t *key, uint32_t hash);
+        ngx_str_t *key, uint32_t hash);
 static void ngx_http_limit_conn_cleanup(void *data);
 static ngx_inline void ngx_http_limit_conn_cleanup_all(ngx_pool_t *pool);
 
 static ngx_int_t ngx_http_limit_conn_status_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data);
+        ngx_http_variable_value_t *v, uintptr_t data);
 static void *ngx_http_limit_conn_create_conf(ngx_conf_t *cf);
 static char *ngx_http_limit_conn_merge_conf(ngx_conf_t *cf, void *parent,
-    void *child);
+        void *child);
 static char *ngx_http_limit_conn_zone(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                      void *conf);
 static char *ngx_http_limit_conn(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                 void *conf);
 static ngx_int_t ngx_http_limit_conn_add_variables(ngx_conf_t *cf);
 static ngx_int_t ngx_http_limit_conn_init(ngx_conf_t *cf);
 
@@ -90,42 +90,47 @@ static ngx_conf_num_bounds_t  ngx_http_limit_conn_status_bounds = {
 
 static ngx_command_t  ngx_http_limit_conn_commands[] = {
 
-    { ngx_string("limit_conn_zone"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE2,
-      ngx_http_limit_conn_zone,
-      0,
-      0,
-      NULL },
+    {   ngx_string("limit_conn_zone"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE2,
+        ngx_http_limit_conn_zone,
+        0,
+        0,
+        NULL
+    },
 
-    { ngx_string("limit_conn"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
-      ngx_http_limit_conn,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("limit_conn"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE2,
+        ngx_http_limit_conn,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("limit_conn_log_level"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_enum_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_limit_conn_conf_t, log_level),
-      &ngx_http_limit_conn_log_levels },
+    {   ngx_string("limit_conn_log_level"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_enum_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_limit_conn_conf_t, log_level),
+        &ngx_http_limit_conn_log_levels
+    },
 
-    { ngx_string("limit_conn_status"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_limit_conn_conf_t, status_code),
-      &ngx_http_limit_conn_status_bounds },
+    {   ngx_string("limit_conn_status"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_limit_conn_conf_t, status_code),
+        &ngx_http_limit_conn_status_bounds
+    },
 
-    { ngx_string("limit_conn_dry_run"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_limit_conn_conf_t, dry_run),
-      NULL },
+    {   ngx_string("limit_conn_dry_run"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_limit_conn_conf_t, dry_run),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -162,10 +167,11 @@ ngx_module_t  ngx_http_limit_conn_module = {
 
 static ngx_http_variable_t  ngx_http_limit_conn_vars[] = {
 
-    { ngx_string("limit_conn_status"), NULL,
-      ngx_http_limit_conn_status_variable, 0, NGX_HTTP_VAR_NOCACHEABLE, 0 },
+    {   ngx_string("limit_conn_status"), NULL,
+        ngx_http_limit_conn_status_variable, 0, NGX_HTTP_VAR_NOCACHEABLE, 0
+    },
 
-      ngx_http_null_variable
+    ngx_http_null_variable
 };
 
 
@@ -239,7 +245,7 @@ ngx_http_limit_conn_handler(ngx_http_request_t *r)
 
                 if (lccf->dry_run) {
                     r->main->limit_conn_status =
-                                          NGX_HTTP_LIMIT_CONN_REJECTED_DRY_RUN;
+                        NGX_HTTP_LIMIT_CONN_REJECTED_DRY_RUN;
                     return NGX_DECLINED;
                 }
 
@@ -274,7 +280,7 @@ ngx_http_limit_conn_handler(ngx_http_request_t *r)
 
                 if (lccf->dry_run) {
                     r->main->limit_conn_status =
-                                          NGX_HTTP_LIMIT_CONN_REJECTED_DRY_RUN;
+                        NGX_HTTP_LIMIT_CONN_REJECTED_DRY_RUN;
                     return NGX_DECLINED;
                 }
 
@@ -310,7 +316,7 @@ ngx_http_limit_conn_handler(ngx_http_request_t *r)
 
 static void
 ngx_http_limit_conn_rbtree_insert_value(ngx_rbtree_node_t *temp,
-    ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
+                                        ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
 {
     ngx_rbtree_node_t           **p;
     ngx_http_limit_conn_node_t   *lcn, *lcnt;
@@ -445,9 +451,9 @@ ngx_http_limit_conn_init_zone(ngx_shm_zone_t *shm_zone, void *data)
 
     if (octx) {
         if (ctx->key.value.len != octx->key.value.len
-            || ngx_strncmp(ctx->key.value.data, octx->key.value.data,
-                           ctx->key.value.len)
-               != 0)
+                || ngx_strncmp(ctx->key.value.data, octx->key.value.data,
+                               ctx->key.value.len)
+                != 0)
         {
             ngx_log_error(NGX_LOG_EMERG, shm_zone->shm.log, 0,
                           "limit_conn_zone \"%V\" uses the \"%V\" key "
@@ -497,7 +503,7 @@ ngx_http_limit_conn_init_zone(ngx_shm_zone_t *shm_zone, void *data)
 
 static ngx_int_t
 ngx_http_limit_conn_status_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data)
+                                    ngx_http_variable_value_t *v, uintptr_t data)
 {
     if (r->main->limit_conn_status == 0) {
         v->not_found = 1;
@@ -683,7 +689,7 @@ ngx_http_limit_conn(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     if (limits == NULL) {
         if (ngx_array_init(&lccf->limits, cf->pool, 1,
                            sizeof(ngx_http_limit_conn_limit_t))
-            != NGX_OK)
+                != NGX_OK)
         {
             return NGX_CONF_ERROR;
         }

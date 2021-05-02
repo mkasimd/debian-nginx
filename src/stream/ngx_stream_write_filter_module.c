@@ -17,7 +17,7 @@ typedef struct {
 
 
 static ngx_int_t ngx_stream_write_filter(ngx_stream_session_t *s,
-    ngx_chain_t *in, ngx_uint_t from_upstream);
+        ngx_chain_t *in, ngx_uint_t from_upstream);
 static ngx_int_t ngx_stream_write_filter_init(ngx_conf_t *cf);
 
 
@@ -51,7 +51,7 @@ ngx_module_t  ngx_stream_write_filter_module = {
 
 static ngx_int_t
 ngx_stream_write_filter(ngx_stream_session_t *s, ngx_chain_t *in,
-    ngx_uint_t from_upstream)
+                        ngx_uint_t from_upstream)
 {
     off_t                           size;
     ngx_uint_t                      last, flush, sync;
@@ -233,9 +233,9 @@ ngx_stream_write_filter(ngx_stream_session_t *s, ngx_chain_t *in,
                    "stream write filter: l:%ui f:%ui s:%O", last, flush, size);
 
     if (size == 0
-        && !(c->buffered & NGX_LOWLEVEL_BUFFERED)
-        && !(last && c->need_last_buf)
-        && !(c->type == SOCK_DGRAM && flush))
+            && !(c->buffered & NGX_LOWLEVEL_BUFFERED)
+            && !(last && c->need_last_buf)
+            && !(c->type == SOCK_DGRAM && flush))
     {
         if (last || flush || sync) {
             for (cl = *out; cl; /* void */) {

@@ -28,14 +28,14 @@ static void ngx_stream_upstream_save_round_robin_peer_session(
 static ngx_int_t ngx_stream_upstream_empty_set_session(
     ngx_peer_connection_t *pc, void *data);
 static void ngx_stream_upstream_empty_save_session(ngx_peer_connection_t *pc,
-    void *data);
+        void *data);
 
 #endif
 
 
 ngx_int_t
 ngx_stream_upstream_init_round_robin(ngx_conf_t *cf,
-    ngx_stream_upstream_srv_conf_t *us)
+                                     ngx_stream_upstream_srv_conf_t *us)
 {
     ngx_url_t                        u;
     ngx_uint_t                       i, j, n, w, t;
@@ -261,7 +261,7 @@ ngx_stream_upstream_init_round_robin(ngx_conf_t *cf,
 
 ngx_int_t
 ngx_stream_upstream_init_round_robin_peer(ngx_stream_session_t *s,
-    ngx_stream_upstream_srv_conf_t *us)
+        ngx_stream_upstream_srv_conf_t *us)
 {
     ngx_uint_t                           n;
     ngx_stream_upstream_rr_peer_data_t  *rrp;
@@ -307,9 +307,9 @@ ngx_stream_upstream_init_round_robin_peer(ngx_stream_session_t *s,
     s->upstream->peer.tries = ngx_stream_upstream_tries(rrp->peers);
 #if (NGX_STREAM_SSL)
     s->upstream->peer.set_session =
-                             ngx_stream_upstream_set_round_robin_peer_session;
+        ngx_stream_upstream_set_round_robin_peer_session;
     s->upstream->peer.save_session =
-                             ngx_stream_upstream_save_round_robin_peer_session;
+        ngx_stream_upstream_save_round_robin_peer_session;
 #endif
 
     return NGX_OK;
@@ -318,7 +318,7 @@ ngx_stream_upstream_init_round_robin_peer(ngx_stream_session_t *s,
 
 ngx_int_t
 ngx_stream_upstream_create_round_robin_peer(ngx_stream_session_t *s,
-    ngx_stream_upstream_resolved_t *ur)
+        ngx_stream_upstream_resolved_t *ur)
 {
     u_char                              *p;
     size_t                               len;
@@ -417,7 +417,7 @@ ngx_stream_upstream_create_round_robin_peer(ngx_stream_session_t *s,
 
     } else {
         n = (rrp->peers->number + (8 * sizeof(uintptr_t) - 1))
-                / (8 * sizeof(uintptr_t));
+            / (8 * sizeof(uintptr_t));
 
         rrp->tried = ngx_pcalloc(s->connection->pool, n * sizeof(uintptr_t));
         if (rrp->tried == NULL) {
@@ -502,7 +502,7 @@ failed:
         rrp->peers = peers->next;
 
         n = (rrp->peers->number + (8 * sizeof(uintptr_t) - 1))
-                / (8 * sizeof(uintptr_t));
+            / (8 * sizeof(uintptr_t));
 
         for (i = 0; i < n; i++) {
             rrp->tried[i] = 0;
@@ -546,8 +546,8 @@ ngx_stream_upstream_get_peer(ngx_stream_upstream_rr_peer_data_t *rrp)
 #endif
 
     for (peer = rrp->peers->peer, i = 0;
-         peer;
-         peer = peer->next, i++)
+            peer;
+            peer = peer->next, i++)
     {
         n = i / (8 * sizeof(uintptr_t));
         m = (uintptr_t) 1 << i % (8 * sizeof(uintptr_t));
@@ -561,8 +561,8 @@ ngx_stream_upstream_get_peer(ngx_stream_upstream_rr_peer_data_t *rrp)
         }
 
         if (peer->max_fails
-            && peer->fails >= peer->max_fails
-            && now - peer->checked <= peer->fail_timeout)
+                && peer->fails >= peer->max_fails
+                && now - peer->checked <= peer->fail_timeout)
         {
             continue;
         }
@@ -607,7 +607,7 @@ ngx_stream_upstream_get_peer(ngx_stream_upstream_rr_peer_data_t *rrp)
 
 void
 ngx_stream_upstream_free_round_robin_peer(ngx_peer_connection_t *pc, void *data,
-    ngx_uint_t state)
+        ngx_uint_t state)
 {
     ngx_stream_upstream_rr_peer_data_t  *rrp = data;
 
@@ -678,7 +678,7 @@ ngx_stream_upstream_free_round_robin_peer(ngx_peer_connection_t *pc, void *data,
 
 static void
 ngx_stream_upstream_notify_round_robin_peer(ngx_peer_connection_t *pc,
-    void *data, ngx_uint_t type)
+        void *data, ngx_uint_t type)
 {
     ngx_stream_upstream_rr_peer_data_t  *rrp = data;
 
@@ -687,7 +687,7 @@ ngx_stream_upstream_notify_round_robin_peer(ngx_peer_connection_t *pc,
     peer = rrp->current;
 
     if (type == NGX_STREAM_UPSTREAM_NOTIFY_CONNECT
-        && pc->connection->type == SOCK_STREAM)
+            && pc->connection->type == SOCK_STREAM)
     {
         ngx_stream_upstream_rr_peers_rlock(rrp->peers);
         ngx_stream_upstream_rr_peer_lock(rrp->peers, peer);
@@ -706,7 +706,7 @@ ngx_stream_upstream_notify_round_robin_peer(ngx_peer_connection_t *pc,
 
 static ngx_int_t
 ngx_stream_upstream_set_round_robin_peer_session(ngx_peer_connection_t *pc,
-    void *data)
+        void *data)
 {
     ngx_stream_upstream_rr_peer_data_t  *rrp = data;
 
@@ -769,7 +769,7 @@ ngx_stream_upstream_set_round_robin_peer_session(ngx_peer_connection_t *pc,
 
 static void
 ngx_stream_upstream_save_round_robin_peer_session(ngx_peer_connection_t *pc,
-    void *data)
+        void *data)
 {
     ngx_stream_upstream_rr_peer_data_t  *rrp = data;
 

@@ -202,7 +202,7 @@ ngx_readv_chain(ngx_connection_t *c, ngx_chain_t *chain, off_t limit)
 #if (NGX_HAVE_EPOLLRDHUP)
 
             if ((ngx_event_flags & NGX_USE_EPOLL_EVENT)
-                && ngx_use_epoll_rdhup)
+                    && ngx_use_epoll_rdhup)
             {
                 if (n < size) {
                     if (!rev->pending_eof) {

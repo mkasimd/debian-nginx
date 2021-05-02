@@ -14,78 +14,86 @@
 static void *ngx_mail_core_create_main_conf(ngx_conf_t *cf);
 static void *ngx_mail_core_create_srv_conf(ngx_conf_t *cf);
 static char *ngx_mail_core_merge_srv_conf(ngx_conf_t *cf, void *parent,
-    void *child);
+        void *child);
 static char *ngx_mail_core_server(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                  void *conf);
 static char *ngx_mail_core_listen(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                  void *conf);
 static char *ngx_mail_core_protocol(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                    void *conf);
 static char *ngx_mail_core_error_log(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                     void *conf);
 static char *ngx_mail_core_resolver(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                    void *conf);
 
 
 static ngx_command_t  ngx_mail_core_commands[] = {
 
-    { ngx_string("server"),
-      NGX_MAIL_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
-      ngx_mail_core_server,
-      0,
-      0,
-      NULL },
+    {   ngx_string("server"),
+        NGX_MAIL_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+        ngx_mail_core_server,
+        0,
+        0,
+        NULL
+    },
 
-    { ngx_string("listen"),
-      NGX_MAIL_SRV_CONF|NGX_CONF_1MORE,
-      ngx_mail_core_listen,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("listen"),
+        NGX_MAIL_SRV_CONF|NGX_CONF_1MORE,
+        ngx_mail_core_listen,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("protocol"),
-      NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_mail_core_protocol,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("protocol"),
+        NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_mail_core_protocol,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("timeout"),
-      NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      offsetof(ngx_mail_core_srv_conf_t, timeout),
-      NULL },
+    {   ngx_string("timeout"),
+        NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        offsetof(ngx_mail_core_srv_conf_t, timeout),
+        NULL
+    },
 
-    { ngx_string("server_name"),
-      NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_str_slot,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      offsetof(ngx_mail_core_srv_conf_t, server_name),
-      NULL },
+    {   ngx_string("server_name"),
+        NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_str_slot,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        offsetof(ngx_mail_core_srv_conf_t, server_name),
+        NULL
+    },
 
-    { ngx_string("error_log"),
-      NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_1MORE,
-      ngx_mail_core_error_log,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("error_log"),
+        NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_1MORE,
+        ngx_mail_core_error_log,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("resolver"),
-      NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_1MORE,
-      ngx_mail_core_resolver,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("resolver"),
+        NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_1MORE,
+        ngx_mail_core_resolver,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("resolver_timeout"),
-      NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_MAIL_SRV_CONF_OFFSET,
-      offsetof(ngx_mail_core_srv_conf_t, resolver_timeout),
-      NULL },
+    {   ngx_string("resolver_timeout"),
+        NGX_MAIL_MAIN_CONF|NGX_MAIL_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_MAIL_SRV_CONF_OFFSET,
+        offsetof(ngx_mail_core_srv_conf_t, resolver_timeout),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -128,13 +136,13 @@ ngx_mail_core_create_main_conf(ngx_conf_t *cf)
 
     if (ngx_array_init(&cmcf->servers, cf->pool, 4,
                        sizeof(ngx_mail_core_srv_conf_t *))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NULL;
     }
 
     if (ngx_array_init(&cmcf->listen, cf->pool, 4, sizeof(ngx_mail_listen_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NULL;
     }
@@ -517,7 +525,7 @@ ngx_mail_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
                 }
 
                 if (ls->tcp_keepidle == 0 && ls->tcp_keepintvl == 0
-                    && ls->tcp_keepcnt == 0)
+                        && ls->tcp_keepcnt == 0)
                 {
                     goto invalid_so_keepalive;
                 }
@@ -539,7 +547,7 @@ ngx_mail_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             continue;
 
 #if (NGX_HAVE_KEEPALIVE_TUNABLE)
-        invalid_so_keepalive:
+invalid_so_keepalive:
 
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                                "invalid so_keepalive value: \"%s\"",
@@ -572,7 +580,7 @@ ngx_mail_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
             if (ngx_cmp_sockaddr(als[i].sockaddr, als[i].socklen,
                                  ls[n].sockaddr, ls[n].socklen, 1)
-                != NGX_OK)
+                    != NGX_OK)
             {
                 continue;
             }
@@ -607,7 +615,7 @@ ngx_mail_core_protocol(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         module = cf->cycle->modules[m]->ctx;
 
         if (module->protocol
-            && ngx_strcmp(module->protocol->name.data, value[1].data) == 0)
+                && ngx_strcmp(module->protocol->name.data, value[1].data) == 0)
         {
             cscf->protocol = module->protocol;
 

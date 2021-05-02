@@ -18,14 +18,15 @@ static void ngx_conf_flush_files(ngx_cycle_t *cycle);
 
 static ngx_command_t  ngx_conf_commands[] = {
 
-    { ngx_string("include"),
-      NGX_ANY_CONF|NGX_CONF_TAKE1,
-      ngx_conf_include,
-      0,
-      0,
-      NULL },
+    {   ngx_string("include"),
+        NGX_ANY_CONF|NGX_CONF_TAKE1,
+        ngx_conf_include,
+        0,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -218,7 +219,7 @@ ngx_conf_parse(ngx_conf_t *cf, ngx_str_t *filename)
 
         if (ngx_dump_config
 #if (NGX_DEBUG)
-            || 1
+                || 1
 #endif
            )
         {
@@ -385,7 +386,7 @@ ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last)
             found = 1;
 
             if (cf->cycle->modules[i]->type != NGX_CONF_MODULE
-                && cf->cycle->modules[i]->type != cf->module_type)
+                    && cf->cycle->modules[i]->type != cf->module_type)
             {
                 continue;
             }
@@ -398,8 +399,8 @@ ngx_conf_handler(ngx_conf_t *cf, ngx_int_t last)
 
             if (!(cmd->type & NGX_CONF_BLOCK) && last != NGX_OK) {
                 ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                                  "directive \"%s\" is not terminated by \";\"",
-                                  name->data);
+                                   "directive \"%s\" is not terminated by \";\"",
+                                   name->data);
                 return NGX_ERROR;
             }
 
@@ -544,8 +545,8 @@ ngx_conf_read_token(ngx_conf_t *cf)
                     }
 
                     ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                                  "unexpected end of file, "
-                                  "expecting \";\" or \"}\"");
+                                       "unexpected end of file, "
+                                       "expecting \";\" or \"}\"");
                     return NGX_ERROR;
                 }
 
@@ -769,8 +770,8 @@ ngx_conf_read_token(ngx_conf_t *cf)
                 }
 
                 for (dst = word->data, src = start, len = 0;
-                     src < b->pos - 1;
-                     len++)
+                        src < b->pos - 1;
+                        len++)
                 {
                     if (*src == '\\') {
                         switch (src[1]) {
@@ -990,7 +991,7 @@ ngx_conf_flush_files(ngx_cycle_t *cycle)
 
 void ngx_cdecl
 ngx_conf_log_error(ngx_uint_t level, ngx_conf_t *cf, ngx_err_t err,
-    const char *fmt, ...)
+                   const char *fmt, ...)
 {
     u_char   errstr[NGX_MAX_CONF_ERRSTR], *p, *last;
     va_list  args;
@@ -1047,9 +1048,9 @@ ngx_conf_set_flag_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     } else {
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                     "invalid value \"%s\" in \"%s\" directive, "
-                     "it must be \"on\" or \"off\"",
-                     value[1].data, cmd->name.data);
+                           "invalid value \"%s\" in \"%s\" directive, "
+                           "it must be \"on\" or \"off\"",
+                           value[1].data, cmd->name.data);
         return NGX_CONF_ERROR;
     }
 
@@ -1368,7 +1369,7 @@ ngx_conf_set_enum_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     for (i = 0; e[i].name.len != 0; i++) {
         if (e[i].name.len != value[1].len
-            || ngx_strcasecmp(e[i].name.data, value[1].data) != 0)
+                || ngx_strcasecmp(e[i].name.data, value[1].data) != 0)
         {
             continue;
         }
@@ -1403,7 +1404,7 @@ ngx_conf_set_bitmask_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         for (m = 0; mask[m].name.len != 0; m++) {
 
             if (mask[m].name.len != value[i].len
-                || ngx_strcasecmp(mask[m].name.data, value[i].data) != 0)
+                    || ngx_strcasecmp(mask[m].name.data, value[i].data) != 0)
             {
                 continue;
             }

@@ -13,11 +13,11 @@
 static ngx_int_t ngx_select_init(ngx_cycle_t *cycle, ngx_msec_t timer);
 static void ngx_select_done(ngx_cycle_t *cycle);
 static ngx_int_t ngx_select_add_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                      ngx_uint_t flags);
 static ngx_int_t ngx_select_del_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                      ngx_uint_t flags);
 static ngx_int_t ngx_select_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
-    ngx_uint_t flags);
+        ngx_uint_t flags);
 static void ngx_select_repair_fd_sets(ngx_cycle_t *cycle);
 static char *ngx_select_init_conf(ngx_cycle_t *cycle, void *conf);
 
@@ -85,8 +85,8 @@ ngx_select_init(ngx_cycle_t *cycle, ngx_msec_t timer)
     }
 
     if (ngx_process >= NGX_PROCESS_WORKER
-        || cycle->old_cycle == NULL
-        || cycle->old_cycle->connection_n < cycle->connection_n)
+            || cycle->old_cycle == NULL
+            || cycle->old_cycle->connection_n < cycle->connection_n)
     {
         index = ngx_alloc(sizeof(ngx_event_t *) * 2 * cycle->connection_n,
                           cycle->log);
@@ -141,7 +141,7 @@ ngx_select_add_event(ngx_event_t *ev, ngx_int_t event, ngx_uint_t flags)
     }
 
     if ((event == NGX_READ_EVENT && ev->write)
-        || (event == NGX_WRITE_EVENT && !ev->write))
+            || (event == NGX_WRITE_EVENT && !ev->write))
     {
         ngx_log_error(NGX_LOG_ALERT, ev->log, 0,
                       "invalid select %s event fd:%d ev:%i",
@@ -150,7 +150,7 @@ ngx_select_add_event(ngx_event_t *ev, ngx_int_t event, ngx_uint_t flags)
     }
 
     if ((event == NGX_READ_EVENT && max_read >= FD_SETSIZE)
-        || (event == NGX_WRITE_EVENT && max_write >= FD_SETSIZE))
+            || (event == NGX_WRITE_EVENT && max_write >= FD_SETSIZE))
     {
         ngx_log_error(NGX_LOG_ERR, ev->log, 0,
                       "maximum number of descriptors "
@@ -217,7 +217,7 @@ ngx_select_del_event(ngx_event_t *ev, ngx_int_t event, ngx_uint_t flags)
 
 static ngx_int_t
 ngx_select_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
-    ngx_uint_t flags)
+                          ngx_uint_t flags)
 {
     int                ready, nready;
     ngx_err_t          err;
@@ -333,7 +333,7 @@ ngx_select_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
             ev->available = -1;
 
             queue = ev->accept ? &ngx_posted_accept_events
-                               : &ngx_posted_events;
+                    : &ngx_posted_events;
 
             ngx_post_event(ev, queue);
 

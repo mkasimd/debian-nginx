@@ -19,20 +19,20 @@ static void ngx_mail_smtp_block_reading(ngx_event_t *rev);
 static void ngx_mail_smtp_greeting(ngx_mail_session_t *s, ngx_connection_t *c);
 static void ngx_mail_smtp_invalid_pipelining(ngx_event_t *rev);
 static ngx_int_t ngx_mail_smtp_create_buffer(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+        ngx_connection_t *c);
 
 static ngx_int_t ngx_mail_smtp_helo(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_smtp_auth(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_smtp_mail(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_smtp_starttls(ngx_mail_session_t *s,
-    ngx_connection_t *c);
+                                        ngx_connection_t *c);
 static ngx_int_t ngx_mail_smtp_rset(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_smtp_rcpt(ngx_mail_session_t *s, ngx_connection_t *c);
 
 static ngx_int_t ngx_mail_smtp_discard_command(ngx_mail_session_t *s,
-    ngx_connection_t *c, char *err);
+        ngx_connection_t *c, char *err);
 static void ngx_mail_smtp_log_rejected_command(ngx_mail_session_t *s,
-    ngx_connection_t *c, char *err);
+        ngx_connection_t *c, char *err);
 
 
 static u_char  smtp_ok[] = "250 2.0.0 OK" CRLF;
@@ -209,26 +209,26 @@ ngx_mail_smtp_resolve_name_handler(ngx_resolver_ctx_t *ctx)
 
 #if (NGX_DEBUG)
         {
-        u_char     text[NGX_SOCKADDR_STRLEN];
-        ngx_str_t  addr;
+            u_char     text[NGX_SOCKADDR_STRLEN];
+            ngx_str_t  addr;
 
-        addr.data = text;
+            addr.data = text;
 
-        for (i = 0; i < ctx->naddrs; i++) {
-            addr.len = ngx_sock_ntop(ctx->addrs[i].sockaddr,
-                                     ctx->addrs[i].socklen,
-                                     text, NGX_SOCKADDR_STRLEN, 0);
+            for (i = 0; i < ctx->naddrs; i++) {
+                addr.len = ngx_sock_ntop(ctx->addrs[i].sockaddr,
+                                         ctx->addrs[i].socklen,
+                                         text, NGX_SOCKADDR_STRLEN, 0);
 
-            ngx_log_debug1(NGX_LOG_DEBUG_MAIL, c->log, 0,
-                           "name was resolved to %V", &addr);
-        }
+                ngx_log_debug1(NGX_LOG_DEBUG_MAIL, c->log, 0,
+                               "name was resolved to %V", &addr);
+            }
         }
 #endif
 
         for (i = 0; i < ctx->naddrs; i++) {
             if (ngx_cmp_sockaddr(ctx->addrs[i].sockaddr, ctx->addrs[i].socklen,
                                  c->sockaddr, c->socklen, 0)
-                == NGX_OK)
+                    == NGX_OK)
             {
                 goto found;
             }
@@ -302,8 +302,8 @@ ngx_mail_smtp_greeting(ngx_mail_session_t *s, ngx_connection_t *c)
     }
 
     if (sscf->greeting_delay) {
-         c->read->handler = ngx_mail_smtp_invalid_pipelining;
-         return;
+        c->read->handler = ngx_mail_smtp_invalid_pipelining;
+        return;
     }
 
     c->read->handler = ngx_mail_smtp_init_protocol;
@@ -359,8 +359,8 @@ ngx_mail_smtp_invalid_pipelining(ngx_event_t *rev)
         }
 
         if (ngx_mail_smtp_discard_command(s, c,
-                                "client was rejected before greeting: \"%V\"")
-            != NGX_OK)
+                                          "client was rejected before greeting: \"%V\"")
+                != NGX_OK)
         {
             return;
         }
@@ -569,7 +569,7 @@ ngx_mail_smtp_auth_state(ngx_event_t *rev)
         s->state = 0;
         ngx_str_set(&s->out, smtp_invalid_command);
 
-        /* fall through */
+    /* fall through */
 
     case NGX_OK:
         s->args.nelts = 0;
@@ -871,7 +871,7 @@ ngx_mail_smtp_starttls(ngx_mail_session_t *s, ngx_connection_t *c)
 
 static ngx_int_t
 ngx_mail_smtp_discard_command(ngx_mail_session_t *s, ngx_connection_t *c,
-    char *err)
+                              char *err)
 {
     ssize_t    n;
 
@@ -906,7 +906,7 @@ ngx_mail_smtp_discard_command(ngx_mail_session_t *s, ngx_connection_t *c,
 
 static void
 ngx_mail_smtp_log_rejected_command(ngx_mail_session_t *s, ngx_connection_t *c,
-    char *err)
+                                   char *err)
 {
     u_char      ch;
     ngx_str_t   cmd;

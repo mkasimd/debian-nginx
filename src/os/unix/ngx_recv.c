@@ -36,7 +36,7 @@ ngx_unix_recv(ngx_connection_t *c, u_char *buf, size_t size)
                     ngx_set_socket_errno(rev->kq_errno);
 
                     return ngx_connection_error(c, rev->kq_errno,
-                               "kevent() reported about an closed connection");
+                                                "kevent() reported about an closed connection");
                 }
 
                 return 0;
@@ -153,7 +153,7 @@ ngx_unix_recv(ngx_connection_t *c, u_char *buf, size_t size)
 #if (NGX_HAVE_EPOLLRDHUP)
 
             if ((ngx_event_flags & NGX_USE_EPOLL_EVENT)
-                && ngx_use_epoll_rdhup)
+                    && ngx_use_epoll_rdhup)
             {
                 if ((size_t) n < size) {
                     if (!rev->pending_eof) {
@@ -169,7 +169,7 @@ ngx_unix_recv(ngx_connection_t *c, u_char *buf, size_t size)
 #endif
 
             if ((size_t) n < size
-                && !(ngx_event_flags & NGX_USE_GREEDY_EVENT))
+                    && !(ngx_event_flags & NGX_USE_GREEDY_EVENT))
             {
                 rev->ready = 0;
             }

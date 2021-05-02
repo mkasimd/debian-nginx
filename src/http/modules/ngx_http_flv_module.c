@@ -13,14 +13,15 @@ static char *ngx_http_flv(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
 static ngx_command_t  ngx_http_flv_commands[] = {
 
-    { ngx_string("flv"),
-      NGX_HTTP_LOC_CONF|NGX_CONF_NOARGS,
-      ngx_http_flv,
-      0,
-      0,
-      NULL },
+    {   ngx_string("flv"),
+        NGX_HTTP_LOC_CONF|NGX_CONF_NOARGS,
+        ngx_http_flv,
+        0,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -115,7 +116,7 @@ ngx_http_flv_handler(ngx_http_request_t *r)
     }
 
     if (ngx_open_cached_file(clcf->open_file_cache, &path, &of, r->pool)
-        != NGX_OK)
+            != NGX_OK)
     {
         switch (of.err) {
 

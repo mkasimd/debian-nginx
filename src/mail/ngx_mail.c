@@ -13,13 +13,13 @@
 
 static char *ngx_mail_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static ngx_int_t ngx_mail_add_ports(ngx_conf_t *cf, ngx_array_t *ports,
-    ngx_mail_listen_t *listen);
+                                    ngx_mail_listen_t *listen);
 static char *ngx_mail_optimize_servers(ngx_conf_t *cf, ngx_array_t *ports);
 static ngx_int_t ngx_mail_add_addrs(ngx_conf_t *cf, ngx_mail_port_t *mport,
-    ngx_mail_conf_addr_t *addr);
+                                    ngx_mail_conf_addr_t *addr);
 #if (NGX_HAVE_INET6)
 static ngx_int_t ngx_mail_add_addrs6(ngx_conf_t *cf, ngx_mail_port_t *mport,
-    ngx_mail_conf_addr_t *addr);
+                                     ngx_mail_conf_addr_t *addr);
 #endif
 static ngx_int_t ngx_mail_cmp_conf_addrs(const void *one, const void *two);
 
@@ -29,14 +29,15 @@ ngx_uint_t  ngx_mail_max_module;
 
 static ngx_command_t  ngx_mail_commands[] = {
 
-    { ngx_string("mail"),
-      NGX_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
-      ngx_mail_block,
-      0,
-      0,
-      NULL },
+    {   ngx_string("mail"),
+        NGX_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+        ngx_mail_block,
+        0,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -204,7 +205,7 @@ ngx_mail_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 
     if (ngx_array_init(&ports, cf->temp_pool, 4, sizeof(ngx_mail_conf_port_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_CONF_ERROR;
     }
@@ -223,7 +224,7 @@ ngx_mail_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 static ngx_int_t
 ngx_mail_add_ports(ngx_conf_t *cf, ngx_array_t *ports,
-    ngx_mail_listen_t *listen)
+                   ngx_mail_listen_t *listen)
 {
     in_port_t              p;
     ngx_uint_t             i;
@@ -257,7 +258,7 @@ ngx_mail_add_ports(ngx_conf_t *cf, ngx_array_t *ports,
 
     if (ngx_array_init(&port->addrs, cf->temp_pool, 2,
                        sizeof(ngx_mail_conf_addr_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }
@@ -382,7 +383,7 @@ ngx_mail_optimize_servers(ngx_conf_t *cf, ngx_array_t *ports)
 
 static ngx_int_t
 ngx_mail_add_addrs(ngx_conf_t *cf, ngx_mail_port_t *mport,
-    ngx_mail_conf_addr_t *addr)
+                   ngx_mail_conf_addr_t *addr)
 {
     ngx_uint_t           i;
     ngx_mail_in_addr_t  *addrs;
@@ -417,7 +418,7 @@ ngx_mail_add_addrs(ngx_conf_t *cf, ngx_mail_port_t *mport,
 
 static ngx_int_t
 ngx_mail_add_addrs6(ngx_conf_t *cf, ngx_mail_port_t *mport,
-    ngx_mail_conf_addr_t *addr)
+                    ngx_mail_conf_addr_t *addr)
 {
     ngx_uint_t            i;
     ngx_mail_in6_addr_t  *addrs6;

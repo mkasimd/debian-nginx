@@ -17,7 +17,7 @@ static void ngx_thread_write_chain_to_file_handler(void *data, ngx_log_t *log);
 
 static ngx_chain_t *ngx_chain_to_iovec(ngx_iovec_t *vec, ngx_chain_t *cl);
 static ssize_t ngx_writev_file(ngx_file_t *file, ngx_iovec_t *vec,
-    off_t offset);
+                               off_t offset);
 
 
 #if (NGX_HAVE_FILE_AIO)
@@ -93,7 +93,7 @@ typedef struct {
 
 ssize_t
 ngx_thread_read(ngx_file_t *file, u_char *buf, size_t size, off_t offset,
-    ngx_pool_t *pool)
+                ngx_pool_t *pool)
 {
     ngx_thread_task_t      *task;
     ngx_thread_file_ctx_t  *ctx;
@@ -291,7 +291,7 @@ ngx_open_tempfile(u_char *name, ngx_uint_t persistent, ngx_uint_t access)
 
 ssize_t
 ngx_write_chain_to_file(ngx_file_t *file, ngx_chain_t *cl, off_t offset,
-    ngx_pool_t *pool)
+                        ngx_pool_t *pool)
 {
     ssize_t        total, n;
     ngx_iovec_t    vec;
@@ -475,7 +475,7 @@ eintr:
 
 ssize_t
 ngx_thread_write_chain_to_file(ngx_file_t *file, ngx_chain_t *cl, off_t offset,
-    ngx_pool_t *pool)
+                               ngx_pool_t *pool)
 {
     ngx_thread_task_t      *task;
     ngx_thread_file_ctx_t  *ctx;

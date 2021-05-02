@@ -136,18 +136,23 @@ static ngx_str_t ngx_http_status_lines[] = {
 ngx_http_header_out_t  ngx_http_headers_out[] = {
     { ngx_string("Server"), offsetof(ngx_http_headers_out_t, server) },
     { ngx_string("Date"), offsetof(ngx_http_headers_out_t, date) },
-    { ngx_string("Content-Length"),
-                 offsetof(ngx_http_headers_out_t, content_length) },
-    { ngx_string("Content-Encoding"),
-                 offsetof(ngx_http_headers_out_t, content_encoding) },
+    {   ngx_string("Content-Length"),
+        offsetof(ngx_http_headers_out_t, content_length)
+    },
+    {   ngx_string("Content-Encoding"),
+        offsetof(ngx_http_headers_out_t, content_encoding)
+    },
     { ngx_string("Location"), offsetof(ngx_http_headers_out_t, location) },
-    { ngx_string("Last-Modified"),
-                 offsetof(ngx_http_headers_out_t, last_modified) },
-    { ngx_string("Accept-Ranges"),
-                 offsetof(ngx_http_headers_out_t, accept_ranges) },
+    {   ngx_string("Last-Modified"),
+        offsetof(ngx_http_headers_out_t, last_modified)
+    },
+    {   ngx_string("Accept-Ranges"),
+        offsetof(ngx_http_headers_out_t, accept_ranges)
+    },
     { ngx_string("Expires"), offsetof(ngx_http_headers_out_t, expires) },
-    { ngx_string("Cache-Control"),
-                 offsetof(ngx_http_headers_out_t, cache_control) },
+    {   ngx_string("Cache-Control"),
+        offsetof(ngx_http_headers_out_t, cache_control)
+    },
     { ngx_string("ETag"), offsetof(ngx_http_headers_out_t, etag) },
 
     { ngx_null_string, 0 }
@@ -190,8 +195,8 @@ ngx_http_header_filter(ngx_http_request_t *r)
 
     if (r->headers_out.last_modified_time != -1) {
         if (r->headers_out.status != NGX_HTTP_OK
-            && r->headers_out.status != NGX_HTTP_PARTIAL_CONTENT
-            && r->headers_out.status != NGX_HTTP_NOT_MODIFIED)
+                && r->headers_out.status != NGX_HTTP_PARTIAL_CONTENT
+                && r->headers_out.status != NGX_HTTP_NOT_MODIFIED)
         {
             r->headers_out.last_modified_time = -1;
             r->headers_out.last_modified = NULL;
@@ -216,7 +221,7 @@ ngx_http_header_filter(ngx_http_request_t *r)
         status = r->headers_out.status;
 
         if (status >= NGX_HTTP_OK
-            && status < NGX_HTTP_LAST_2XX)
+                && status < NGX_HTTP_LAST_2XX)
         {
             /* 2XX */
 
@@ -251,7 +256,7 @@ ngx_http_header_filter(ngx_http_request_t *r)
         {
             /* 4XX */
             status = status - NGX_HTTP_BAD_REQUEST
-                            + NGX_HTTP_OFF_4XX;
+                     + NGX_HTTP_OFF_4XX;
 
             status_line = &ngx_http_status_lines[status];
             len += ngx_http_status_lines[status].len;
@@ -261,7 +266,7 @@ ngx_http_header_filter(ngx_http_request_t *r)
         {
             /* 5XX */
             status = status - NGX_HTTP_INTERNAL_SERVER_ERROR
-                            + NGX_HTTP_OFF_5XX;
+                     + NGX_HTTP_OFF_5XX;
 
             status_line = &ngx_http_status_lines[status];
             len += ngx_http_status_lines[status].len;
@@ -301,20 +306,20 @@ ngx_http_header_filter(ngx_http_request_t *r)
                + r->headers_out.content_type.len + 2;
 
         if (r->headers_out.content_type_len == r->headers_out.content_type.len
-            && r->headers_out.charset.len)
+                && r->headers_out.charset.len)
         {
             len += sizeof("; charset=") - 1 + r->headers_out.charset.len;
         }
     }
 
     if (r->headers_out.content_length == NULL
-        && r->headers_out.content_length_n >= 0)
+            && r->headers_out.content_length_n >= 0)
     {
         len += sizeof("Content-Length: ") - 1 + NGX_OFF_T_LEN + 2;
     }
 
     if (r->headers_out.last_modified == NULL
-        && r->headers_out.last_modified_time != -1)
+            && r->headers_out.last_modified_time != -1)
     {
         len += sizeof("Last-Modified: Mon, 28 Sep 1970 06:00:00 GMT" CRLF) - 1;
     }
@@ -322,9 +327,9 @@ ngx_http_header_filter(ngx_http_request_t *r)
     c = r->connection;
 
     if (r->headers_out.location
-        && r->headers_out.location->value.len
-        && r->headers_out.location->value.data[0] == '/'
-        && clcf->absolute_redirect)
+            && r->headers_out.location->value.len
+            && r->headers_out.location->value.data[0] == '/'
+            && clcf->absolute_redirect)
     {
         r->headers_out.location->hash = 0;
 
@@ -447,7 +452,8 @@ ngx_http_header_filter(ngx_http_request_t *r)
     } else {
         b->last = ngx_sprintf(b->last, "%03ui ", status);
     }
-    *b->last++ = CR; *b->last++ = LF;
+    *b->last++ = CR;
+    *b->last++ = LF;
 
     if (r->headers_out.server == NULL) {
         if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_ON) {
@@ -471,7 +477,8 @@ ngx_http_header_filter(ngx_http_request_t *r)
         b->last = ngx_cpymem(b->last, ngx_cached_http_time.data,
                              ngx_cached_http_time.len);
 
-        *b->last++ = CR; *b->last++ = LF;
+        *b->last++ = CR;
+        *b->last++ = LF;
     }
 
     if (r->headers_out.content_type.len) {
@@ -482,7 +489,7 @@ ngx_http_header_filter(ngx_http_request_t *r)
                            r->headers_out.content_type.len);
 
         if (r->headers_out.content_type_len == r->headers_out.content_type.len
-            && r->headers_out.charset.len)
+                && r->headers_out.charset.len)
         {
             b->last = ngx_cpymem(b->last, "; charset=",
                                  sizeof("; charset=") - 1);
@@ -495,24 +502,26 @@ ngx_http_header_filter(ngx_http_request_t *r)
             r->headers_out.content_type.data = p;
         }
 
-        *b->last++ = CR; *b->last++ = LF;
+        *b->last++ = CR;
+        *b->last++ = LF;
     }
 
     if (r->headers_out.content_length == NULL
-        && r->headers_out.content_length_n >= 0)
+            && r->headers_out.content_length_n >= 0)
     {
         b->last = ngx_sprintf(b->last, "Content-Length: %O" CRLF,
                               r->headers_out.content_length_n);
     }
 
     if (r->headers_out.last_modified == NULL
-        && r->headers_out.last_modified_time != -1)
+            && r->headers_out.last_modified_time != -1)
     {
         b->last = ngx_cpymem(b->last, "Last-Modified: ",
                              sizeof("Last-Modified: ") - 1);
         b->last = ngx_http_time(b->last, r->headers_out.last_modified_time);
 
-        *b->last++ = CR; *b->last++ = LF;
+        *b->last++ = CR;
+        *b->last++ = LF;
     }
 
     if (host.data) {
@@ -528,7 +537,9 @@ ngx_http_header_filter(ngx_http_request_t *r)
         }
 #endif
 
-        *b->last++ = ':'; *b->last++ = '/'; *b->last++ = '/';
+        *b->last++ = ':';
+        *b->last++ = '/';
+        *b->last++ = '/';
         b->last = ngx_copy(b->last, host.data, host.len);
 
         if (port) {
@@ -544,7 +555,8 @@ ngx_http_header_filter(ngx_http_request_t *r)
         r->headers_out.location->value.data = p;
         ngx_str_set(&r->headers_out.location->key, "Location");
 
-        *b->last++ = CR; *b->last++ = LF;
+        *b->last++ = CR;
+        *b->last++ = LF;
     }
 
     if (r->chunked) {
@@ -597,17 +609,20 @@ ngx_http_header_filter(ngx_http_request_t *r)
         }
 
         b->last = ngx_copy(b->last, header[i].key.data, header[i].key.len);
-        *b->last++ = ':'; *b->last++ = ' ';
+        *b->last++ = ':';
+        *b->last++ = ' ';
 
         b->last = ngx_copy(b->last, header[i].value.data, header[i].value.len);
-        *b->last++ = CR; *b->last++ = LF;
+        *b->last++ = CR;
+        *b->last++ = LF;
     }
 
     ngx_log_debug2(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "%*s", (size_t) (b->last - b->pos), b->pos);
 
     /* the end of HTTP header */
-    *b->last++ = CR; *b->last++ = LF;
+    *b->last++ = CR;
+    *b->last++ = LF;
 
     r->header_size = b->last - b->pos;
 

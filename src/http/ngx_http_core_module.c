@@ -26,7 +26,7 @@ static void ngx_http_core_auth_delay_handler(ngx_http_request_t *r);
 
 static ngx_int_t ngx_http_core_find_location(ngx_http_request_t *r);
 static ngx_int_t ngx_http_core_find_static_location(ngx_http_request_t *r,
-    ngx_http_location_tree_node_t *node);
+        ngx_http_location_tree_node_t *node);
 
 static ngx_int_t ngx_http_core_preconfiguration(ngx_conf_t *cf);
 static ngx_int_t ngx_http_core_postconfiguration(ngx_conf_t *cf);
@@ -34,65 +34,65 @@ static void *ngx_http_core_create_main_conf(ngx_conf_t *cf);
 static char *ngx_http_core_init_main_conf(ngx_conf_t *cf, void *conf);
 static void *ngx_http_core_create_srv_conf(ngx_conf_t *cf);
 static char *ngx_http_core_merge_srv_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+        void *parent, void *child);
 static void *ngx_http_core_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_core_merge_loc_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+        void *parent, void *child);
 
 static char *ngx_http_core_server(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *dummy);
+                                  void *dummy);
 static char *ngx_http_core_location(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *dummy);
+                                    void *dummy);
 static ngx_int_t ngx_http_core_regex_location(ngx_conf_t *cf,
-    ngx_http_core_loc_conf_t *clcf, ngx_str_t *regex, ngx_uint_t caseless);
+        ngx_http_core_loc_conf_t *clcf, ngx_str_t *regex, ngx_uint_t caseless);
 
 static char *ngx_http_core_types(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                 void *conf);
 static char *ngx_http_core_type(ngx_conf_t *cf, ngx_command_t *dummy,
-    void *conf);
+                                void *conf);
 
 static char *ngx_http_core_listen(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                  void *conf);
 static char *ngx_http_core_server_name(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                       void *conf);
 static char *ngx_http_core_root(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static char *ngx_http_core_limit_except(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                        void *conf);
 static char *ngx_http_core_set_aio(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                   void *conf);
 static char *ngx_http_core_directio(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                    void *conf);
 static char *ngx_http_core_error_page(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                      void *conf);
 static char *ngx_http_core_open_file_cache(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+        void *conf);
 static char *ngx_http_core_error_log(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                     void *conf);
 static char *ngx_http_core_keepalive(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                     void *conf);
 static char *ngx_http_core_internal(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                    void *conf);
 static char *ngx_http_core_resolver(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                    void *conf);
 #if (NGX_HTTP_GZIP)
 static ngx_int_t ngx_http_gzip_accept_encoding(ngx_str_t *ae);
 static ngx_uint_t ngx_http_gzip_quantity(u_char *p, u_char *last);
 static char *ngx_http_gzip_disable(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                   void *conf);
 #endif
 static ngx_int_t ngx_http_get_forwarded_addr_internal(ngx_http_request_t *r,
-    ngx_addr_t *addr, u_char *xff, size_t xfflen, ngx_array_t *proxies,
-    int recursive);
+        ngx_addr_t *addr, u_char *xff, size_t xfflen, ngx_array_t *proxies,
+        int recursive);
 #if (NGX_HAVE_OPENAT)
 static char *ngx_http_disable_symlinks(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                       void *conf);
 #endif
 
 static char *ngx_http_core_lowat_check(ngx_conf_t *cf, void *post, void *data);
 static char *ngx_http_core_pool_size(ngx_conf_t *cf, void *post, void *data);
 
 static ngx_conf_post_t  ngx_http_core_lowat_post =
-    { ngx_http_core_lowat_check };
+{ ngx_http_core_lowat_check };
 
 static ngx_conf_post_handler_pt  ngx_http_core_pool_size_p =
     ngx_http_core_pool_size;
@@ -182,603 +182,686 @@ static ngx_str_t  ngx_http_gzip_private = ngx_string("private");
 
 static ngx_command_t  ngx_http_core_commands[] = {
 
-    { ngx_string("variables_hash_max_size"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_MAIN_CONF_OFFSET,
-      offsetof(ngx_http_core_main_conf_t, variables_hash_max_size),
-      NULL },
-
-    { ngx_string("variables_hash_bucket_size"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_MAIN_CONF_OFFSET,
-      offsetof(ngx_http_core_main_conf_t, variables_hash_bucket_size),
-      NULL },
-
-    { ngx_string("server_names_hash_max_size"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_MAIN_CONF_OFFSET,
-      offsetof(ngx_http_core_main_conf_t, server_names_hash_max_size),
-      NULL },
-
-    { ngx_string("server_names_hash_bucket_size"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_MAIN_CONF_OFFSET,
-      offsetof(ngx_http_core_main_conf_t, server_names_hash_bucket_size),
-      NULL },
-
-    { ngx_string("server"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
-      ngx_http_core_server,
-      0,
-      0,
-      NULL },
-
-    { ngx_string("connection_pool_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, connection_pool_size),
-      &ngx_http_core_pool_size_p },
-
-    { ngx_string("request_pool_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, request_pool_size),
-      &ngx_http_core_pool_size_p },
-
-    { ngx_string("client_header_timeout"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, client_header_timeout),
-      NULL },
-
-    { ngx_string("client_header_buffer_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, client_header_buffer_size),
-      NULL },
-
-    { ngx_string("large_client_header_buffers"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE2,
-      ngx_conf_set_bufs_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, large_client_header_buffers),
-      NULL },
-
-    { ngx_string("ignore_invalid_headers"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, ignore_invalid_headers),
-      NULL },
-
-    { ngx_string("merge_slashes"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, merge_slashes),
-      NULL },
-
-    { ngx_string("underscores_in_headers"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      offsetof(ngx_http_core_srv_conf_t, underscores_in_headers),
-      NULL },
-
-    { ngx_string("location"),
-      NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_BLOCK|NGX_CONF_TAKE12,
-      ngx_http_core_location,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("listen"),
-      NGX_HTTP_SRV_CONF|NGX_CONF_1MORE,
-      ngx_http_core_listen,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("server_name"),
-      NGX_HTTP_SRV_CONF|NGX_CONF_1MORE,
-      ngx_http_core_server_name,
-      NGX_HTTP_SRV_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("types_hash_max_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, types_hash_max_size),
-      NULL },
-
-    { ngx_string("types_hash_bucket_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, types_hash_bucket_size),
-      NULL },
-
-    { ngx_string("types"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF
-                                          |NGX_CONF_BLOCK|NGX_CONF_NOARGS,
-      ngx_http_core_types,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("default_type"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_str_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, default_type),
-      NULL },
-
-    { ngx_string("root"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_core_root,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("alias"),
-      NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_http_core_root,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("limit_except"),
-      NGX_HTTP_LOC_CONF|NGX_CONF_BLOCK|NGX_CONF_1MORE,
-      ngx_http_core_limit_except,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("client_max_body_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_off_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, client_max_body_size),
-      NULL },
-
-    { ngx_string("client_body_buffer_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, client_body_buffer_size),
-      NULL },
-
-    { ngx_string("client_body_timeout"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, client_body_timeout),
-      NULL },
-
-    { ngx_string("client_body_temp_path"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1234,
-      ngx_conf_set_path_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, client_body_temp_path),
-      NULL },
-
-    { ngx_string("client_body_in_file_only"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_enum_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, client_body_in_file_only),
-      &ngx_http_core_request_body_in_file },
-
-    { ngx_string("client_body_in_single_buffer"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, client_body_in_single_buffer),
-      NULL },
-
-    { ngx_string("sendfile"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, sendfile),
-      NULL },
-
-    { ngx_string("sendfile_max_chunk"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, sendfile_max_chunk),
-      NULL },
-
-    { ngx_string("subrequest_output_buffer_size"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, subrequest_output_buffer_size),
-      NULL },
-
-    { ngx_string("aio"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_http_core_set_aio,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("aio_write"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, aio_write),
-      NULL },
-
-    { ngx_string("read_ahead"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, read_ahead),
-      NULL },
-
-    { ngx_string("directio"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_http_core_directio,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("directio_alignment"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_off_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, directio_alignment),
-      NULL },
-
-    { ngx_string("tcp_nopush"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, tcp_nopush),
-      NULL },
-
-    { ngx_string("tcp_nodelay"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, tcp_nodelay),
-      NULL },
-
-    { ngx_string("send_timeout"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, send_timeout),
-      NULL },
-
-    { ngx_string("send_lowat"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, send_lowat),
-      &ngx_http_core_lowat_post },
-
-    { ngx_string("postpone_output"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, postpone_output),
-      NULL },
-
-    { ngx_string("limit_rate"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_set_complex_value_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, limit_rate),
-      NULL },
-
-    { ngx_string("limit_rate_after"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_http_set_complex_value_size_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, limit_rate_after),
-      NULL },
-
-    { ngx_string("keepalive_time"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, keepalive_time),
-      NULL },
-
-    { ngx_string("keepalive_timeout"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
-      ngx_http_core_keepalive,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("keepalive_requests"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, keepalive_requests),
-      NULL },
-
-    { ngx_string("keepalive_disable"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
-      ngx_conf_set_bitmask_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, keepalive_disable),
-      &ngx_http_core_keepalive_disable },
-
-    { ngx_string("satisfy"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_enum_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, satisfy),
-      &ngx_http_core_satisfy },
-
-    { ngx_string("auth_delay"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, auth_delay),
-      NULL },
-
-    { ngx_string("internal"),
-      NGX_HTTP_LOC_CONF|NGX_CONF_NOARGS,
-      ngx_http_core_internal,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("lingering_close"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_enum_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, lingering_close),
-      &ngx_http_core_lingering_close },
-
-    { ngx_string("lingering_time"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, lingering_time),
-      NULL },
-
-    { ngx_string("lingering_timeout"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, lingering_timeout),
-      NULL },
-
-    { ngx_string("reset_timedout_connection"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, reset_timedout_connection),
-      NULL },
-
-    { ngx_string("absolute_redirect"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, absolute_redirect),
-      NULL },
-
-    { ngx_string("server_name_in_redirect"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, server_name_in_redirect),
-      NULL },
-
-    { ngx_string("port_in_redirect"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, port_in_redirect),
-      NULL },
-
-    { ngx_string("msie_padding"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, msie_padding),
-      NULL },
-
-    { ngx_string("msie_refresh"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, msie_refresh),
-      NULL },
-
-    { ngx_string("log_not_found"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, log_not_found),
-      NULL },
-
-    { ngx_string("log_subrequest"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, log_subrequest),
-      NULL },
-
-    { ngx_string("recursive_error_pages"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, recursive_error_pages),
-      NULL },
-
-    { ngx_string("server_tokens"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_enum_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, server_tokens),
-      &ngx_http_core_server_tokens },
-
-    { ngx_string("if_modified_since"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_enum_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, if_modified_since),
-      &ngx_http_core_if_modified_since },
-
-    { ngx_string("max_ranges"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, max_ranges),
-      NULL },
-
-    { ngx_string("chunked_transfer_encoding"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, chunked_transfer_encoding),
-      NULL },
-
-    { ngx_string("etag"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, etag),
-      NULL },
-
-    { ngx_string("error_page"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_2MORE,
-      ngx_http_core_error_page,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("post_action"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
-      ngx_conf_set_str_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, post_action),
-      NULL },
-
-    { ngx_string("error_log"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_http_core_error_log,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("open_file_cache"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
-      ngx_http_core_open_file_cache,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, open_file_cache),
-      NULL },
-
-    { ngx_string("open_file_cache_valid"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_sec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, open_file_cache_valid),
-      NULL },
-
-    { ngx_string("open_file_cache_min_uses"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, open_file_cache_min_uses),
-      NULL },
-
-    { ngx_string("open_file_cache_errors"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, open_file_cache_errors),
-      NULL },
-
-    { ngx_string("open_file_cache_events"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, open_file_cache_events),
-      NULL },
-
-    { ngx_string("resolver"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_http_core_resolver,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
-
-    { ngx_string("resolver_timeout"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, resolver_timeout),
-      NULL },
+    {   ngx_string("variables_hash_max_size"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET,
+        offsetof(ngx_http_core_main_conf_t, variables_hash_max_size),
+        NULL
+    },
+
+    {   ngx_string("variables_hash_bucket_size"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET,
+        offsetof(ngx_http_core_main_conf_t, variables_hash_bucket_size),
+        NULL
+    },
+
+    {   ngx_string("server_names_hash_max_size"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET,
+        offsetof(ngx_http_core_main_conf_t, server_names_hash_max_size),
+        NULL
+    },
+
+    {   ngx_string("server_names_hash_bucket_size"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET,
+        offsetof(ngx_http_core_main_conf_t, server_names_hash_bucket_size),
+        NULL
+    },
+
+    {   ngx_string("server"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+        ngx_http_core_server,
+        0,
+        0,
+        NULL
+    },
+
+    {   ngx_string("connection_pool_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, connection_pool_size),
+        &ngx_http_core_pool_size_p
+    },
+
+    {   ngx_string("request_pool_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, request_pool_size),
+        &ngx_http_core_pool_size_p
+    },
+
+    {   ngx_string("client_header_timeout"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, client_header_timeout),
+        NULL
+    },
+
+    {   ngx_string("client_header_buffer_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, client_header_buffer_size),
+        NULL
+    },
+
+    {   ngx_string("large_client_header_buffers"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_TAKE2,
+        ngx_conf_set_bufs_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, large_client_header_buffers),
+        NULL
+    },
+
+    {   ngx_string("ignore_invalid_headers"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, ignore_invalid_headers),
+        NULL
+    },
+
+    {   ngx_string("merge_slashes"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, merge_slashes),
+        NULL
+    },
+
+    {   ngx_string("underscores_in_headers"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        offsetof(ngx_http_core_srv_conf_t, underscores_in_headers),
+        NULL
+    },
+
+    {   ngx_string("location"),
+        NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_BLOCK|NGX_CONF_TAKE12,
+        ngx_http_core_location,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("listen"),
+        NGX_HTTP_SRV_CONF|NGX_CONF_1MORE,
+        ngx_http_core_listen,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("server_name"),
+        NGX_HTTP_SRV_CONF|NGX_CONF_1MORE,
+        ngx_http_core_server_name,
+        NGX_HTTP_SRV_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("types_hash_max_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, types_hash_max_size),
+        NULL
+    },
+
+    {   ngx_string("types_hash_bucket_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, types_hash_bucket_size),
+        NULL
+    },
+
+    {   ngx_string("types"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF
+        |NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+        ngx_http_core_types,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("default_type"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_str_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, default_type),
+        NULL
+    },
+
+    {   ngx_string("root"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
+        |NGX_CONF_TAKE1,
+        ngx_http_core_root,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("alias"),
+        NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_http_core_root,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("limit_except"),
+        NGX_HTTP_LOC_CONF|NGX_CONF_BLOCK|NGX_CONF_1MORE,
+        ngx_http_core_limit_except,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("client_max_body_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_off_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, client_max_body_size),
+        NULL
+    },
+
+    {   ngx_string("client_body_buffer_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, client_body_buffer_size),
+        NULL
+    },
+
+    {   ngx_string("client_body_timeout"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, client_body_timeout),
+        NULL
+    },
+
+    {   ngx_string("client_body_temp_path"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1234,
+        ngx_conf_set_path_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, client_body_temp_path),
+        NULL
+    },
+
+    {   ngx_string("client_body_in_file_only"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_enum_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, client_body_in_file_only),
+        &ngx_http_core_request_body_in_file
+    },
+
+    {   ngx_string("client_body_in_single_buffer"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, client_body_in_single_buffer),
+        NULL
+    },
+
+    {   ngx_string("sendfile"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
+        |NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, sendfile),
+        NULL
+    },
+
+    {   ngx_string("sendfile_max_chunk"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, sendfile_max_chunk),
+        NULL
+    },
+
+    {   ngx_string("subrequest_output_buffer_size"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, subrequest_output_buffer_size),
+        NULL
+    },
+
+    {   ngx_string("aio"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_http_core_set_aio,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("aio_write"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, aio_write),
+        NULL
+    },
+
+    {   ngx_string("read_ahead"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, read_ahead),
+        NULL
+    },
+
+    {   ngx_string("directio"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_http_core_directio,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("directio_alignment"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_off_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, directio_alignment),
+        NULL
+    },
+
+    {   ngx_string("tcp_nopush"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, tcp_nopush),
+        NULL
+    },
+
+    {   ngx_string("tcp_nodelay"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, tcp_nodelay),
+        NULL
+    },
+
+    {   ngx_string("send_timeout"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, send_timeout),
+        NULL
+    },
+
+    {   ngx_string("send_lowat"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, send_lowat),
+        &ngx_http_core_lowat_post
+    },
+
+    {   ngx_string("postpone_output"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, postpone_output),
+        NULL
+    },
+
+    {   ngx_string("limit_rate"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
+        |NGX_CONF_TAKE1,
+        ngx_http_set_complex_value_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, limit_rate),
+        NULL
+    },
+
+    {   ngx_string("limit_rate_after"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
+        |NGX_CONF_TAKE1,
+        ngx_http_set_complex_value_size_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, limit_rate_after),
+        NULL
+    },
+
+    {   ngx_string("keepalive_time"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, keepalive_time),
+        NULL
+    },
+
+    {   ngx_string("keepalive_timeout"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
+        ngx_http_core_keepalive,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("keepalive_requests"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, keepalive_requests),
+        NULL
+    },
+
+    {   ngx_string("keepalive_disable"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
+        ngx_conf_set_bitmask_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, keepalive_disable),
+        &ngx_http_core_keepalive_disable
+    },
+
+    {   ngx_string("satisfy"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_enum_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, satisfy),
+        &ngx_http_core_satisfy
+    },
+
+    {   ngx_string("auth_delay"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, auth_delay),
+        NULL
+    },
+
+    {   ngx_string("internal"),
+        NGX_HTTP_LOC_CONF|NGX_CONF_NOARGS,
+        ngx_http_core_internal,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("lingering_close"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_enum_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, lingering_close),
+        &ngx_http_core_lingering_close
+    },
+
+    {   ngx_string("lingering_time"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, lingering_time),
+        NULL
+    },
+
+    {   ngx_string("lingering_timeout"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, lingering_timeout),
+        NULL
+    },
+
+    {   ngx_string("reset_timedout_connection"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, reset_timedout_connection),
+        NULL
+    },
+
+    {   ngx_string("absolute_redirect"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, absolute_redirect),
+        NULL
+    },
+
+    {   ngx_string("server_name_in_redirect"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, server_name_in_redirect),
+        NULL
+    },
+
+    {   ngx_string("port_in_redirect"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, port_in_redirect),
+        NULL
+    },
+
+    {   ngx_string("msie_padding"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, msie_padding),
+        NULL
+    },
+
+    {   ngx_string("msie_refresh"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, msie_refresh),
+        NULL
+    },
+
+    {   ngx_string("log_not_found"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, log_not_found),
+        NULL
+    },
+
+    {   ngx_string("log_subrequest"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, log_subrequest),
+        NULL
+    },
+
+    {   ngx_string("recursive_error_pages"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, recursive_error_pages),
+        NULL
+    },
+
+    {   ngx_string("server_tokens"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_enum_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, server_tokens),
+        &ngx_http_core_server_tokens
+    },
+
+    {   ngx_string("if_modified_since"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_enum_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, if_modified_since),
+        &ngx_http_core_if_modified_since
+    },
+
+    {   ngx_string("max_ranges"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, max_ranges),
+        NULL
+    },
+
+    {   ngx_string("chunked_transfer_encoding"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, chunked_transfer_encoding),
+        NULL
+    },
+
+    {   ngx_string("etag"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, etag),
+        NULL
+    },
+
+    {   ngx_string("error_page"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
+        |NGX_CONF_2MORE,
+        ngx_http_core_error_page,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("post_action"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
+        |NGX_CONF_TAKE1,
+        ngx_conf_set_str_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, post_action),
+        NULL
+    },
+
+    {   ngx_string("error_log"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_http_core_error_log,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("open_file_cache"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
+        ngx_http_core_open_file_cache,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, open_file_cache),
+        NULL
+    },
+
+    {   ngx_string("open_file_cache_valid"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_sec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, open_file_cache_valid),
+        NULL
+    },
+
+    {   ngx_string("open_file_cache_min_uses"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, open_file_cache_min_uses),
+        NULL
+    },
+
+    {   ngx_string("open_file_cache_errors"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, open_file_cache_errors),
+        NULL
+    },
+
+    {   ngx_string("open_file_cache_events"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, open_file_cache_events),
+        NULL
+    },
+
+    {   ngx_string("resolver"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_http_core_resolver,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
+
+    {   ngx_string("resolver_timeout"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, resolver_timeout),
+        NULL
+    },
 
 #if (NGX_HTTP_GZIP)
 
-    { ngx_string("gzip_vary"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, gzip_vary),
-      NULL },
+    {   ngx_string("gzip_vary"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, gzip_vary),
+        NULL
+    },
 
-    { ngx_string("gzip_http_version"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_enum_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, gzip_http_version),
-      &ngx_http_gzip_http_version },
+    {   ngx_string("gzip_http_version"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_enum_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, gzip_http_version),
+        &ngx_http_gzip_http_version
+    },
 
-    { ngx_string("gzip_proxied"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_conf_set_bitmask_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_core_loc_conf_t, gzip_proxied),
-      &ngx_http_gzip_proxied_mask },
+    {   ngx_string("gzip_proxied"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_conf_set_bitmask_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_core_loc_conf_t, gzip_proxied),
+        &ngx_http_gzip_proxied_mask
+    },
 
-    { ngx_string("gzip_disable"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_http_gzip_disable,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("gzip_disable"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_http_gzip_disable,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
 #endif
 
 #if (NGX_HAVE_OPENAT)
 
-    { ngx_string("disable_symlinks"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
-      ngx_http_disable_symlinks,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("disable_symlinks"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE12,
+        ngx_http_disable_symlinks,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
 #endif
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -947,7 +1030,7 @@ ngx_http_core_rewrite_phase(ngx_http_request_t *r, ngx_http_phase_handler_t *ph)
 
 ngx_int_t
 ngx_http_core_find_config_phase(ngx_http_request_t *r,
-    ngx_http_phase_handler_t *ph)
+                                ngx_http_phase_handler_t *ph)
 {
     u_char                    *p;
     size_t                     len;
@@ -983,9 +1066,9 @@ ngx_http_core_find_config_phase(ngx_http_request_t *r,
                    r->headers_in.content_length_n, clcf->client_max_body_size);
 
     if (r->headers_in.content_length_n != -1
-        && !r->discard_body
-        && clcf->client_max_body_size
-        && clcf->client_max_body_size < r->headers_in.content_length_n)
+            && !r->discard_body
+            && clcf->client_max_body_size
+            && clcf->client_max_body_size < r->headers_in.content_length_n)
     {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
                       "client intended to send too large body: %O bytes",
@@ -1041,7 +1124,7 @@ ngx_http_core_find_config_phase(ngx_http_request_t *r,
 
 ngx_int_t
 ngx_http_core_post_rewrite_phase(ngx_http_request_t *r,
-    ngx_http_phase_handler_t *ph)
+                                 ngx_http_phase_handler_t *ph)
 {
     ngx_http_core_srv_conf_t  *cscf;
 
@@ -1152,7 +1235,7 @@ ngx_http_core_access_phase(ngx_http_request_t *r, ngx_http_phase_handler_t *ph)
 
 ngx_int_t
 ngx_http_core_post_access_phase(ngx_http_request_t *r,
-    ngx_http_phase_handler_t *ph)
+                                ngx_http_phase_handler_t *ph)
 {
     ngx_int_t  access_code;
 
@@ -1248,7 +1331,7 @@ ngx_http_core_auth_delay_handler(ngx_http_request_t *r)
 
 ngx_int_t
 ngx_http_core_content_phase(ngx_http_request_t *r,
-    ngx_http_phase_handler_t *ph)
+                            ngx_http_phase_handler_t *ph)
 {
     size_t     root;
     ngx_int_t  rc;
@@ -1469,7 +1552,7 @@ ngx_http_core_find_location(ngx_http_request_t *r)
 
 static ngx_int_t
 ngx_http_core_find_static_location(ngx_http_request_t *r,
-    ngx_http_location_tree_node_t *node)
+                                   ngx_http_location_tree_node_t *node)
 {
     u_char     *uri;
     size_t      len, n;
@@ -1538,7 +1621,7 @@ ngx_http_core_find_static_location(ngx_http_request_t *r,
         if (len + 1 == (size_t) node->len && node->auto_redirect) {
 
             r->loc_conf = (node->exact) ? node->exact->loc_conf:
-                                          node->inclusive->loc_conf;
+                          node->inclusive->loc_conf;
             rv = NGX_DONE;
         }
 
@@ -1720,8 +1803,8 @@ ngx_http_weak_etag(ngx_http_request_t *r)
     }
 
     if (etag->value.len > 2
-        && etag->value.data[0] == 'W'
-        && etag->value.data[1] == '/')
+            && etag->value.data[0] == 'W'
+            && etag->value.data[1] == '/')
     {
         return;
     }
@@ -1748,7 +1831,7 @@ ngx_http_weak_etag(ngx_http_request_t *r)
 
 ngx_int_t
 ngx_http_send_response(ngx_http_request_t *r, ngx_uint_t status,
-    ngx_str_t *ct, ngx_http_complex_value_t *cv)
+                       ngx_str_t *ct, ngx_http_complex_value_t *cv)
 {
     ngx_int_t     rc;
     ngx_str_t     val;
@@ -1768,10 +1851,10 @@ ngx_http_send_response(ngx_http_request_t *r, ngx_uint_t status,
     }
 
     if (status == NGX_HTTP_MOVED_PERMANENTLY
-        || status == NGX_HTTP_MOVED_TEMPORARILY
-        || status == NGX_HTTP_SEE_OTHER
-        || status == NGX_HTTP_TEMPORARY_REDIRECT
-        || status == NGX_HTTP_PERMANENT_REDIRECT)
+            || status == NGX_HTTP_MOVED_TEMPORARILY
+            || status == NGX_HTTP_SEE_OTHER
+            || status == NGX_HTTP_TEMPORARY_REDIRECT
+            || status == NGX_HTTP_PERMANENT_REDIRECT)
     {
         ngx_http_clear_location(r);
 
@@ -1873,7 +1956,7 @@ ngx_http_output_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
 u_char *
 ngx_http_map_uri_to_path(ngx_http_request_t *r, ngx_str_t *path,
-    size_t *root_length, size_t reserved)
+                         size_t *root_length, size_t reserved)
 {
     u_char                    *last;
     size_t                     alias;
@@ -1914,13 +1997,13 @@ ngx_http_map_uri_to_path(ngx_http_request_t *r, ngx_str_t *path,
 
         if (ngx_http_script_run(r, path, clcf->root_lengths->elts, reserved,
                                 clcf->root_values->elts)
-            == NULL)
+                == NULL)
         {
             return NULL;
         }
 
         if (ngx_get_full_name(r->pool, (ngx_str_t *) &ngx_cycle->prefix, path)
-            != NGX_OK)
+                != NGX_OK)
         {
             return NULL;
         }
@@ -1963,9 +2046,9 @@ ngx_http_auth_basic_user(ngx_http_request_t *r)
     encoded = r->headers_in.authorization->value;
 
     if (encoded.len < sizeof("Basic ") - 1
-        || ngx_strncasecmp(encoded.data, (u_char *) "Basic ",
-                           sizeof("Basic ") - 1)
-           != 0)
+            || ngx_strncasecmp(encoded.data, (u_char *) "Basic ",
+                               sizeof("Basic ") - 1)
+            != 0)
     {
         r->headers_in.user.data = (u_char *) "";
         return NGX_DECLINED;
@@ -2053,7 +2136,7 @@ ngx_http_gzip_ok(ngx_http_request_t *r)
      */
 
     if (ngx_memcmp(ae->value.data, "gzip,", 5) != 0
-        && ngx_http_gzip_accept_encoding(&ae->value) != NGX_OK)
+            && ngx_http_gzip_accept_encoding(&ae->value) != NGX_OK)
     {
         return NGX_DECLINED;
     }
@@ -2123,25 +2206,25 @@ ngx_http_gzip_ok(ngx_http_request_t *r)
     if (cc->elts) {
 
         if ((p & NGX_HTTP_GZIP_PROXIED_NO_CACHE)
-            && ngx_http_parse_multi_header_lines(cc, &ngx_http_gzip_no_cache,
-                                                 NULL)
-               >= 0)
+                && ngx_http_parse_multi_header_lines(cc, &ngx_http_gzip_no_cache,
+                        NULL)
+                >= 0)
         {
             goto ok;
         }
 
         if ((p & NGX_HTTP_GZIP_PROXIED_NO_STORE)
-            && ngx_http_parse_multi_header_lines(cc, &ngx_http_gzip_no_store,
-                                                 NULL)
-               >= 0)
+                && ngx_http_parse_multi_header_lines(cc, &ngx_http_gzip_no_store,
+                        NULL)
+                >= 0)
         {
             goto ok;
         }
 
         if ((p & NGX_HTTP_GZIP_PROXIED_PRIVATE)
-            && ngx_http_parse_multi_header_lines(cc, &ngx_http_gzip_private,
-                                                 NULL)
-               >= 0)
+                && ngx_http_parse_multi_header_lines(cc, &ngx_http_gzip_private,
+                        NULL)
+                >= 0)
         {
             goto ok;
         }
@@ -2166,7 +2249,7 @@ ok:
         if (ngx_regex_exec_array(clcf->gzip_disable,
                                  &r->headers_in.user_agent->value,
                                  r->connection->log)
-            != NGX_DECLINED)
+                != NGX_DECLINED)
         {
             return NGX_DECLINED;
         }
@@ -2313,8 +2396,8 @@ ngx_http_gzip_quantity(u_char *p, u_char *last)
 
 ngx_int_t
 ngx_http_subrequest(ngx_http_request_t *r,
-    ngx_str_t *uri, ngx_str_t *args, ngx_http_request_t **psr,
-    ngx_http_post_subrequest_t *ps, ngx_uint_t flags)
+                    ngx_str_t *uri, ngx_str_t *args, ngx_http_request_t **psr,
+                    ngx_http_post_subrequest_t *ps, ngx_uint_t flags)
 {
     ngx_time_t                    *tp;
     ngx_connection_t              *c;
@@ -2361,14 +2444,14 @@ ngx_http_subrequest(ngx_http_request_t *r,
 
     if (ngx_list_init(&sr->headers_out.headers, r->pool, 20,
                       sizeof(ngx_table_elt_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }
 
     if (ngx_list_init(&sr->headers_out.trailers, r->pool, 4,
                       sizeof(ngx_table_elt_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }
@@ -2497,7 +2580,7 @@ ngx_http_subrequest(ngx_http_request_t *r,
 
 ngx_int_t
 ngx_http_internal_redirect(ngx_http_request_t *r,
-    ngx_str_t *uri, ngx_str_t *args)
+                           ngx_str_t *uri, ngx_str_t *args)
 {
     ngx_http_core_srv_conf_t  *cscf;
 
@@ -2587,7 +2670,7 @@ ngx_http_named_location(ngx_http_request_t *r, ngx_str_t *name)
                            "test location: \"%V\"", &(*clcfp)->name);
 
             if (name->len != (*clcfp)->name.len
-                || ngx_strncmp(name->data, (*clcfp)->name.data, name->len) != 0)
+                    || ngx_strncmp(name->data, (*clcfp)->name.data, name->len) != 0)
             {
                 continue;
             }
@@ -2662,7 +2745,7 @@ ngx_http_cleanup_add(ngx_http_request_t *r, size_t size)
 
 ngx_int_t
 ngx_http_set_disable_symlinks(ngx_http_request_t *r,
-    ngx_http_core_loc_conf_t *clcf, ngx_str_t *path, ngx_open_file_info_t *of)
+                              ngx_http_core_loc_conf_t *clcf, ngx_str_t *path, ngx_open_file_info_t *of)
 {
 #if (NGX_HAVE_OPENAT)
     u_char     *p;
@@ -2675,14 +2758,14 @@ ngx_http_set_disable_symlinks(ngx_http_request_t *r,
     }
 
     if (ngx_http_complex_value(r, clcf->disable_symlinks_from, &from)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }
 
     if (from.len == 0
-        || from.len > path->len
-        || ngx_memcmp(path->data, from.data, from.len) != 0)
+            || from.len > path->len
+            || ngx_memcmp(path->data, from.data, from.len) != 0)
     {
         return NGX_OK;
     }
@@ -2712,8 +2795,8 @@ ngx_http_set_disable_symlinks(ngx_http_request_t *r,
 
 ngx_int_t
 ngx_http_get_forwarded_addr(ngx_http_request_t *r, ngx_addr_t *addr,
-    ngx_array_t *headers, ngx_str_t *value, ngx_array_t *proxies,
-    int recursive)
+                            ngx_array_t *headers, ngx_str_t *value, ngx_array_t *proxies,
+                            int recursive)
 {
     ngx_int_t          rc;
     ngx_uint_t         i, found;
@@ -2721,8 +2804,8 @@ ngx_http_get_forwarded_addr(ngx_http_request_t *r, ngx_addr_t *addr,
 
     if (headers == NULL) {
         return ngx_http_get_forwarded_addr_internal(r, addr, value->data,
-                                                    value->len, proxies,
-                                                    recursive);
+                value->len, proxies,
+                recursive);
     }
 
     i = headers->nelts;
@@ -2734,8 +2817,8 @@ ngx_http_get_forwarded_addr(ngx_http_request_t *r, ngx_addr_t *addr,
 
     while (i-- > 0) {
         rc = ngx_http_get_forwarded_addr_internal(r, addr, h[i]->value.data,
-                                                  h[i]->value.len, proxies,
-                                                  recursive);
+                h[i]->value.len, proxies,
+                recursive);
 
         if (!recursive) {
             break;
@@ -2759,7 +2842,7 @@ ngx_http_get_forwarded_addr(ngx_http_request_t *r, ngx_addr_t *addr,
 
 static ngx_int_t
 ngx_http_get_forwarded_addr_internal(ngx_http_request_t *r, ngx_addr_t *addr,
-    u_char *xff, size_t xfflen, ngx_array_t *proxies, int recursive)
+                                     u_char *xff, size_t xfflen, ngx_array_t *proxies, int recursive)
 {
     u_char      *p;
     ngx_addr_t   paddr;
@@ -2787,7 +2870,7 @@ ngx_http_get_forwarded_addr_internal(ngx_http_request_t *r, ngx_addr_t *addr,
         }
 
         if (ngx_parse_addr_port(r->pool, &paddr, p, xfflen - (p - xff))
-            != NGX_OK)
+                != NGX_OK)
         {
             return found ? NGX_DONE : NGX_DECLINED;
         }
@@ -2982,7 +3065,7 @@ ngx_http_core_location(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
 
         if (module->create_loc_conf) {
             ctx->loc_conf[cf->cycle->modules[i]->ctx_index] =
-                                                   module->create_loc_conf(cf);
+                module->create_loc_conf(cf);
             if (ctx->loc_conf[cf->cycle->modules[i]->ctx_index] == NULL) {
                 return NGX_CONF_ERROR;
             }
@@ -3112,7 +3195,7 @@ ngx_http_core_location(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
 
 #if (NGX_PCRE)
         if (clcf->regex == NULL
-            && ngx_filename_cmp(clcf->name.data, pclcf->name.data, len) != 0)
+                && ngx_filename_cmp(clcf->name.data, pclcf->name.data, len) != 0)
 #else
         if (ngx_filename_cmp(clcf->name.data, pclcf->name.data, len) != 0)
 #endif
@@ -3142,7 +3225,7 @@ ngx_http_core_location(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
 
 static ngx_int_t
 ngx_http_core_regex_location(ngx_conf_t *cf, ngx_http_core_loc_conf_t *clcf,
-    ngx_str_t *regex, ngx_uint_t caseless)
+                             ngx_str_t *regex, ngx_uint_t caseless)
 {
 #if (NGX_PCRE)
     ngx_regex_compile_t  rc;
@@ -3265,7 +3348,7 @@ ngx_http_core_type(ngx_conf_t *cf, ngx_command_t *dummy, void *conf)
         type->key_hash = hash;
         type->value = content_type;
 
-    next:
+next:
         continue;
     }
 
@@ -3301,7 +3384,7 @@ ngx_http_core_create_main_conf(ngx_conf_t *cf)
 
     if (ngx_array_init(&cmcf->servers, cf->pool, 4,
                        sizeof(ngx_http_core_srv_conf_t *))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NULL;
     }
@@ -3326,14 +3409,14 @@ ngx_http_core_init_main_conf(ngx_conf_t *cf, void *conf)
                              ngx_cacheline_size);
 
     cmcf->server_names_hash_bucket_size =
-            ngx_align(cmcf->server_names_hash_bucket_size, ngx_cacheline_size);
+        ngx_align(cmcf->server_names_hash_bucket_size, ngx_cacheline_size);
 
 
     ngx_conf_init_uint_value(cmcf->variables_hash_max_size, 1024);
     ngx_conf_init_uint_value(cmcf->variables_hash_bucket_size, 64);
 
     cmcf->variables_hash_bucket_size =
-               ngx_align(cmcf->variables_hash_bucket_size, ngx_cacheline_size);
+        ngx_align(cmcf->variables_hash_bucket_size, ngx_cacheline_size);
 
     if (cmcf->ncaptures) {
         cmcf->ncaptures = (cmcf->ncaptures + 1) * 3;
@@ -3361,7 +3444,7 @@ ngx_http_core_create_srv_conf(ngx_conf_t *cf)
 
     if (ngx_array_init(&cscf->server_names, cf->temp_pool, 4,
                        sizeof(ngx_http_server_name_t))
-        != NGX_OK)
+            != NGX_OK)
     {
         return NULL;
     }
@@ -3412,12 +3495,12 @@ ngx_http_core_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
     }
 
     ngx_conf_merge_value(conf->ignore_invalid_headers,
-                              prev->ignore_invalid_headers, 1);
+                         prev->ignore_invalid_headers, 1);
 
     ngx_conf_merge_value(conf->merge_slashes, prev->merge_slashes, 1);
 
     ngx_conf_merge_value(conf->underscores_in_headers,
-                              prev->underscores_in_headers, 0);
+                         prev->underscores_in_headers, 0);
 
     if (conf->server_names.nelts == 0) {
         /* the array has 4 empty preallocated elements, so push cannot fail */
@@ -3439,10 +3522,10 @@ ngx_http_core_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
     } else
 #endif
 
-    if (name.data[0] == '.') {
-        name.len--;
-        name.data++;
-    }
+        if (name.data[0] == '.') {
+            name.len--;
+            name.data++;
+        }
 
     conf->server_name.len = name.len;
     conf->server_name.data = ngx_pstrdup(cf->pool, &name);
@@ -3611,7 +3694,7 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
                               prev->types_hash_bucket_size, 64);
 
     conf->types_hash_bucket_size = ngx_align(conf->types_hash_bucket_size,
-                                             ngx_cacheline_size);
+                                   ngx_cacheline_size);
 
     /*
      * the special handling of the "types" directive in the "http" section
@@ -3629,7 +3712,7 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
         types_hash.temp_pool = NULL;
 
         if (ngx_hash_init(&types_hash, prev->types->elts, prev->types->nelts)
-            != NGX_OK)
+                != NGX_OK)
         {
             return NGX_CONF_ERROR;
         }
@@ -3654,8 +3737,8 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
 
             type->key = ngx_http_core_default_types[i].key;
             type->key_hash =
-                       ngx_hash_key_lc(ngx_http_core_default_types[i].key.data,
-                                       ngx_http_core_default_types[i].key.len);
+                ngx_hash_key_lc(ngx_http_core_default_types[i].key.data,
+                                ngx_http_core_default_types[i].key.len);
             type->value = ngx_http_core_default_types[i].value;
         }
     }
@@ -3671,7 +3754,7 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
         types_hash.temp_pool = NULL;
 
         if (ngx_hash_init(&types_hash, conf->types->elts, conf->types->nelts)
-            != NGX_OK)
+                != NGX_OK)
         {
             return NGX_CONF_ERROR;
         }
@@ -3690,10 +3773,10 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
     }
 
     ngx_conf_merge_str_value(conf->default_type,
-                              prev->default_type, "text/plain");
+                             prev->default_type, "text/plain");
 
     ngx_conf_merge_off_value(conf->client_max_body_size,
-                              prev->client_max_body_size, 1 * 1024 * 1024);
+                             prev->client_max_body_size, 1 * 1024 * 1024);
     ngx_conf_merge_size_value(conf->client_body_buffer_size,
                               prev->client_body_buffer_size,
                               (size_t) 2 * ngx_pagesize);
@@ -3701,9 +3784,9 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
                               prev->client_body_timeout, 60000);
 
     ngx_conf_merge_bitmask_value(conf->keepalive_disable,
-                              prev->keepalive_disable,
-                              (NGX_CONF_BITMASK_SET
-                               |NGX_HTTP_KEEPALIVE_DISABLE_MSIE6));
+                                 prev->keepalive_disable,
+                                 (NGX_CONF_BITMASK_SET
+                                  |NGX_HTTP_KEEPALIVE_DISABLE_MSIE6));
     ngx_conf_merge_uint_value(conf->satisfy, prev->satisfy,
                               NGX_HTTP_SATISFY_ALL);
     ngx_conf_merge_msec_value(conf->auth_delay, prev->auth_delay, 0);
@@ -3715,7 +3798,7 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
                               prev->client_body_in_file_only,
                               NGX_HTTP_REQUEST_BODY_FILE_OFF);
     ngx_conf_merge_value(conf->client_body_in_single_buffer,
-                              prev->client_body_in_single_buffer, 0);
+                         prev->client_body_in_single_buffer, 0);
     ngx_conf_merge_value(conf->internal, prev->internal, 0);
     ngx_conf_merge_value(conf->sendfile, prev->sendfile, 0);
     ngx_conf_merge_size_value(conf->sendfile_max_chunk,
@@ -3732,9 +3815,9 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
 #endif
     ngx_conf_merge_size_value(conf->read_ahead, prev->read_ahead, 0);
     ngx_conf_merge_off_value(conf->directio, prev->directio,
-                              NGX_OPEN_FILE_DIRECTIO_OFF);
+                             NGX_OPEN_FILE_DIRECTIO_OFF);
     ngx_conf_merge_off_value(conf->directio_alignment, prev->directio_alignment,
-                              512);
+                             512);
     ngx_conf_merge_value(conf->tcp_nopush, prev->tcp_nopush, 0);
     ngx_conf_merge_value(conf->tcp_nodelay, prev->tcp_nodelay, 1);
 
@@ -3756,7 +3839,7 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
     ngx_conf_merge_msec_value(conf->keepalive_timeout,
                               prev->keepalive_timeout, 75000);
     ngx_conf_merge_sec_value(conf->keepalive_header,
-                              prev->keepalive_header, 0);
+                             prev->keepalive_header, 0);
     ngx_conf_merge_uint_value(conf->keepalive_requests,
                               prev->keepalive_requests, 1000);
     ngx_conf_merge_uint_value(conf->lingering_close,
@@ -3787,54 +3870,54 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
     }
 
     if (ngx_conf_merge_path_value(cf, &conf->client_body_temp_path,
-                              prev->client_body_temp_path,
-                              &ngx_http_client_temp_path)
-        != NGX_OK)
+                                  prev->client_body_temp_path,
+                                  &ngx_http_client_temp_path)
+            != NGX_OK)
     {
         return NGX_CONF_ERROR;
     }
 
     ngx_conf_merge_value(conf->reset_timedout_connection,
-                              prev->reset_timedout_connection, 0);
+                         prev->reset_timedout_connection, 0);
     ngx_conf_merge_value(conf->absolute_redirect,
-                              prev->absolute_redirect, 1);
+                         prev->absolute_redirect, 1);
     ngx_conf_merge_value(conf->server_name_in_redirect,
-                              prev->server_name_in_redirect, 0);
+                         prev->server_name_in_redirect, 0);
     ngx_conf_merge_value(conf->port_in_redirect, prev->port_in_redirect, 1);
     ngx_conf_merge_value(conf->msie_padding, prev->msie_padding, 1);
     ngx_conf_merge_value(conf->msie_refresh, prev->msie_refresh, 0);
     ngx_conf_merge_value(conf->log_not_found, prev->log_not_found, 1);
     ngx_conf_merge_value(conf->log_subrequest, prev->log_subrequest, 0);
     ngx_conf_merge_value(conf->recursive_error_pages,
-                              prev->recursive_error_pages, 0);
+                         prev->recursive_error_pages, 0);
     ngx_conf_merge_value(conf->chunked_transfer_encoding,
-                              prev->chunked_transfer_encoding, 1);
+                         prev->chunked_transfer_encoding, 1);
     ngx_conf_merge_value(conf->etag, prev->etag, 1);
 
     ngx_conf_merge_uint_value(conf->server_tokens, prev->server_tokens,
                               NGX_HTTP_SERVER_TOKENS_ON);
 
     ngx_conf_merge_ptr_value(conf->open_file_cache,
-                              prev->open_file_cache, NULL);
+                             prev->open_file_cache, NULL);
 
     ngx_conf_merge_sec_value(conf->open_file_cache_valid,
-                              prev->open_file_cache_valid, 60);
+                             prev->open_file_cache_valid, 60);
 
     ngx_conf_merge_uint_value(conf->open_file_cache_min_uses,
                               prev->open_file_cache_min_uses, 1);
 
     ngx_conf_merge_sec_value(conf->open_file_cache_errors,
-                              prev->open_file_cache_errors, 0);
+                             prev->open_file_cache_errors, 0);
 
     ngx_conf_merge_sec_value(conf->open_file_cache_events,
-                              prev->open_file_cache_events, 0);
+                             prev->open_file_cache_events, 0);
 #if (NGX_HTTP_GZIP)
 
     ngx_conf_merge_value(conf->gzip_vary, prev->gzip_vary, 0);
     ngx_conf_merge_uint_value(conf->gzip_http_version, prev->gzip_http_version,
                               NGX_HTTP_VERSION_11);
     ngx_conf_merge_bitmask_value(conf->gzip_proxied, prev->gzip_proxied,
-                              (NGX_CONF_BITMASK_SET|NGX_HTTP_GZIP_PROXIED_OFF));
+                                 (NGX_CONF_BITMASK_SET|NGX_HTTP_GZIP_PROXIED_OFF));
 
 #if (NGX_PCRE)
     ngx_conf_merge_ptr_value(conf->gzip_disable, prev->gzip_disable, NULL);
@@ -3850,7 +3933,7 @@ ngx_http_core_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
     if (conf->gzip_disable_degradation == 3) {
         conf->gzip_disable_degradation =
             (prev->gzip_disable_degradation == 3) ?
-                 0 : prev->gzip_disable_degradation;
+            0 : prev->gzip_disable_degradation;
     }
 
 #endif
@@ -3915,7 +3998,7 @@ ngx_http_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     for (n = 2; n < cf->args->nelts; n++) {
 
         if (ngx_strcmp(value[n].data, "default_server") == 0
-            || ngx_strcmp(value[n].data, "default") == 0)
+                || ngx_strcmp(value[n].data, "default") == 0)
         {
             lsopt.default_server = 1;
             continue;
@@ -4157,7 +4240,7 @@ ngx_http_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
                 }
 
                 if (lsopt.tcp_keepidle == 0 && lsopt.tcp_keepintvl == 0
-                    && lsopt.tcp_keepcnt == 0)
+                        && lsopt.tcp_keepcnt == 0)
                 {
                     goto invalid_so_keepalive;
                 }
@@ -4180,7 +4263,7 @@ ngx_http_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             continue;
 
 #if (NGX_HAVE_KEEPALIVE_TUNABLE)
-        invalid_so_keepalive:
+invalid_so_keepalive:
 
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                                "invalid so_keepalive value: \"%s\"",
@@ -4231,7 +4314,7 @@ ngx_http_core_server_name(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         ch = value[i].data[0];
 
         if ((ch == '*' && (value[i].len < 3 || value[i].data[1] != '.'))
-            || (ch == '.' && value[i].len < 2))
+                || (ch == '.' && value[i].len < 2))
         {
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                                "server name \"%V\" is invalid", &value[i]);
@@ -4268,39 +4351,39 @@ ngx_http_core_server_name(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 #if (NGX_PCRE)
         {
-        u_char               *p;
-        ngx_regex_compile_t   rc;
-        u_char                errstr[NGX_MAX_CONF_ERRSTR];
+            u_char               *p;
+            ngx_regex_compile_t   rc;
+            u_char                errstr[NGX_MAX_CONF_ERRSTR];
 
-        if (value[i].len == 1) {
-            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                               "empty regex in server name \"%V\"", &value[i]);
-            return NGX_CONF_ERROR;
-        }
-
-        value[i].len--;
-        value[i].data++;
-
-        ngx_memzero(&rc, sizeof(ngx_regex_compile_t));
-
-        rc.pattern = value[i];
-        rc.err.len = NGX_MAX_CONF_ERRSTR;
-        rc.err.data = errstr;
-
-        for (p = value[i].data; p < value[i].data + value[i].len; p++) {
-            if (*p >= 'A' && *p <= 'Z') {
-                rc.options = NGX_REGEX_CASELESS;
-                break;
+            if (value[i].len == 1) {
+                ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
+                                   "empty regex in server name \"%V\"", &value[i]);
+                return NGX_CONF_ERROR;
             }
-        }
 
-        sn->regex = ngx_http_regex_compile(cf, &rc);
-        if (sn->regex == NULL) {
-            return NGX_CONF_ERROR;
-        }
+            value[i].len--;
+            value[i].data++;
 
-        sn->name = value[i];
-        cscf->captures = (rc.captures > 0);
+            ngx_memzero(&rc, sizeof(ngx_regex_compile_t));
+
+            rc.pattern = value[i];
+            rc.err.len = NGX_MAX_CONF_ERRSTR;
+            rc.err.data = errstr;
+
+            for (p = value[i].data; p < value[i].data + value[i].len; p++) {
+                if (*p >= 'A' && *p <= 'Z') {
+                    rc.options = NGX_REGEX_CASELESS;
+                    break;
+                }
+            }
+
+            sn->regex = ngx_http_regex_compile(cf, &rc);
+            if (sn->regex == NULL) {
+                return NGX_CONF_ERROR;
+            }
+
+            sn->name = value[i];
+            cscf->captures = (rc.captures > 0);
         }
 #else
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
@@ -4352,7 +4435,7 @@ ngx_http_core_root(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     value = cf->args->elts;
 
     if (ngx_strstr(value[1].data, "$document_root")
-        || ngx_strstr(value[1].data, "${document_root}"))
+            || ngx_strstr(value[1].data, "${document_root}"))
     {
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                            "the $document_root variable cannot be used "
@@ -4363,7 +4446,7 @@ ngx_http_core_root(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     }
 
     if (ngx_strstr(value[1].data, "$realpath_root")
-        || ngx_strstr(value[1].data, "${realpath_root}"))
+            || ngx_strstr(value[1].data, "${realpath_root}"))
     {
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                            "the $realpath_root variable cannot be used "
@@ -4377,7 +4460,7 @@ ngx_http_core_root(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     clcf->root = value[1];
 
     if (!alias && clcf->root.len > 0
-        && clcf->root.data[clcf->root.len - 1] == '/')
+            && clcf->root.data[clcf->root.len - 1] == '/')
     {
         clcf->root.len--;
     }
@@ -4472,7 +4555,7 @@ ngx_http_core_limit_except(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
                            "invalid method \"%V\"", &value[i]);
         return NGX_CONF_ERROR;
 
-    next:
+next:
         continue;
     }
 
@@ -4585,7 +4668,7 @@ ngx_http_core_set_aio(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 #endif
 
     if (ngx_strncmp(value[1].data, "threads", 7) == 0
-        && (value[1].len == 7 || value[1].data[7] == '='))
+            && (value[1].len == 7 || value[1].data[7] == '='))
     {
 #if (NGX_THREADS)
         ngx_str_t                          name;
@@ -4611,7 +4694,7 @@ ngx_http_core_set_aio(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
             if (cv.lengths != NULL) {
                 clcf->thread_pool_value = ngx_palloc(cf->pool,
-                                    sizeof(ngx_http_complex_value_t));
+                                                     sizeof(ngx_http_complex_value_t));
                 if (clcf->thread_pool_value == NULL) {
                     return NGX_CONF_ERROR;
                 }
@@ -4776,11 +4859,11 @@ ngx_http_core_error_page(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         if (overwrite == -1) {
             switch (err->status) {
-                case NGX_HTTP_TO_HTTPS:
-                case NGX_HTTPS_CERT_ERROR:
-                case NGX_HTTPS_NO_CERT:
-                case NGX_HTTP_REQUEST_HEADER_TOO_LARGE:
-                    err->overwrite = NGX_HTTP_BAD_REQUEST;
+            case NGX_HTTP_TO_HTTPS:
+            case NGX_HTTPS_CERT_ERROR:
+            case NGX_HTTPS_NO_CERT:
+            case NGX_HTTP_REQUEST_HEADER_TOO_LARGE:
+                err->overwrite = NGX_HTTP_BAD_REQUEST;
             }
         }
 
@@ -4843,7 +4926,7 @@ ngx_http_core_open_file_cache(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             continue;
         }
 
-    failed:
+failed:
 
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                            "invalid \"open_file_cache\" parameter \"%V\"",
@@ -4857,7 +4940,7 @@ ngx_http_core_open_file_cache(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     if (max == 0) {
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                        "\"open_file_cache\" must have the \"max\" parameter");
+                           "\"open_file_cache\" must have the \"max\" parameter");
         return NGX_CONF_ERROR;
     }
 

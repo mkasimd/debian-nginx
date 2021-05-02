@@ -14,11 +14,11 @@
 static ngx_int_t ngx_poll_init(ngx_cycle_t *cycle, ngx_msec_t timer);
 static void ngx_poll_done(ngx_cycle_t *cycle);
 static ngx_int_t ngx_poll_add_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                    ngx_uint_t flags);
 static ngx_int_t ngx_poll_del_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                    ngx_uint_t flags);
 static ngx_int_t ngx_poll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
-    ngx_uint_t flags);
+        ngx_uint_t flags);
 static char *ngx_poll_init_conf(ngx_cycle_t *cycle, void *conf);
 
 
@@ -77,8 +77,8 @@ ngx_poll_init(ngx_cycle_t *cycle, ngx_msec_t timer)
     }
 
     if (ngx_process >= NGX_PROCESS_WORKER
-        || cycle->old_cycle == NULL
-        || cycle->old_cycle->connection_n < cycle->connection_n)
+            || cycle->old_cycle == NULL
+            || cycle->old_cycle->connection_n < cycle->connection_n)
     {
         list = ngx_alloc(sizeof(struct pollfd) * cycle->connection_n,
                          cycle->log);
@@ -383,7 +383,7 @@ ngx_poll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)
             ev->available = -1;
 
             queue = ev->accept ? &ngx_posted_accept_events
-                               : &ngx_posted_events;
+                    : &ngx_posted_events;
 
             ngx_post_event(ev, queue);
         }

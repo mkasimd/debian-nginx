@@ -26,10 +26,10 @@ static ngx_int_t ngx_event_process_init(ngx_cycle_t *cycle);
 static char *ngx_events_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
 static char *ngx_event_connections(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                   void *conf);
 static char *ngx_event_use(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static char *ngx_event_debug_connection(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                        void *conf);
 
 static void *ngx_event_core_create_conf(ngx_cycle_t *cycle);
 static char *ngx_event_core_init_conf(ngx_cycle_t *cycle, void *conf);
@@ -80,14 +80,15 @@ ngx_atomic_t         *ngx_stat_waiting = &ngx_stat_waiting0;
 
 static ngx_command_t  ngx_events_commands[] = {
 
-    { ngx_string("events"),
-      NGX_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
-      ngx_events_block,
-      0,
-      0,
-      NULL },
+    {   ngx_string("events"),
+        NGX_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
+        ngx_events_block,
+        0,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -119,49 +120,55 @@ static ngx_str_t  event_core_name = ngx_string("event_core");
 
 static ngx_command_t  ngx_event_core_commands[] = {
 
-    { ngx_string("worker_connections"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_event_connections,
-      0,
-      0,
-      NULL },
+    {   ngx_string("worker_connections"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_event_connections,
+        0,
+        0,
+        NULL
+    },
 
-    { ngx_string("use"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_event_use,
-      0,
-      0,
-      NULL },
+    {   ngx_string("use"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_event_use,
+        0,
+        0,
+        NULL
+    },
 
-    { ngx_string("multi_accept"),
-      NGX_EVENT_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      0,
-      offsetof(ngx_event_conf_t, multi_accept),
-      NULL },
+    {   ngx_string("multi_accept"),
+        NGX_EVENT_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        0,
+        offsetof(ngx_event_conf_t, multi_accept),
+        NULL
+    },
 
-    { ngx_string("accept_mutex"),
-      NGX_EVENT_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      0,
-      offsetof(ngx_event_conf_t, accept_mutex),
-      NULL },
+    {   ngx_string("accept_mutex"),
+        NGX_EVENT_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        0,
+        offsetof(ngx_event_conf_t, accept_mutex),
+        NULL
+    },
 
-    { ngx_string("accept_mutex_delay"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_msec_slot,
-      0,
-      offsetof(ngx_event_conf_t, accept_mutex_delay),
-      NULL },
+    {   ngx_string("accept_mutex_delay"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_msec_slot,
+        0,
+        offsetof(ngx_event_conf_t, accept_mutex_delay),
+        NULL
+    },
 
-    { ngx_string("debug_connection"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_event_debug_connection,
-      0,
-      0,
-      NULL },
+    {   ngx_string("debug_connection"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_event_debug_connection,
+        0,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -229,7 +236,7 @@ ngx_process_events_and_timers(ngx_cycle_t *cycle)
 
             } else {
                 if (timer == NGX_TIMER_INFINITE
-                    || timer > ngx_accept_mutex_delay)
+                        || timer > ngx_accept_mutex_delay)
                 {
                     timer = ngx_accept_mutex_delay;
                 }
@@ -272,7 +279,7 @@ ngx_handle_read_event(ngx_event_t *rev, ngx_uint_t flags)
 
         if (!rev->active && !rev->ready) {
             if (ngx_add_event(rev, NGX_READ_EVENT, NGX_CLEAR_EVENT)
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -286,7 +293,7 @@ ngx_handle_read_event(ngx_event_t *rev, ngx_uint_t flags)
 
         if (!rev->active && !rev->ready) {
             if (ngx_add_event(rev, NGX_READ_EVENT, NGX_LEVEL_EVENT)
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -296,7 +303,7 @@ ngx_handle_read_event(ngx_event_t *rev, ngx_uint_t flags)
 
         if (rev->active && (rev->ready || (flags & NGX_CLOSE_EVENT))) {
             if (ngx_del_event(rev, NGX_READ_EVENT, NGX_LEVEL_EVENT | flags)
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -351,7 +358,7 @@ ngx_handle_write_event(ngx_event_t *wev, size_t lowat)
         if (!wev->active && !wev->ready) {
             if (ngx_add_event(wev, NGX_WRITE_EVENT,
                               NGX_CLEAR_EVENT | (lowat ? NGX_LOWAT_EVENT : 0))
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -365,7 +372,7 @@ ngx_handle_write_event(ngx_event_t *wev, size_t lowat)
 
         if (!wev->active && !wev->ready) {
             if (ngx_add_event(wev, NGX_WRITE_EVENT, NGX_LEVEL_EVENT)
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -375,7 +382,7 @@ ngx_handle_write_event(ngx_event_t *wev, size_t lowat)
 
         if (wev->active && wev->ready) {
             if (ngx_del_event(wev, NGX_WRITE_EVENT, NGX_LEVEL_EVENT)
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -488,27 +495,27 @@ ngx_event_module_init(ngx_cycle_t *cycle)
 
 #if !(NGX_WIN32)
     {
-    ngx_int_t      limit;
-    struct rlimit  rlmt;
+        ngx_int_t      limit;
+        struct rlimit  rlmt;
 
-    if (getrlimit(RLIMIT_NOFILE, &rlmt) == -1) {
-        ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_errno,
-                      "getrlimit(RLIMIT_NOFILE) failed, ignored");
+        if (getrlimit(RLIMIT_NOFILE, &rlmt) == -1) {
+            ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_errno,
+                          "getrlimit(RLIMIT_NOFILE) failed, ignored");
 
-    } else {
-        if (ecf->connections > (ngx_uint_t) rlmt.rlim_cur
-            && (ccf->rlimit_nofile == NGX_CONF_UNSET
-                || ecf->connections > (ngx_uint_t) ccf->rlimit_nofile))
-        {
-            limit = (ccf->rlimit_nofile == NGX_CONF_UNSET) ?
-                         (ngx_int_t) rlmt.rlim_cur : ccf->rlimit_nofile;
+        } else {
+            if (ecf->connections > (ngx_uint_t) rlmt.rlim_cur
+                    && (ccf->rlimit_nofile == NGX_CONF_UNSET
+                        || ecf->connections > (ngx_uint_t) ccf->rlimit_nofile))
+            {
+                limit = (ccf->rlimit_nofile == NGX_CONF_UNSET) ?
+                        (ngx_int_t) rlmt.rlim_cur : ccf->rlimit_nofile;
 
-            ngx_log_error(NGX_LOG_WARN, cycle->log, 0,
-                          "%ui worker_connections exceed "
-                          "open file resource limit: %i",
-                          ecf->connections, limit);
+                ngx_log_error(NGX_LOG_WARN, cycle->log, 0,
+                              "%ui worker_connections exceed "
+                              "open file resource limit: %i",
+                              ecf->connections, limit);
+            }
         }
-    }
     }
 #endif /* !(NGX_WIN32) */
 
@@ -533,12 +540,12 @@ ngx_event_module_init(ngx_cycle_t *cycle)
 #if (NGX_STAT_STUB)
 
     size += cl           /* ngx_stat_accepted */
-           + cl          /* ngx_stat_handled */
-           + cl          /* ngx_stat_requests */
-           + cl          /* ngx_stat_active */
-           + cl          /* ngx_stat_reading */
-           + cl          /* ngx_stat_writing */
-           + cl;         /* ngx_stat_waiting */
+            + cl          /* ngx_stat_handled */
+            + cl          /* ngx_stat_requests */
+            + cl          /* ngx_stat_active */
+            + cl          /* ngx_stat_reading */
+            + cl          /* ngx_stat_writing */
+            + cl;         /* ngx_stat_waiting */
 
 #endif
 
@@ -557,7 +564,7 @@ ngx_event_module_init(ngx_cycle_t *cycle)
 
     if (ngx_shmtx_create(&ngx_accept_mutex, (ngx_shmtx_sh_t *) shared,
                          cycle->lock_file.data)
-        != NGX_OK)
+            != NGX_OK)
     {
         return NGX_ERROR;
     }
@@ -815,7 +822,7 @@ ngx_event_process_init(ngx_cycle_t *cycle)
                 old = ls[i].previous->connection;
 
                 if (ngx_del_event(old->read, NGX_READ_EVENT, NGX_CLOSE_EVENT)
-                    == NGX_ERROR)
+                        == NGX_ERROR)
                 {
                     return NGX_ERROR;
                 }
@@ -843,7 +850,7 @@ ngx_event_process_init(ngx_cycle_t *cycle)
 
             iocpcf = ngx_event_get_conf(cycle->conf_ctx, ngx_iocp_module);
             if (ngx_event_post_acceptex(&ls[i], iocpcf->post_acceptex)
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -863,7 +870,7 @@ ngx_event_process_init(ngx_cycle_t *cycle)
 #else
 
         rev->handler = (c->type == SOCK_STREAM) ? ngx_event_accept
-                                                : ngx_event_recvmsg;
+                       : ngx_event_recvmsg;
 
 #if (NGX_HAVE_REUSEPORT)
 
@@ -884,10 +891,10 @@ ngx_event_process_init(ngx_cycle_t *cycle)
 #if (NGX_HAVE_EPOLLEXCLUSIVE)
 
         if ((ngx_event_flags & NGX_USE_EPOLL_EVENT)
-            && ccf->worker_processes > 1)
+                && ccf->worker_processes > 1)
         {
             if (ngx_add_event(rev, NGX_READ_EVENT, NGX_EXCLUSIVE_EVENT)
-                == NGX_ERROR)
+                    == NGX_ERROR)
             {
                 return NGX_ERROR;
             }
@@ -931,7 +938,7 @@ ngx_send_lowat(ngx_connection_t *c, size_t lowat)
 
     if (setsockopt(c->fd, SOL_SOCKET, SO_SNDLOWAT,
                    (const void *) &sndlowat, sizeof(int))
-        == -1)
+            == -1)
     {
         ngx_connection_error(c, ngx_socket_errno,
                              "setsockopt(SO_SNDLOWAT) failed");
@@ -982,7 +989,7 @@ ngx_events_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         if (m->create_conf) {
             (*ctx)[cf->cycle->modules[i]->ctx_index] =
-                                                     m->create_conf(cf->cycle);
+                m->create_conf(cf->cycle);
             if ((*ctx)[cf->cycle->modules[i]->ctx_index] == NULL) {
                 return NGX_CONF_ERROR;
             }
@@ -1084,17 +1091,17 @@ ngx_event_use(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
                 ecf->name = module->name->data;
 
                 if (ngx_process == NGX_PROCESS_SINGLE
-                    && old_ecf
-                    && old_ecf->use != ecf->use)
+                        && old_ecf
+                        && old_ecf->use != ecf->use)
                 {
                     ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                               "when the server runs without a master process "
-                               "the \"%V\" event type must be the same as "
-                               "in previous configuration - \"%s\" "
-                               "and it cannot be changed on the fly, "
-                               "to change it you need to stop server "
-                               "and start it again",
-                               &value[1], old_ecf->name);
+                                       "when the server runs without a master process "
+                                       "the \"%V\" event type must be the same as "
+                                       "in previous configuration - \"%s\" "
+                                       "and it cannot be changed on the fly, "
+                                       "to change it you need to stop server "
+                                       "and start it again",
+                                       &value[1], old_ecf->name);
 
                     return NGX_CONF_ERROR;
                 }

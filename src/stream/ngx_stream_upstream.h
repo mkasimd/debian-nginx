@@ -29,7 +29,7 @@
 
 typedef struct {
     ngx_array_t                        upstreams;
-                                           /* ngx_stream_upstream_srv_conf_t */
+    /* ngx_stream_upstream_srv_conf_t */
 } ngx_stream_upstream_main_conf_t;
 
 
@@ -37,9 +37,9 @@ typedef struct ngx_stream_upstream_srv_conf_s  ngx_stream_upstream_srv_conf_t;
 
 
 typedef ngx_int_t (*ngx_stream_upstream_init_pt)(ngx_conf_t *cf,
-    ngx_stream_upstream_srv_conf_t *us);
+        ngx_stream_upstream_srv_conf_t *us);
 typedef ngx_int_t (*ngx_stream_upstream_init_peer_pt)(ngx_stream_session_t *s,
-    ngx_stream_upstream_srv_conf_t *us);
+        ngx_stream_upstream_srv_conf_t *us);
 
 
 typedef struct {
@@ -72,7 +72,7 @@ struct ngx_stream_upstream_srv_conf_s {
     void                             **srv_conf;
 
     ngx_array_t                       *servers;
-                                              /* ngx_stream_upstream_server_t */
+    /* ngx_stream_upstream_server_t */
 
     ngx_uint_t                         flags;
     ngx_str_t                          host;
@@ -146,7 +146,7 @@ typedef struct {
 
 
 ngx_stream_upstream_srv_conf_t *ngx_stream_upstream_add(ngx_conf_t *cf,
-    ngx_url_t *u, ngx_uint_t flags);
+        ngx_url_t *u, ngx_uint_t flags);
 
 
 #define ngx_stream_conf_upstream_srv_conf(uscf, module)                       \

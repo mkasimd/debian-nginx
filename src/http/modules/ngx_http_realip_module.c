@@ -35,14 +35,14 @@ typedef struct {
 
 static ngx_int_t ngx_http_realip_handler(ngx_http_request_t *r);
 static ngx_int_t ngx_http_realip_set_addr(ngx_http_request_t *r,
-    ngx_addr_t *addr);
+        ngx_addr_t *addr);
 static void ngx_http_realip_cleanup(void *data);
 static char *ngx_http_realip_from(ngx_conf_t *cf, ngx_command_t *cmd,
-    void *conf);
+                                  void *conf);
 static char *ngx_http_realip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static void *ngx_http_realip_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_realip_merge_loc_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+        void *parent, void *child);
 static ngx_int_t ngx_http_realip_add_variables(ngx_conf_t *cf);
 static ngx_int_t ngx_http_realip_init(ngx_conf_t *cf);
 static ngx_http_realip_ctx_t *ngx_http_realip_get_module_ctx(
@@ -50,35 +50,38 @@ static ngx_http_realip_ctx_t *ngx_http_realip_get_module_ctx(
 
 
 static ngx_int_t ngx_http_realip_remote_addr_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data);
+        ngx_http_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_http_realip_remote_port_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data);
+        ngx_http_variable_value_t *v, uintptr_t data);
 
 
 static ngx_command_t  ngx_http_realip_commands[] = {
 
-    { ngx_string("set_real_ip_from"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_http_realip_from,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("set_real_ip_from"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_http_realip_from,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("real_ip_header"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_http_realip,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("real_ip_header"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_http_realip,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("real_ip_recursive"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_realip_loc_conf_t, recursive),
-      NULL },
+    {   ngx_string("real_ip_recursive"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_realip_loc_conf_t, recursive),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -116,13 +119,15 @@ ngx_module_t  ngx_http_realip_module = {
 
 static ngx_http_variable_t  ngx_http_realip_vars[] = {
 
-    { ngx_string("realip_remote_addr"), NULL,
-      ngx_http_realip_remote_addr_variable, 0, 0, 0 },
+    {   ngx_string("realip_remote_addr"), NULL,
+        ngx_http_realip_remote_addr_variable, 0, 0, 0
+    },
 
-    { ngx_string("realip_remote_port"), NULL,
-      ngx_http_realip_remote_port_variable, 0, 0, 0 },
+    {   ngx_string("realip_remote_port"), NULL,
+        ngx_http_realip_remote_port_variable, 0, 0, 0
+    },
 
-      ngx_http_null_variable
+    ngx_http_null_variable
 };
 
 
@@ -211,8 +216,8 @@ ngx_http_realip_handler(ngx_http_request_t *r)
             }
 
             if (hash == header[i].hash
-                && len == header[i].key.len
-                && ngx_strncmp(p, header[i].lowcase_key, len) == 0)
+                    && len == header[i].key.len
+                    && ngx_strncmp(p, header[i].lowcase_key, len) == 0)
             {
                 value = &header[i].value;
                 xfwd = NULL;
@@ -234,7 +239,7 @@ found:
 
     if (ngx_http_get_forwarded_addr(r, &addr, xfwd, value, rlcf->from,
                                     rlcf->recursive)
-        != NGX_DECLINED)
+            != NGX_DECLINED)
     {
         if (rlcf->type == NGX_HTTP_REALIP_PROXY) {
             ngx_inet_set_port(addr.sockaddr, c->proxy_protocol->src_port);
@@ -571,7 +576,7 @@ ngx_http_realip_get_module_ctx(ngx_http_request_t *r)
 
 static ngx_int_t
 ngx_http_realip_remote_addr_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data)
+                                     ngx_http_variable_value_t *v, uintptr_t data)
 {
     ngx_str_t              *addr_text;
     ngx_http_realip_ctx_t  *ctx;
@@ -592,7 +597,7 @@ ngx_http_realip_remote_addr_variable(ngx_http_request_t *r,
 
 static ngx_int_t
 ngx_http_realip_remote_port_variable(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data)
+                                     ngx_http_variable_value_t *v, uintptr_t data)
 {
     ngx_uint_t              port;
     struct sockaddr        *sa;

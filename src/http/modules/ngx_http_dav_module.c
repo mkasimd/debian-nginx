@@ -38,28 +38,28 @@ static void ngx_http_dav_put_handler(ngx_http_request_t *r);
 
 static ngx_int_t ngx_http_dav_delete_handler(ngx_http_request_t *r);
 static ngx_int_t ngx_http_dav_delete_path(ngx_http_request_t *r,
-    ngx_str_t *path, ngx_uint_t dir);
+        ngx_str_t *path, ngx_uint_t dir);
 static ngx_int_t ngx_http_dav_delete_dir(ngx_tree_ctx_t *ctx, ngx_str_t *path);
 static ngx_int_t ngx_http_dav_delete_file(ngx_tree_ctx_t *ctx, ngx_str_t *path);
 static ngx_int_t ngx_http_dav_noop(ngx_tree_ctx_t *ctx, ngx_str_t *path);
 
 static ngx_int_t ngx_http_dav_mkcol_handler(ngx_http_request_t *r,
-    ngx_http_dav_loc_conf_t *dlcf);
+        ngx_http_dav_loc_conf_t *dlcf);
 
 static ngx_int_t ngx_http_dav_copy_move_handler(ngx_http_request_t *r);
 static ngx_int_t ngx_http_dav_copy_dir(ngx_tree_ctx_t *ctx, ngx_str_t *path);
 static ngx_int_t ngx_http_dav_copy_dir_time(ngx_tree_ctx_t *ctx,
-    ngx_str_t *path);
+        ngx_str_t *path);
 static ngx_int_t ngx_http_dav_copy_tree_file(ngx_tree_ctx_t *ctx,
-    ngx_str_t *path);
+        ngx_str_t *path);
 
 static ngx_int_t ngx_http_dav_depth(ngx_http_request_t *r, ngx_int_t dflt);
 static ngx_int_t ngx_http_dav_error(ngx_log_t *log, ngx_err_t err,
-    ngx_int_t not_found, char *failed, u_char *path);
+                                    ngx_int_t not_found, char *failed, u_char *path);
 static ngx_int_t ngx_http_dav_location(ngx_http_request_t *r);
 static void *ngx_http_dav_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_dav_merge_loc_conf(ngx_conf_t *cf,
-    void *parent, void *child);
+        void *parent, void *child);
 static ngx_int_t ngx_http_dav_init(ngx_conf_t *cf);
 
 
@@ -76,35 +76,39 @@ static ngx_conf_bitmask_t  ngx_http_dav_methods_mask[] = {
 
 static ngx_command_t  ngx_http_dav_commands[] = {
 
-    { ngx_string("dav_methods"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
-      ngx_conf_set_bitmask_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_dav_loc_conf_t, methods),
-      &ngx_http_dav_methods_mask },
+    {   ngx_string("dav_methods"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
+        ngx_conf_set_bitmask_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_dav_loc_conf_t, methods),
+        &ngx_http_dav_methods_mask
+    },
 
-    { ngx_string("create_full_put_path"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
-      ngx_conf_set_flag_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_dav_loc_conf_t, create_full_put_path),
-      NULL },
+    {   ngx_string("create_full_put_path"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_dav_loc_conf_t, create_full_put_path),
+        NULL
+    },
 
-    { ngx_string("min_delete_depth"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_dav_loc_conf_t, min_delete_depth),
-      NULL },
+    {   ngx_string("min_delete_depth"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_dav_loc_conf_t, min_delete_depth),
+        NULL
+    },
 
-    { ngx_string("dav_access"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE123,
-      ngx_conf_set_access_slot,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_dav_loc_conf_t, access),
-      NULL },
+    {   ngx_string("dav_access"),
+        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE123,
+        ngx_conf_set_access_slot,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        offsetof(ngx_http_dav_loc_conf_t, access),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -518,7 +522,7 @@ ngx_http_dav_mkcol_handler(ngx_http_request_t *r, ngx_http_dav_loc_conf_t *dlcf)
                    "http mkcol path: \"%s\"", path.data);
 
     if (ngx_create_dir(path.data, ngx_dir_access(dlcf->access))
-        != NGX_FILE_ERROR)
+            != NGX_FILE_ERROR)
     {
         if (ngx_http_dav_location(r) != NGX_OK) {
             return NGX_HTTP_INTERNAL_SERVER_ERROR;
@@ -582,7 +586,7 @@ ngx_http_dav_copy_move_handler(ngx_http_request_t *r)
 
     if (r->connection->ssl) {
         if (ngx_strncmp(dest->value.data, "https://", sizeof("https://") - 1)
-            != 0)
+                != 0)
         {
             goto invalid_destination;
         }
@@ -593,7 +597,7 @@ ngx_http_dav_copy_move_handler(ngx_http_request_t *r)
 #endif
     {
         if (ngx_strncmp(dest->value.data, "http://", sizeof("http://") - 1)
-            != 0)
+                != 0)
         {
             goto invalid_destination;
         }
@@ -635,7 +639,7 @@ destination_done:
     }
 
     if ((r->uri.data[r->uri.len - 1] == '/' && *(last - 1) != '/')
-        || (r->uri.data[r->uri.len - 1] != '/' && *(last - 1) == '/'))
+            || (r->uri.data[r->uri.len - 1] != '/' && *(last - 1) == '/'))
     {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
                       "both URI \"%V\" and \"Destination\" URI \"%V\" "
@@ -791,7 +795,7 @@ overwrite_done:
         }
 
         if (ngx_create_dir(copy.path.data, ngx_file_access(&fi))
-            == NGX_FILE_ERROR)
+                == NGX_FILE_ERROR)
         {
             return ngx_http_dav_error(r->connection->log, ngx_errno,
                                       NGX_HTTP_NOT_FOUND,
@@ -920,24 +924,24 @@ ngx_http_dav_copy_dir_time(ngx_tree_ctx_t *ctx, ngx_str_t *path)
 
 #if (NGX_WIN32)
     {
-    ngx_fd_t  fd;
+        ngx_fd_t  fd;
 
-    fd = ngx_open_file(dir, NGX_FILE_RDWR, NGX_FILE_OPEN, 0);
+        fd = ngx_open_file(dir, NGX_FILE_RDWR, NGX_FILE_OPEN, 0);
 
-    if (fd == NGX_INVALID_FILE) {
-        (void) ngx_http_dav_error(ctx->log, ngx_errno, 0, ngx_open_file_n, dir);
-        goto failed;
-    }
+        if (fd == NGX_INVALID_FILE) {
+            (void) ngx_http_dav_error(ctx->log, ngx_errno, 0, ngx_open_file_n, dir);
+            goto failed;
+        }
 
-    if (ngx_set_file_time(NULL, fd, ctx->mtime) != NGX_OK) {
-        ngx_log_error(NGX_LOG_ALERT, ctx->log, ngx_errno,
-                      ngx_set_file_time_n " \"%s\" failed", dir);
-    }
+        if (ngx_set_file_time(NULL, fd, ctx->mtime) != NGX_OK) {
+            ngx_log_error(NGX_LOG_ALERT, ctx->log, ngx_errno,
+                          ngx_set_file_time_n " \"%s\" failed", dir);
+        }
 
-    if (ngx_close_file(fd) == NGX_FILE_ERROR) {
-        ngx_log_error(NGX_LOG_ALERT, ctx->log, ngx_errno,
-                      ngx_close_file_n " \"%s\" failed", dir);
-    }
+        if (ngx_close_file(fd) == NGX_FILE_ERROR) {
+            ngx_log_error(NGX_LOG_ALERT, ctx->log, ngx_errno,
+                          ngx_close_file_n " \"%s\" failed", dir);
+        }
     }
 
 failed:
@@ -1021,7 +1025,7 @@ ngx_http_dav_depth(ngx_http_request_t *r, ngx_int_t dflt)
     } else {
 
         if (depth->value.len == sizeof("infinity") - 1
-            && ngx_strcmp(depth->value.data, "infinity") == 0)
+                && ngx_strcmp(depth->value.data, "infinity") == 0)
         {
             return NGX_HTTP_DAV_INFINITY_DEPTH;
         }
@@ -1037,7 +1041,7 @@ ngx_http_dav_depth(ngx_http_request_t *r, ngx_int_t dflt)
 
 static ngx_int_t
 ngx_http_dav_error(ngx_log_t *log, ngx_err_t err, ngx_int_t not_found,
-    char *failed, u_char *path)
+                   char *failed, u_char *path)
 {
     ngx_int_t   rc;
     ngx_uint_t  level;
@@ -1116,10 +1120,10 @@ ngx_http_dav_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
     ngx_http_dav_loc_conf_t  *conf = child;
 
     ngx_conf_merge_bitmask_value(conf->methods, prev->methods,
-                         (NGX_CONF_BITMASK_SET|NGX_HTTP_DAV_OFF));
+                                 (NGX_CONF_BITMASK_SET|NGX_HTTP_DAV_OFF));
 
     ngx_conf_merge_uint_value(conf->min_delete_depth,
-                         prev->min_delete_depth, 0);
+                              prev->min_delete_depth, 0);
 
     ngx_conf_merge_uint_value(conf->access, prev->access, 0600);
 

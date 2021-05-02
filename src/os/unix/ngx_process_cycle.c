@@ -12,9 +12,9 @@
 
 
 static void ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n,
-    ngx_int_t type);
+                                       ngx_int_t type);
 static void ngx_start_cache_manager_processes(ngx_cycle_t *cycle,
-    ngx_uint_t respawn);
+        ngx_uint_t respawn);
 static void ngx_pass_open_channel(ngx_cycle_t *cycle);
 static void ngx_signal_worker_processes(ngx_cycle_t *cycle, int signo);
 static ngx_uint_t ngx_reap_children(ngx_cycle_t *cycle);
@@ -194,7 +194,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
                 ngx_signal_worker_processes(cycle, SIGKILL);
             } else {
                 ngx_signal_worker_processes(cycle,
-                                       ngx_signal_value(NGX_TERMINATE_SIGNAL));
+                                            ngx_signal_value(NGX_TERMINATE_SIGNAL));
             }
 
             continue;
@@ -406,17 +406,17 @@ ngx_pass_open_channel(ngx_cycle_t *cycle)
     for (i = 0; i < ngx_last_process; i++) {
 
         if (i == ngx_process_slot
-            || ngx_processes[i].pid == -1
-            || ngx_processes[i].channel[0] == -1)
+                || ngx_processes[i].pid == -1
+                || ngx_processes[i].channel[0] == -1)
         {
             continue;
         }
 
         ngx_log_debug6(NGX_LOG_DEBUG_CORE, cycle->log, 0,
-                      "pass channel s:%i pid:%P fd:%d to s:%i pid:%P fd:%d",
-                      ch.slot, ch.pid, ch.fd,
-                      i, ngx_processes[i].pid,
-                      ngx_processes[i].channel[0]);
+                       "pass channel s:%i pid:%P fd:%d to s:%i pid:%P fd:%d",
+                       ch.slot, ch.pid, ch.fd,
+                       i, ngx_processes[i].pid,
+                       ngx_processes[i].channel[0]);
 
         /* TODO: NGX_AGAIN */
 
@@ -486,7 +486,7 @@ ngx_signal_worker_processes(ngx_cycle_t *cycle, int signo)
         }
 
         if (ngx_processes[i].exiting
-            && signo == ngx_signal_value(NGX_SHUTDOWN_SIGNAL))
+                && signo == ngx_signal_value(NGX_SHUTDOWN_SIGNAL))
         {
             continue;
         }
@@ -494,7 +494,7 @@ ngx_signal_worker_processes(ngx_cycle_t *cycle, int signo)
         if (ch.command) {
             if (ngx_write_channel(ngx_processes[i].channel[0],
                                   &ch, sizeof(ngx_channel_t), cycle->log)
-                == NGX_OK)
+                    == NGX_OK)
             {
                 if (signo != ngx_signal_value(NGX_REOPEN_SIGNAL)) {
                     ngx_processes[i].exiting = 1;
@@ -571,8 +571,8 @@ ngx_reap_children(ngx_cycle_t *cycle)
 
                 for (n = 0; n < ngx_last_process; n++) {
                     if (ngx_processes[n].exited
-                        || ngx_processes[n].pid == -1
-                        || ngx_processes[n].channel[0] == -1)
+                            || ngx_processes[n].pid == -1
+                            || ngx_processes[n].channel[0] == -1)
                     {
                         continue;
                     }
@@ -589,14 +589,14 @@ ngx_reap_children(ngx_cycle_t *cycle)
             }
 
             if (ngx_processes[i].respawn
-                && !ngx_processes[i].exiting
-                && !ngx_terminate
-                && !ngx_quit)
+                    && !ngx_processes[i].exiting
+                    && !ngx_terminate
+                    && !ngx_quit)
             {
                 if (ngx_spawn_process(cycle, ngx_processes[i].proc,
                                       ngx_processes[i].data,
                                       ngx_processes[i].name, i)
-                    == NGX_INVALID_PID)
+                        == NGX_INVALID_PID)
                 {
                     ngx_log_error(NGX_LOG_ALERT, cycle->log, 0,
                                   "could not respawn %s",
@@ -619,7 +619,7 @@ ngx_reap_children(ngx_cycle_t *cycle)
 
                 if (ngx_rename_file((char *) ccf->oldpid.data,
                                     (char *) ccf->pid.data)
-                    == NGX_FILE_ERROR)
+                        == NGX_FILE_ERROR)
                 {
                     ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_errno,
                                   ngx_rename_file_n " %s back to %s failed "
@@ -935,7 +935,7 @@ ngx_worker_process_init(ngx_cycle_t *cycle, ngx_int_t worker)
 
     if (ngx_add_channel_event(cycle, ngx_channel, NGX_READ_EVENT,
                               ngx_channel_handler)
-        == NGX_ERROR)
+            == NGX_ERROR)
     {
         /* fatal */
         exit(2);
@@ -959,10 +959,10 @@ ngx_worker_process_exit(ngx_cycle_t *cycle)
         c = cycle->connections;
         for (i = 0; i < cycle->connection_n; i++) {
             if (c[i].fd != -1
-                && c[i].read
-                && !c[i].read->accept
-                && !c[i].read->channel
-                && !c[i].read->resolver)
+                    && c[i].read
+                    && !c[i].read->accept
+                    && !c[i].read->channel
+                    && !c[i].read->resolver)
             {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, 0,
                               "*%uA open socket #%d left in connection %ui",

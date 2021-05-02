@@ -111,17 +111,17 @@ static void ngx_epoll_test_rdhup(ngx_cycle_t *cycle);
 #endif
 static void ngx_epoll_done(ngx_cycle_t *cycle);
 static ngx_int_t ngx_epoll_add_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                     ngx_uint_t flags);
 static ngx_int_t ngx_epoll_del_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                     ngx_uint_t flags);
 static ngx_int_t ngx_epoll_add_connection(ngx_connection_t *c);
 static ngx_int_t ngx_epoll_del_connection(ngx_connection_t *c,
-    ngx_uint_t flags);
+        ngx_uint_t flags);
 #if (NGX_HAVE_EVENTFD)
 static ngx_int_t ngx_epoll_notify(ngx_event_handler_pt handler);
 #endif
 static ngx_int_t ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
-    ngx_uint_t flags);
+        ngx_uint_t flags);
 
 #if (NGX_HAVE_FILE_AIO)
 static void ngx_epoll_eventfd_handler(ngx_event_t *ev);
@@ -158,21 +158,23 @@ static ngx_str_t      epoll_name = ngx_string("epoll");
 
 static ngx_command_t  ngx_epoll_commands[] = {
 
-    { ngx_string("epoll_events"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      0,
-      offsetof(ngx_epoll_conf_t, events),
-      NULL },
+    {   ngx_string("epoll_events"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        0,
+        offsetof(ngx_epoll_conf_t, events),
+        NULL
+    },
 
-    { ngx_string("worker_aio_requests"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      0,
-      offsetof(ngx_epoll_conf_t, aio_requests),
-      NULL },
+    {   ngx_string("worker_aio_requests"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        0,
+        offsetof(ngx_epoll_conf_t, aio_requests),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -239,7 +241,7 @@ io_destroy(aio_context_t ctx)
 
 static int
 io_getevents(aio_context_t ctx, long min_nr, long nr, struct io_event *events,
-    struct timespec *tmo)
+             struct timespec *tmo)
 {
     return syscall(SYS_io_getevents, ctx, min_nr, nr, events, tmo);
 }
@@ -418,7 +420,7 @@ ngx_epoll_notify_init(ngx_log_t *log)
 
         if (close(notify_fd) == -1) {
             ngx_log_error(NGX_LOG_ALERT, log, ngx_errno,
-                            "eventfd close() failed");
+                          "eventfd close() failed");
         }
 
         return NGX_ERROR;
@@ -893,7 +895,7 @@ ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)
 
             if (flags & NGX_POST_EVENTS) {
                 queue = rev->accept ? &ngx_posted_accept_events
-                                    : &ngx_posted_events;
+                        : &ngx_posted_events;
 
                 ngx_post_event(rev, queue);
 
@@ -990,8 +992,8 @@ ngx_epoll_eventfd_handler(ngx_event_t *ev)
 
                 ngx_log_debug4(NGX_LOG_DEBUG_EVENT, ev->log, 0,
                                "io_event: %XL %XL %L %L",
-                                event[i].data, event[i].obj,
-                                event[i].res, event[i].res2);
+                               event[i].data, event[i].obj,
+                               event[i].res, event[i].res2);
 
                 e = (ngx_event_t *) (uintptr_t) event[i].data;
 

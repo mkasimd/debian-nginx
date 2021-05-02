@@ -38,13 +38,13 @@ typedef struct {
 static ngx_int_t ngx_devpoll_init(ngx_cycle_t *cycle, ngx_msec_t timer);
 static void ngx_devpoll_done(ngx_cycle_t *cycle);
 static ngx_int_t ngx_devpoll_add_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                       ngx_uint_t flags);
 static ngx_int_t ngx_devpoll_del_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                       ngx_uint_t flags);
 static ngx_int_t ngx_devpoll_set_event(ngx_event_t *ev, ngx_int_t event,
-    ngx_uint_t flags);
+                                       ngx_uint_t flags);
 static ngx_int_t ngx_devpoll_process_events(ngx_cycle_t *cycle,
-    ngx_msec_t timer, ngx_uint_t flags);
+        ngx_msec_t timer, ngx_uint_t flags);
 
 static void *ngx_devpoll_create_conf(ngx_cycle_t *cycle);
 static char *ngx_devpoll_init_conf(ngx_cycle_t *cycle, void *conf);
@@ -60,21 +60,23 @@ static ngx_str_t      devpoll_name = ngx_string("/dev/poll");
 
 static ngx_command_t  ngx_devpoll_commands[] = {
 
-    { ngx_string("devpoll_changes"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      0,
-      offsetof(ngx_devpoll_conf_t, changes),
-      NULL },
+    {   ngx_string("devpoll_changes"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        0,
+        offsetof(ngx_devpoll_conf_t, changes),
+        NULL
+    },
 
-    { ngx_string("devpoll_events"),
-      NGX_EVENT_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_num_slot,
-      0,
-      offsetof(ngx_devpoll_conf_t, events),
-      NULL },
+    {   ngx_string("devpoll_events"),
+        NGX_EVENT_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_num_slot,
+        0,
+        offsetof(ngx_devpoll_conf_t, events),
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -338,7 +340,7 @@ ngx_devpoll_set_event(ngx_event_t *ev, ngx_int_t event, ngx_uint_t flags)
 
 static ngx_int_t
 ngx_devpoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
-    ngx_uint_t flags)
+                           ngx_uint_t flags)
 {
     int                 events, revents, rc;
     size_t              n;
@@ -426,28 +428,28 @@ ngx_devpoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 
             case -1:
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_errno,
-                    "ioctl(DP_ISPOLLED) failed for socket %d, event %04Xd",
-                    fd, revents);
+                              "ioctl(DP_ISPOLLED) failed for socket %d, event %04Xd",
+                              fd, revents);
                 break;
 
             case 0:
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, 0,
-                    "phantom event %04Xd for closed and removed socket %d",
-                    revents, fd);
+                              "phantom event %04Xd for closed and removed socket %d",
+                              revents, fd);
                 break;
 
             default:
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, 0,
-                    "unexpected event %04Xd for closed and removed socket %d, "
-                    "ioctl(DP_ISPOLLED) returned rc:%d, fd:%d, event %04Xd",
-                    revents, fd, rc, pfd.fd, pfd.revents);
+                              "unexpected event %04Xd for closed and removed socket %d, "
+                              "ioctl(DP_ISPOLLED) returned rc:%d, fd:%d, event %04Xd",
+                              revents, fd, rc, pfd.fd, pfd.revents);
 
                 pfd.fd = fd;
                 pfd.events = POLLREMOVE;
                 pfd.revents = 0;
 
                 if (write(dp, &pfd, sizeof(struct pollfd))
-                    != (ssize_t) sizeof(struct pollfd))
+                        != (ssize_t) sizeof(struct pollfd))
                 {
                     ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_errno,
                                   "write(/dev/poll) for %d failed", fd);
@@ -470,8 +472,8 @@ ngx_devpoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 
         if (revents & (POLLERR|POLLHUP|POLLNVAL)) {
             ngx_log_debug3(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
-                          "ioctl(DP_POLL) error fd:%d ev:%04Xd rev:%04Xd",
-                          fd, event_list[i].events, revents);
+                           "ioctl(DP_POLL) error fd:%d ev:%04Xd rev:%04Xd",
+                           fd, event_list[i].events, revents);
         }
 
         if (revents & ~(POLLIN|POLLOUT|POLLERR|POLLHUP|POLLNVAL)) {
@@ -499,7 +501,7 @@ ngx_devpoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 
             if (flags & NGX_POST_EVENTS) {
                 queue = rev->accept ? &ngx_posted_accept_events
-                                    : &ngx_posted_events;
+                        : &ngx_posted_events;
 
                 ngx_post_event(rev, queue);
 

@@ -15,7 +15,7 @@
 static ngx_int_t ngx_mail_pop3_user(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_pop3_pass(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_pop3_capa(ngx_mail_session_t *s, ngx_connection_t *c,
-    ngx_int_t stls);
+                                    ngx_int_t stls);
 static ngx_int_t ngx_mail_pop3_stls(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_pop3_apop(ngx_mail_session_t *s, ngx_connection_t *c);
 static ngx_int_t ngx_mail_pop3_auth(ngx_mail_session_t *s, ngx_connection_t *c);
@@ -40,7 +40,7 @@ ngx_mail_pop3_init_session(ngx_mail_session_t *s, ngx_connection_t *c)
     cscf = ngx_mail_get_module_srv_conf(s, ngx_mail_core_module);
 
     if (pscf->auth_methods
-        & (NGX_MAIL_AUTH_APOP_ENABLED|NGX_MAIL_AUTH_CRAM_MD5_ENABLED))
+            & (NGX_MAIL_AUTH_APOP_ENABLED|NGX_MAIL_AUTH_CRAM_MD5_ENABLED))
     {
         if (ngx_mail_salt(s, c, cscf) != NGX_OK) {
             ngx_mail_session_internal_server_error(s);
@@ -96,7 +96,7 @@ ngx_mail_pop3_init_protocol(ngx_event_t *rev)
 
     if (s->buffer == NULL) {
         if (ngx_array_init(&s->args, c->pool, 2, sizeof(ngx_str_t))
-            == NGX_ERROR)
+                == NGX_ERROR)
         {
             ngx_mail_session_internal_server_error(s);
             return;
@@ -278,7 +278,7 @@ ngx_mail_pop3_auth_state(ngx_event_t *rev)
 
         ngx_str_set(&s->out, pop3_invalid_command);
 
-        /* fall through */
+    /* fall through */
 
     case NGX_OK:
 

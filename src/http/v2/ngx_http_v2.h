@@ -61,7 +61,7 @@ typedef struct ngx_http_v2_out_frame_s    ngx_http_v2_out_frame_t;
 
 
 typedef u_char *(*ngx_http_v2_handler_pt) (ngx_http_v2_connection_t *h2c,
-    u_char *pos, u_char *end);
+        u_char *pos, u_char *end);
 
 
 typedef struct {
@@ -226,7 +226,7 @@ struct ngx_http_v2_out_frame_s {
     ngx_chain_t                     *first;
     ngx_chain_t                     *last;
     ngx_int_t                      (*handler)(ngx_http_v2_connection_t *h2c,
-                                        ngx_http_v2_out_frame_t *frame);
+            ngx_http_v2_out_frame_t *frame);
 
     ngx_http_v2_stream_t            *stream;
     size_t                           length;
@@ -238,7 +238,7 @@ struct ngx_http_v2_out_frame_s {
 
 static ngx_inline void
 ngx_http_v2_queue_frame(ngx_http_v2_connection_t *h2c,
-    ngx_http_v2_out_frame_t *frame)
+                        ngx_http_v2_out_frame_t *frame)
 {
     ngx_http_v2_out_frame_t  **out;
 
@@ -249,9 +249,9 @@ ngx_http_v2_queue_frame(ngx_http_v2_connection_t *h2c,
         }
 
         if ((*out)->stream->node->rank < frame->stream->node->rank
-            || ((*out)->stream->node->rank == frame->stream->node->rank
-                && (*out)->stream->node->rel_weight
-                   >= frame->stream->node->rel_weight))
+                || ((*out)->stream->node->rank == frame->stream->node->rank
+                    && (*out)->stream->node->rel_weight
+                    >= frame->stream->node->rel_weight))
         {
             break;
         }
@@ -264,7 +264,7 @@ ngx_http_v2_queue_frame(ngx_http_v2_connection_t *h2c,
 
 static ngx_inline void
 ngx_http_v2_queue_blocked_frame(ngx_http_v2_connection_t *h2c,
-    ngx_http_v2_out_frame_t *frame)
+                                ngx_http_v2_out_frame_t *frame)
 {
     ngx_http_v2_out_frame_t  **out;
 
@@ -282,7 +282,7 @@ ngx_http_v2_queue_blocked_frame(ngx_http_v2_connection_t *h2c,
 
 static ngx_inline void
 ngx_http_v2_queue_ordered_frame(ngx_http_v2_connection_t *h2c,
-    ngx_http_v2_out_frame_t *frame)
+                                ngx_http_v2_out_frame_t *frame)
 {
     frame->next = h2c->last_out;
     h2c->last_out = frame;
@@ -295,7 +295,7 @@ ngx_int_t ngx_http_v2_read_request_body(ngx_http_request_t *r);
 ngx_int_t ngx_http_v2_read_unbuffered_request_body(ngx_http_request_t *r);
 
 ngx_http_v2_stream_t *ngx_http_v2_push_stream(ngx_http_v2_stream_t *parent,
-    ngx_str_t *path);
+        ngx_str_t *path);
 
 void ngx_http_v2_close_stream(ngx_http_v2_stream_t *stream, ngx_int_t rc);
 
@@ -306,16 +306,16 @@ ngx_str_t *ngx_http_v2_get_static_name(ngx_uint_t index);
 ngx_str_t *ngx_http_v2_get_static_value(ngx_uint_t index);
 
 ngx_int_t ngx_http_v2_get_indexed_header(ngx_http_v2_connection_t *h2c,
-    ngx_uint_t index, ngx_uint_t name_only);
+        ngx_uint_t index, ngx_uint_t name_only);
 ngx_int_t ngx_http_v2_add_header(ngx_http_v2_connection_t *h2c,
-    ngx_http_v2_header_t *header);
+                                 ngx_http_v2_header_t *header);
 ngx_int_t ngx_http_v2_table_size(ngx_http_v2_connection_t *h2c, size_t size);
 
 
 ngx_int_t ngx_http_v2_huff_decode(u_char *state, u_char *src, size_t len,
-    u_char **dst, ngx_uint_t last, ngx_log_t *log);
+                                  u_char **dst, ngx_uint_t last, ngx_log_t *log);
 size_t ngx_http_v2_huff_encode(u_char *src, size_t len, u_char *dst,
-    ngx_uint_t lower);
+                               ngx_uint_t lower);
 
 
 #define ngx_http_v2_prefix(bits)  ((1 << (bits)) - 1)
@@ -417,7 +417,7 @@ size_t ngx_http_v2_huff_encode(u_char *src, size_t len, u_char *dst,
 
 
 u_char *ngx_http_v2_string_encode(u_char *dst, u_char *src, size_t len,
-    u_char *tmp, ngx_uint_t lower);
+                                  u_char *tmp, ngx_uint_t lower);
 
 
 #endif /* _NGX_HTTP_V2_H_INCLUDED_ */

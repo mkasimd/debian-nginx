@@ -33,18 +33,18 @@ typedef struct {
 
 #if (NGX_HTTP_SSI)
 static ngx_int_t ngx_http_perl_ssi(ngx_http_request_t *r,
-    ngx_http_ssi_ctx_t *ssi_ctx, ngx_str_t **params);
+                                   ngx_http_ssi_ctx_t *ssi_ctx, ngx_str_t **params);
 #endif
 
 static char *ngx_http_perl_init_interpreter(ngx_conf_t *cf,
-    ngx_http_perl_main_conf_t *pmcf);
+        ngx_http_perl_main_conf_t *pmcf);
 static PerlInterpreter *ngx_http_perl_create_interpreter(ngx_conf_t *cf,
-    ngx_http_perl_main_conf_t *pmcf);
+        ngx_http_perl_main_conf_t *pmcf);
 static ngx_int_t ngx_http_perl_run_requires(pTHX_ ngx_array_t *requires,
-    ngx_log_t *log);
+        ngx_log_t *log);
 static ngx_int_t ngx_http_perl_call_handler(pTHX_ ngx_http_request_t *r,
-    ngx_http_perl_ctx_t *ctx, HV *nginx, SV *sub, SV **args,
-    ngx_str_t *handler, ngx_str_t *rv);
+        ngx_http_perl_ctx_t *ctx, HV *nginx, SV *sub, SV **args,
+        ngx_str_t *handler, ngx_str_t *rv);
 static void ngx_http_perl_eval_anon_sub(pTHX_ ngx_str_t *handler, SV **sv);
 
 static ngx_int_t ngx_http_perl_preconfiguration(ngx_conf_t *cf);
@@ -52,7 +52,7 @@ static void *ngx_http_perl_create_main_conf(ngx_conf_t *cf);
 static char *ngx_http_perl_init_main_conf(ngx_conf_t *cf, void *conf);
 static void *ngx_http_perl_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_perl_merge_loc_conf(ngx_conf_t *cf, void *parent,
-    void *child);
+        void *child);
 static char *ngx_http_perl(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static char *ngx_http_perl_set(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
@@ -66,35 +66,39 @@ static void ngx_http_perl_exit(ngx_cycle_t *cycle);
 
 static ngx_command_t  ngx_http_perl_commands[] = {
 
-    { ngx_string("perl_modules"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_str_array_slot,
-      NGX_HTTP_MAIN_CONF_OFFSET,
-      offsetof(ngx_http_perl_main_conf_t, modules),
-      NULL },
+    {   ngx_string("perl_modules"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_str_array_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET,
+        offsetof(ngx_http_perl_main_conf_t, modules),
+        NULL
+    },
 
-    { ngx_string("perl_require"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_str_array_slot,
-      NGX_HTTP_MAIN_CONF_OFFSET,
-      offsetof(ngx_http_perl_main_conf_t, requires),
-      NULL },
+    {   ngx_string("perl_require"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1,
+        ngx_conf_set_str_array_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET,
+        offsetof(ngx_http_perl_main_conf_t, requires),
+        NULL
+    },
 
-    { ngx_string("perl"),
-      NGX_HTTP_LOC_CONF|NGX_HTTP_LMT_CONF|NGX_CONF_TAKE1,
-      ngx_http_perl,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("perl"),
+        NGX_HTTP_LOC_CONF|NGX_HTTP_LMT_CONF|NGX_CONF_TAKE1,
+        ngx_http_perl,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-    { ngx_string("perl_set"),
-      NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE2,
-      ngx_http_perl_set,
-      NGX_HTTP_LOC_CONF_OFFSET,
-      0,
-      NULL },
+    {   ngx_string("perl_set"),
+        NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE2,
+        ngx_http_perl_set,
+        NGX_HTTP_LOC_CONF_OFFSET,
+        0,
+        NULL
+    },
 
-      ngx_null_command
+    ngx_null_command
 };
 
 
@@ -209,23 +213,23 @@ ngx_http_perl_handle_request(ngx_http_request_t *r)
 
     {
 
-    dTHXa(pmcf->perl);
-    PERL_SET_CONTEXT(pmcf->perl);
-    PERL_SET_INTERP(pmcf->perl);
+        dTHXa(pmcf->perl);
+        PERL_SET_CONTEXT(pmcf->perl);
+        PERL_SET_INTERP(pmcf->perl);
 
-    if (ctx->next == NULL) {
-        plcf = ngx_http_get_module_loc_conf(r, ngx_http_perl_module);
-        sub = plcf->sub;
-        handler = &plcf->handler;
+        if (ctx->next == NULL) {
+            plcf = ngx_http_get_module_loc_conf(r, ngx_http_perl_module);
+            sub = plcf->sub;
+            handler = &plcf->handler;
 
-    } else {
-        sub = ctx->next;
-        handler = &ngx_null_name;
-        ctx->next = NULL;
-    }
+        } else {
+            sub = ctx->next;
+            handler = &ngx_null_name;
+            ctx->next = NULL;
+        }
 
-    rc = ngx_http_perl_call_handler(aTHX_ r, ctx, pmcf->nginx, sub, NULL,
-                                    handler, NULL);
+        rc = ngx_http_perl_call_handler(aTHX_ r, ctx, pmcf->nginx, sub, NULL,
+                                        handler, NULL);
 
     }
 
@@ -310,7 +314,7 @@ ngx_http_perl_sleep_handler(ngx_http_request_t *r)
 
 static ngx_int_t
 ngx_http_perl_variable(ngx_http_request_t *r, ngx_http_variable_value_t *v,
-    uintptr_t data)
+                       uintptr_t data)
 {
     ngx_http_perl_variable_t *pv = (ngx_http_perl_variable_t *) data;
 
@@ -345,12 +349,12 @@ ngx_http_perl_variable(ngx_http_request_t *r, ngx_http_variable_value_t *v,
 
     {
 
-    dTHXa(pmcf->perl);
-    PERL_SET_CONTEXT(pmcf->perl);
-    PERL_SET_INTERP(pmcf->perl);
+        dTHXa(pmcf->perl);
+        PERL_SET_CONTEXT(pmcf->perl);
+        PERL_SET_INTERP(pmcf->perl);
 
-    rc = ngx_http_perl_call_handler(aTHX_ r, ctx, pmcf->nginx, pv->sub, NULL,
-                                    &pv->handler, &value);
+        rc = ngx_http_perl_call_handler(aTHX_ r, ctx, pmcf->nginx, pv->sub, NULL,
+                                        &pv->handler, &value);
 
     }
 
@@ -380,7 +384,7 @@ ngx_http_perl_variable(ngx_http_request_t *r, ngx_http_variable_value_t *v,
 
 static ngx_int_t
 ngx_http_perl_ssi(ngx_http_request_t *r, ngx_http_ssi_ctx_t *ssi_ctx,
-    ngx_str_t **params)
+                  ngx_str_t **params)
 {
     SV                         *sv, **asv;
     ngx_int_t                   rc;
@@ -415,57 +419,57 @@ ngx_http_perl_ssi(ngx_http_request_t *r, ngx_http_ssi_ctx_t *ssi_ctx,
 
     {
 
-    dTHXa(pmcf->perl);
-    PERL_SET_CONTEXT(pmcf->perl);
-    PERL_SET_INTERP(pmcf->perl);
+        dTHXa(pmcf->perl);
+        PERL_SET_CONTEXT(pmcf->perl);
+        PERL_SET_INTERP(pmcf->perl);
 
 #if 0
 
-    /* the code is disabled to force the precompiled perl code using only */
+        /* the code is disabled to force the precompiled perl code using only */
 
-    ngx_http_perl_eval_anon_sub(aTHX_ handler, &sv);
+        ngx_http_perl_eval_anon_sub(aTHX_ handler, &sv);
 
-    if (sv == &PL_sv_undef) {
-        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                      "eval_pv(\"%V\") failed", handler);
-        return NGX_ERROR;
-    }
-
-    if (sv == NULL) {
-        sv = newSVpvn((char *) handler->data, handler->len);
-    }
-
-#endif
-
-    sv = newSVpvn((char *) handler->data, handler->len);
-
-    args = &params[NGX_HTTP_PERL_SSI_ARG];
-
-    if (args[0]) {
-
-        for (i = 0; args[i]; i++) { /* void */ }
-
-        asv = ngx_pcalloc(r->pool, (i + 1) * sizeof(SV *));
-
-        if (asv == NULL) {
-            SvREFCNT_dec(sv);
+        if (sv == &PL_sv_undef) {
+            ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
+                          "eval_pv(\"%V\") failed", handler);
             return NGX_ERROR;
         }
 
-        asv[0] = (SV *) (uintptr_t) i;
-
-        for (i = 0; args[i]; i++) {
-            asv[i + 1] = newSVpvn((char *) args[i]->data, args[i]->len);
+        if (sv == NULL) {
+            sv = newSVpvn((char *) handler->data, handler->len);
         }
 
-    } else {
-        asv = NULL;
-    }
+#endif
 
-    rc = ngx_http_perl_call_handler(aTHX_ r, ctx, pmcf->nginx, sv, asv,
-                                    handler, NULL);
+        sv = newSVpvn((char *) handler->data, handler->len);
 
-    SvREFCNT_dec(sv);
+        args = &params[NGX_HTTP_PERL_SSI_ARG];
+
+        if (args[0]) {
+
+            for (i = 0; args[i]; i++) { /* void */ }
+
+            asv = ngx_pcalloc(r->pool, (i + 1) * sizeof(SV *));
+
+            if (asv == NULL) {
+                SvREFCNT_dec(sv);
+                return NGX_ERROR;
+            }
+
+            asv[0] = (SV *) (uintptr_t) i;
+
+            for (i = 0; args[i]; i++) {
+                asv[i + 1] = newSVpvn((char *) args[i]->data, args[i]->len);
+            }
+
+        } else {
+            asv = NULL;
+        }
+
+        rc = ngx_http_perl_call_handler(aTHX_ r, ctx, pmcf->nginx, sv, asv,
+                                        handler, NULL);
+
+        SvREFCNT_dec(sv);
 
     }
 
@@ -531,7 +535,7 @@ ngx_http_perl_init_interpreter(ngx_conf_t *cf, ngx_http_perl_main_conf_t *pmcf)
         }
 
         if (ngx_http_perl_run_requires(aTHX_ pmcf->requires, cf->log)
-            != NGX_OK)
+                != NGX_OK)
         {
             return NGX_CONF_ERROR;
         }
@@ -573,7 +577,7 @@ ngx_http_perl_init_interpreter(ngx_conf_t *cf, ngx_http_perl_main_conf_t *pmcf)
 
 static PerlInterpreter *
 ngx_http_perl_create_interpreter(ngx_conf_t *cf,
-    ngx_http_perl_main_conf_t *pmcf)
+                                 ngx_http_perl_main_conf_t *pmcf)
 {
     int                n;
     STRLEN             len;
@@ -597,58 +601,58 @@ ngx_http_perl_create_interpreter(ngx_conf_t *cf,
 
     {
 
-    dTHXa(perl);
-    PERL_SET_CONTEXT(perl);
-    PERL_SET_INTERP(perl);
+        dTHXa(perl);
+        PERL_SET_CONTEXT(perl);
+        PERL_SET_INTERP(perl);
 
-    perl_construct(perl);
+        perl_construct(perl);
 
 #ifdef PERL_EXIT_DESTRUCT_END
-    PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+        PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 #endif
 
-    n = (pmcf->modules != NGX_CONF_UNSET_PTR) ? pmcf->modules->nelts * 2 : 0;
+        n = (pmcf->modules != NGX_CONF_UNSET_PTR) ? pmcf->modules->nelts * 2 : 0;
 
-    embedding = ngx_palloc(cf->pool, (5 + n) * sizeof(char *));
-    if (embedding == NULL) {
-        goto fail;
-    }
-
-    embedding[0] = "";
-
-    if (n++) {
-        m = pmcf->modules->elts;
-        for (i = 0; i < pmcf->modules->nelts; i++) {
-            embedding[2 * i + 1] = "-I";
-            embedding[2 * i + 2] = (char *) m[i].data;
+        embedding = ngx_palloc(cf->pool, (5 + n) * sizeof(char *));
+        if (embedding == NULL) {
+            goto fail;
         }
-    }
 
-    embedding[n++] = "-Mnginx";
-    embedding[n++] = "-e";
-    embedding[n++] = "0";
-    embedding[n] = NULL;
+        embedding[0] = "";
 
-    n = perl_parse(perl, ngx_http_perl_xs_init, n, embedding, NULL);
+        if (n++) {
+            m = pmcf->modules->elts;
+            for (i = 0; i < pmcf->modules->nelts; i++) {
+                embedding[2 * i + 1] = "-I";
+                embedding[2 * i + 2] = (char *) m[i].data;
+            }
+        }
 
-    if (n != 0) {
-        ngx_log_error(NGX_LOG_ALERT, cf->log, 0, "perl_parse() failed: %d", n);
-        goto fail;
-    }
+        embedding[n++] = "-Mnginx";
+        embedding[n++] = "-e";
+        embedding[n++] = "0";
+        embedding[n] = NULL;
 
-    sv = get_sv("nginx::VERSION", FALSE);
-    ver = SvPV(sv, len);
+        n = perl_parse(perl, ngx_http_perl_xs_init, n, embedding, NULL);
 
-    if (ngx_strcmp(ver, NGINX_VERSION) != 0) {
-        ngx_log_error(NGX_LOG_ALERT, cf->log, 0,
-                      "version " NGINX_VERSION " of nginx.pm is required, "
-                      "but %s was found", ver);
-        goto fail;
-    }
+        if (n != 0) {
+            ngx_log_error(NGX_LOG_ALERT, cf->log, 0, "perl_parse() failed: %d", n);
+            goto fail;
+        }
 
-    if (ngx_http_perl_run_requires(aTHX_ pmcf->requires, cf->log) != NGX_OK) {
-        goto fail;
-    }
+        sv = get_sv("nginx::VERSION", FALSE);
+        ver = SvPV(sv, len);
+
+        if (ngx_strcmp(ver, NGINX_VERSION) != 0) {
+            ngx_log_error(NGX_LOG_ALERT, cf->log, 0,
+                          "version " NGINX_VERSION " of nginx.pm is required, "
+                          "but %s was found", ver);
+            goto fail;
+        }
+
+        if (ngx_http_perl_run_requires(aTHX_ pmcf->requires, cf->log) != NGX_OK) {
+            goto fail;
+        }
 
     }
 
@@ -700,8 +704,8 @@ ngx_http_perl_run_requires(pTHX_ ngx_array_t *requires, ngx_log_t *log)
 
 static ngx_int_t
 ngx_http_perl_call_handler(pTHX_ ngx_http_request_t *r,
-    ngx_http_perl_ctx_t *ctx, HV *nginx, SV *sub, SV **args,
-    ngx_str_t *handler, ngx_str_t *rv)
+                           ngx_http_perl_ctx_t *ctx, HV *nginx, SV *sub, SV **args,
+                           ngx_str_t *handler, ngx_str_t *rv)
 {
     SV                *sv;
     int                n, status;
@@ -828,8 +832,8 @@ ngx_http_perl_eval_anon_sub(pTHX_ ngx_str_t *handler, SV **sv)
     }
 
     if (ngx_strncmp(p, "sub ", 4) == 0
-        || ngx_strncmp(p, "sub{", 4) == 0
-        || ngx_strncmp(p, "use ", 4) == 0)
+            || ngx_strncmp(p, "sub{", 4) == 0
+            || ngx_strncmp(p, "use ", 4) == 0)
     {
         *sv = eval_pv((char *) p, FALSE);
 
@@ -989,21 +993,21 @@ ngx_http_perl(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     {
 
-    dTHXa(pmcf->perl);
-    PERL_SET_CONTEXT(pmcf->perl);
-    PERL_SET_INTERP(pmcf->perl);
+        dTHXa(pmcf->perl);
+        PERL_SET_CONTEXT(pmcf->perl);
+        PERL_SET_INTERP(pmcf->perl);
 
-    ngx_http_perl_eval_anon_sub(aTHX_ &value[1], &plcf->sub);
+        ngx_http_perl_eval_anon_sub(aTHX_ &value[1], &plcf->sub);
 
-    if (plcf->sub == &PL_sv_undef) {
-        ngx_conf_log_error(NGX_LOG_ERR, cf, 0,
-                           "eval_pv(\"%V\") failed", &value[1]);
-        return NGX_CONF_ERROR;
-    }
+        if (plcf->sub == &PL_sv_undef) {
+            ngx_conf_log_error(NGX_LOG_ERR, cf, 0,
+                               "eval_pv(\"%V\") failed", &value[1]);
+            return NGX_CONF_ERROR;
+        }
 
-    if (plcf->sub == NULL) {
-        plcf->sub = newSVpvn((char *) value[1].data, value[1].len);
-    }
+        if (plcf->sub == NULL) {
+            plcf->sub = newSVpvn((char *) value[1].data, value[1].len);
+        }
 
     }
 
@@ -1061,21 +1065,21 @@ ngx_http_perl_set(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     {
 
-    dTHXa(pmcf->perl);
-    PERL_SET_CONTEXT(pmcf->perl);
-    PERL_SET_INTERP(pmcf->perl);
+        dTHXa(pmcf->perl);
+        PERL_SET_CONTEXT(pmcf->perl);
+        PERL_SET_INTERP(pmcf->perl);
 
-    ngx_http_perl_eval_anon_sub(aTHX_ &value[2], &pv->sub);
+        ngx_http_perl_eval_anon_sub(aTHX_ &value[2], &pv->sub);
 
-    if (pv->sub == &PL_sv_undef) {
-        ngx_conf_log_error(NGX_LOG_ERR, cf, 0,
-                           "eval_pv(\"%V\") failed", &value[2]);
-        return NGX_CONF_ERROR;
-    }
+        if (pv->sub == &PL_sv_undef) {
+            ngx_conf_log_error(NGX_LOG_ERR, cf, 0,
+                               "eval_pv(\"%V\") failed", &value[2]);
+            return NGX_CONF_ERROR;
+        }
 
-    if (pv->sub == NULL) {
-        pv->sub = newSVpvn((char *) value[2].data, value[2].len);
-    }
+        if (pv->sub == NULL) {
+            pv->sub = newSVpvn((char *) value[2].data, value[2].len);
+        }
 
     }
 

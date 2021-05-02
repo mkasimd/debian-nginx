@@ -11,7 +11,7 @@
 
 
 static ngx_chain_t *ngx_udp_output_chain_to_iovec(ngx_iovec_t *vec,
-    ngx_chain_t *in, ngx_log_t *log);
+        ngx_chain_t *in, ngx_log_t *log);
 static ssize_t ngx_sendmsg(ngx_connection_t *c, ngx_iovec_t *vec);
 
 
@@ -35,7 +35,7 @@ ngx_udp_unix_sendmsg_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
 
     if ((ngx_event_flags & NGX_USE_KQUEUE_EVENT) && wev->pending_eof) {
         (void) ngx_connection_error(c, wev->kq_errno,
-                               "kevent() reported about an closed connection");
+                                    "kevent() reported about an closed connection");
         wev->error = 1;
         return NGX_CHAIN_ERROR;
     }
