@@ -25,7 +25,7 @@ The package version numbering system varies a little:
 
  * `<nginx version>.<KSM-ngx release no.>`
   
- This is simply the nginx version followed by a number for the KSM-ngx release built on top of the given nginx version. The reason why this is different is, is that each application version doesn't really need an own release, but is built on top of the same release anyways and only differ in the mosules that the package is compiled with.
+ This is simply the nginx version followed by a number for the KSM-ngx release built on top of the given nginx version. The reason why this is different is that each application version doesn't really need an own release, but is built on top of the same release anyways and only differ in the modules that the package is compiled with.
 
 # ZStandard Compression
 To use the zstd compression module, compile the zstd library first. To do so, the [zstd-nginx-module](https://github.com/mkasimd/zstd-nginx-module) has the [zstd](https://github.com/facebook/zstd) submodule included. Just run the following commands on your CLI to compile and install the zstd library:
