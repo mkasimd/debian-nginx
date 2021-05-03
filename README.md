@@ -61,5 +61,8 @@ The latest PSOL releases can be found in the [Modpagespeed Release Archive](http
 
 NOTE: [nginx-nonewlines](https://github.com/vedang/nginx-nonewlines) is not added as a module to compile against under `debian/rules` as the PageSpeed module deals with such optimization measures with the right filters enabled already.
 
+# ModSecurity
+ModSecurity is a Web Application Firewall. Some releases here include the ModSecurity connector for nginx which requires the ModSecurity libraries to be available. As such, the dependencies are set accordingly. However, you also require the [Core Rule Set](https://github.com/coreruleset/coreruleset) which can be installed via `apt-get install modsecurity-crs` or from the linked github repo. The dependencies of this package are not set in a way requiring the debian package as you might want to download and install the most recent ruleset from the github repository instead.
+
 # Modules
 KSM-ngx comes with three types of releases, namely `lite`, `noPS` and `full`. They all have the same nginx base, but differ from each other with the modules that are provided. See the notes for each release to see which modules each provided package come with. Additionally, you can check out [mkasimd/nginx-modules](https://github.com/mkasimd/nginx-modules) to see some additional useful modules which might not be included in the releases.
