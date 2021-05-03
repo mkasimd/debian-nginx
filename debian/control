@@ -15,7 +15,7 @@ Homepage: https://nginx.org
 
 Package: nginx
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.0-6), adduser, openssl (>= 1.1.1d), libpcre3, libmodsecurity3, libmodsecurity-dev, zstd, brotli
+Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.0-6), adduser, openssl (>= 1.1.1d), libpcre3, brotli, zstd, libmodsecurity3, libmodsecurity-dev
 Provides: httpd, nginx, nginx-r1.20.0
 Conflicts: nginx-common, nginx-core
 Replaces: nginx-common, nginx-core
